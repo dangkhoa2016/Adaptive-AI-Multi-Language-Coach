@@ -1,0 +1,8 @@
+node_modules
+dist
+assets
+.wrangler
+coverage
+pnpm-lock.yaml
+frontend/dist
+idea-and-plan

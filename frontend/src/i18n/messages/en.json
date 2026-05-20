@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "Adaptive multi-language vocabulary & phrase trainer.",
+    "ui_language": "Interface language"
+  },
+  "errors": {
+    "rate_limited": "Too many requests. Please slow down and try again in a moment."
+  }
+}

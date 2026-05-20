@@ -1,0 +1,13 @@
+# Copy this file to .dev.vars (gitignored) for local wrangler dev runs.
+# Production values should be set via `wrangler secret put`.
+
+JWT_SECRET="please-change-me-locally"
+
+# Optional fallback Email provider creds (the runtime normally reads these from the
+# email_providers_config D1 table; set them only for local testing of adapters).
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+POSTMARK_SERVER_TOKEN=""
+SENDPULSE_CLIENT_ID=""
+SENDPULSE_CLIENT_SECRET=""
+RESEND_API_KEY=""

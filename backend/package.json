@@ -1,0 +1,29 @@
+{
+  "name": "@vocab/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate:local": "wrangler d1 migrations apply ai_vocab_db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply ai_vocab_db --remote",
+    "db:migrations:list": "wrangler d1 migrations list ai_vocab_db"
+  },
+  "dependencies": {
+    "@vocab/shared": "workspace:*",
+    "hono": "^4.12.21",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.16.7",
+    "@cloudflare/workers-types": "^4.20260521.1",
+    "typescript": "^6.0.3",
+    "vitest": "4.1.7",
+    "wrangler": "^4.93.0"
+  }
+}

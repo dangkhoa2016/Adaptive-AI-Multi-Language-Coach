@@ -1,0 +1,32 @@
+name = "ai-vocab-app-test"
+main = "src/index.ts"
+compatibility_date = "2026-05-20"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+EMAIL_FROM = "no-reply@yourdomain.com"
+EMAIL_FROM_NAME = "AI Vocab App"
+EMAIL_PROVIDER = "database_dynamic"
+AWS_REGION = "us-east-1"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "test_cache_kv"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ai_vocab_db_test"
+database_id = "test_d1_db"
+migrations_dir = "migrations"
+
+[[unsafe.bindings]]
+name = "RATE_LIMITER_API"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }
+
+[[unsafe.bindings]]
+name = "RATE_LIMITER_AUTH"
+type = "ratelimit"
+namespace_id = "1002"
+simple = { limit = 3, period = 60 }

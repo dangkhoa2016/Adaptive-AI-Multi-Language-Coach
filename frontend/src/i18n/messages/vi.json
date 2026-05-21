@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "Ứng dụng học từ vựng và cụm từ AI đa ngôn ngữ.",
+    "ui_language": "Ngôn ngữ giao diện"
+  },
+  "errors": {
+    "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát."
+  }
+}

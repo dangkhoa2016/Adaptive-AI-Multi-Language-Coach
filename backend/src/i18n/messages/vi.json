@@ -1,0 +1,19 @@
+{
+  "errors": {
+    "invalid_payload": "Dữ liệu yêu cầu không hợp lệ.",
+    "ai_failed": "Không thể tạo nội dung. Vui lòng thử lại.",
+    "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",
+    "not_found": "Không tìm thấy tài nguyên.",
+    "internal_error": "Đã xảy ra lỗi không mong muốn.",
+    "cache_error": "Bộ nhớ tạm không khả dụng, tiếp tục không dùng cache.",
+    "insufficient_distractors": "Không đủ lựa chọn nhiễu cho bài quiz."
+  },
+  "quiz": {
+    "correct": "Chính xác!",
+    "incorrect": "Chưa đúng.",
+    "try_again": "Thử lại"
+  },
+  "generate": {
+    "fallback_notice": "Đang hiển thị danh sách từ vựng có sẵn trong khi AI tạm thời không khả dụng."
+  }
+}

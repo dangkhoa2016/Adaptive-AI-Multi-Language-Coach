@@ -1,0 +1,19 @@
+{
+  "errors": {
+    "invalid_payload": "请求数据无效。",
+    "ai_failed": "内容生成失败，请重试。",
+    "rate_limited": "请求过多。请稍后再试。",
+    "not_found": "未找到资源。",
+    "internal_error": "发生意外错误。",
+    "cache_error": "缓存不可用，继续不使用缓存。",
+    "insufficient_distractors": "测验选项不足。"
+  },
+  "quiz": {
+    "correct": "正确！",
+    "incorrect": "不正确。",
+    "try_again": "重试"
+  },
+  "generate": {
+    "fallback_notice": "AI生成暂时不可用，显示内置词汇列表。"
+  }
+}

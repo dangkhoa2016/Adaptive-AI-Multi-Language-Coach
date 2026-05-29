@@ -20,3 +20,4 @@ coverage
 assets
 frontend/dist
 temp
+backend/wrangler.toml

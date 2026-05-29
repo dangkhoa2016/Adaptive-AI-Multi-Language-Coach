@@ -1,0 +1,19 @@
+{
+  "errors": {
+    "invalid_payload": "リクエストペイロードが無効です。",
+    "ai_failed": "コンテンツの生成に失敗しました。もう一度お試しください。",
+    "rate_limited": "リクエストが多すぎます。稍稍間を置いて再度お試しください。",
+    "not_found": "リソースが見つかりません。",
+    "internal_error": "予期しないエラーが発生しました。",
+    "cache_error": "キャッシュが利用できません。キャッシュなしで続行します。",
+    "insufficient_distractors": "クイズのための選択肢が不足しています。"
+  },
+  "quiz": {
+    "correct": "正解！",
+    "incorrect": "不正解。",
+    "try_again": "もう一度"
+  },
+  "generate": {
+    "fallback_notice": "AI生成が一時的に利用できないため、ビルトインの語彙リストを表示しています。"
+  }
+}

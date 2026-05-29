@@ -1,0 +1,19 @@
+{
+  "errors": {
+    "invalid_payload": "Invalid request payload.",
+    "ai_failed": "Content generation failed. Please try again.",
+    "rate_limited": "Too many requests. Please slow down and try again in a moment.",
+    "not_found": "Resource not found.",
+    "internal_error": "An unexpected error occurred.",
+    "cache_error": "Cache unavailable, continuing without cache.",
+    "insufficient_distractors": "Not enough distractors available for quiz."
+  },
+  "quiz": {
+    "correct": "Correct!",
+    "incorrect": "Incorrect.",
+    "try_again": "Try again"
+  },
+  "generate": {
+    "fallback_notice": "Showing pre-built vocabulary list while AI generation is unavailable."
+  }
+}

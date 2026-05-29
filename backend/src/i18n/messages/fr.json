@@ -1,0 +1,19 @@
+{
+  "errors": {
+    "invalid_payload": "Charge utile de requête invalide.",
+    "ai_failed": "Échec de la génération de contenu. Veuillez réessayer.",
+    "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un moment.",
+    "not_found": "Ressource introuvable.",
+    "internal_error": "Une erreur inattendue s'est produite.",
+    "cache_error": "Cache indisponible, poursuite sans cache.",
+    "insufficient_distractors": "Pas assez de distracteurs disponibles pour le quiz."
+  },
+  "quiz": {
+    "correct": "Correct !",
+    "incorrect": "Incorrect.",
+    "try_again": "Réessayer"
+  },
+  "generate": {
+    "fallback_notice": "Affichage de la liste de vocabulaire intégrée pendant que la génération IA est temporairement indisponible."
+  }
+}

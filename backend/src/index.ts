@@ -1,14 +1,18 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { LOCALE_LABELS, SUPPORTED_LOCALES, resolveLocale, type Locale } from '@vocab/shared'
+import { resolveLocale, type Locale } from '@vocab/shared'
 import type { Bindings, Variables } from './env'
+import { t } from './i18n'
+import { healthRouter } from './routes/health'
+import { localesRouter } from './routes/locales'
+import { topicsRouter } from './routes/topics'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
+// Global middleware
 app.use('*', logger())
 app.use('/api/*', cors())
-
 app.use('/api/*', async (c, next) => {
   const header = c.req.header('accept-language')
   const query = c.req.query('lang')
@@ -18,22 +22,16 @@ app.use('/api/*', async (c, next) => {
   await next()
 })
 
-app.use('/', async (c, next) => {
-  c.json({ message: 'Welcome to the Adaptive AI Multi-Language Coach API!' })
-})
+// Mount sub-routers
+app.route('/', healthRouter)
+app.route('/api', localesRouter)
+app.route('/api', topicsRouter)
 
-app.get('/health', (c) => c.json({ ok: true, ts: Date.now() }))
-
-app.get('/api/locales', (c) =>
-  c.json({
-    locales: SUPPORTED_LOCALES.map((code) => ({ code, label: LOCALE_LABELS[code] })),
-  }),
-)
-
-app.notFound((c) => c.json({ error: 'not_found' }, 404))
+// Error handlers
+app.notFound((c) => c.json({ error: 'not_found', message: t(c, 'errors.not_found') }, 404))
 app.onError((err, c) => {
   console.error(err)
-  return c.json({ error: 'internal_error', message: err.message }, 500)
+  return c.json({ error: 'internal_error', message: t(c, 'errors.internal_error') }, 500)
 })
 
 export default app

@@ -1,3 +1,4 @@
+import globals from 'globals'
 import js from '@eslint/js'
 import tsParser from '@typescript-eslint/parser'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
@@ -46,6 +47,9 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         extraFileExtensions: ['.vue'],
+      },
+      globals: {
+        ...globals.browser,
       },
     },
     rules: {

@@ -14,4 +14,16 @@ export function resetKV() {
   // State is managed by the pool-workers runtime
 }
 
+/**
+ * Creates a mock rate limiter that always succeeds (success: true)
+ * or always fails (success: false).
+ */
+export function createMockRateLimiter(allow: boolean): {
+  limit: () => Promise<{ success: boolean }>
+} {
+  return {
+    limit: async () => ({ success: allow }),
+  }
+}
+
 export { exports as app }

@@ -1,0 +1,48 @@
+# Wrangler Configuration Template
+# Copy this file and customize for each environment:
+#   - wrangler.toml (local/dev)
+#   - wrangler.staging.toml (staging)
+#   - wrangler.production.toml (production)
+
+name = "ai-vocab-app"
+main = "src/index.ts"
+compatibility_date = "2026-05-20"
+compatibility_flags = ["nodejs_compat"]
+
+# [Static Assets] Serve the built Vue SPA from frontend/../assets (via Vite build.outDir)
+[assets]
+directory = "../assets"
+binding = "ASSETS"
+
+# [Secrets] Must be set via `wrangler secret put`:
+#   - ENCRYPTION_KEY: AES-256 root key for encrypting sensitive D1 system_settings
+#   - JWT_SECRET: JWT signing/verification key (if auth is enabled)
+#
+# All other config (AI endpoints, model options, email settings) is stored
+# in the D1 `system_settings` table. Use PATCH /api/admin/settings/:key to manage.
+
+# [KV] Cache layer only — stores AI response cache with 24h TTL.
+# App settings are stored in D1, NOT in KV.
+[[kv_namespaces]]
+binding = "CACHE"
+id = "<KV_APP_ID>"
+preview_id = "<KV_APP_PREVIEW_ID>"
+
+# [D1] SQL database for users, tokens, learned pairs, system_settings, fallback pairs
+[[d1_databases]]
+binding = "DB"
+database_name = "<D1_DATABASE_NAME>"
+database_id = "<D1_DATABASE_ID>"
+migrations_dir = "migrations"
+
+# [Rate Limit] General API guard (DDoS / abuse protection on generate endpoint)
+[[ratelimits]]
+name = "RATE_LIMITER_API"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }
+
+# [Rate Limit] Strict guard on auth (magic link request, verify) to prevent email-bombing
+[[ratelimits]]
+name = "RATE_LIMITER_AUTH"
+namespace_id = "1002"
+simple = { limit = 3, period = 60 }

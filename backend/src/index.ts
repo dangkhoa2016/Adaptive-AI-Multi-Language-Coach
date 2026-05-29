@@ -8,6 +8,8 @@ import { healthRouter } from './routes/health'
 import { localesRouter } from './routes/locales'
 import { topicsRouter } from './routes/topics'
 import { quizRouter } from './routes/quiz'
+import { generateRouter } from './routes/generate'
+import { adminRouter } from './routes/admin'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -28,6 +30,8 @@ app.route('/', healthRouter)
 app.route('/api', localesRouter)
 app.route('/api', topicsRouter)
 app.route('/api', quizRouter)
+app.route('/api', generateRouter)
+app.route('/api', adminRouter)
 
 // Error handlers
 app.notFound((c) => c.json({ error: 'not_found', message: t(c, 'errors.not_found') }, 404))

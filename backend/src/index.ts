@@ -7,6 +7,7 @@ import { t } from './i18n'
 import { healthRouter } from './routes/health'
 import { localesRouter } from './routes/locales'
 import { topicsRouter } from './routes/topics'
+import { quizRouter } from './routes/quiz'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -26,6 +27,7 @@ app.use('/api/*', async (c, next) => {
 app.route('/', healthRouter)
 app.route('/api', localesRouter)
 app.route('/api', topicsRouter)
+app.route('/api', quizRouter)
 
 // Error handlers
 app.notFound((c) => c.json({ error: 'not_found', message: t(c, 'errors.not_found') }, 404))

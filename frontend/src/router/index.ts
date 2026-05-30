@@ -6,6 +6,21 @@ const routes: RouteRecordRaw[] = [
     name: 'home',
     component: () => import('../views/HomeView.vue'),
   },
+  {
+    path: '/flashcard',
+    name: 'flashcard',
+    component: () => import('../views/FlashcardView.vue'),
+  },
+  {
+    path: '/quiz',
+    name: 'quiz',
+    component: () => import('../views/QuizView.vue'),
+  },
+  {
+    path: '/result',
+    name: 'result',
+    component: () => import('../views/ResultView.vue'),
+  },
 ]
 
 export const router = createRouter({

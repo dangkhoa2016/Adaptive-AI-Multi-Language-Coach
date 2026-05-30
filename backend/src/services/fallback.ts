@@ -24,7 +24,7 @@ export async function getFallbackPairsFromDB(
   const { results: specific } = await db
     .prepare(
       `SELECT source, target, example_source as "exampleSource", example_target as "exampleTarget",
-              ipa, pos, is_phrase as "isPhrase"
+              ipa, pos, CAST(is_phrase AS BOOLEAN) as "isPhrase"
        FROM fallback_pairs
        WHERE source_lang = ? AND target_lang = ? AND topic = ? AND level = ?`,
     )
@@ -37,7 +37,7 @@ export async function getFallbackPairsFromDB(
   const { results: generic } = await db
     .prepare(
       `SELECT source, target, example_source as "exampleSource", example_target as "exampleTarget",
-              ipa, pos, is_phrase as "isPhrase"
+              ipa, pos, CAST(is_phrase AS BOOLEAN) as "isPhrase"
        FROM fallback_pairs
        WHERE source_lang = '*' AND target_lang = '*' AND topic = '*' AND level = '*'`,
     )

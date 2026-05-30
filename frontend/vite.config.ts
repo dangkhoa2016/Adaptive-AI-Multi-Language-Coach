@@ -24,4 +24,14 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    exclude: ['e2e/**', 'node_modules/**'],
+    coverage: {
+      enabled: true,
+      reporter: ['text', 'lcov', 'html'],
+      include: ['src/**'],
+    },
+  },
 })

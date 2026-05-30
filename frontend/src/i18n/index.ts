@@ -15,11 +15,12 @@ export const i18n = createI18n({
 })
 
 export async function loadLocaleMessages(locale: Locale) {
-  const available = i18n.global.availableLocales as readonly string[]
+  const available = i18n.global.availableLocales as string[]
   if (available.includes(locale)) return
-  const messages = await import(`./messages/${locale}.json`)
-  ;(i18n.global as { setLocaleMessage: (l: string, m: unknown) => void }).setLocaleMessage(
-    locale,
-    messages.default,
-  )
+  try {
+    const messages = await import(`./messages/${locale}.json`)
+    i18n.global.setLocaleMessage(locale, messages.default)
+  } catch {
+    console.warn(`Failed to load locale: ${locale}, falling back to en`)
+  }
 }

@@ -19,7 +19,10 @@ export const vocabPairSchema = z.object({
   exampleTarget: z.string().optional().default(''),
   ipa: z.string().optional().default(''),
   pos: z.string().optional().default(''),
-  isPhrase: z.boolean().default(false),
+  isPhrase: z
+    .union([z.boolean(), z.number()])
+    .transform((v) => !!v)
+    .default(false),
 })
 
 export const generateResponseSchema = z.object({

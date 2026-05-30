@@ -8,7 +8,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
-    "test": "echo \"(frontend tests come in Phase 2)\" && exit 0"
+    "test": "vitest run"
   },
   "dependencies": {
     "@vocab/shared": "workspace:*",
@@ -22,10 +22,12 @@
     "@tailwindcss/postcss": "^4.3.0",
     "@vitejs/plugin-vue": "^6.0.7",
     "autoprefixer": "^10.5.0",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.14",
+    "vitest": "^3.2.4",
     "vue-tsc": "^3.3.1"
   }
 }

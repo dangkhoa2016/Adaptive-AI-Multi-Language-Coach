@@ -12,7 +12,11 @@
     "test:watch": "vitest",
     "db:migrate:local": "wrangler d1 migrations apply ai_vocab_db --local",
     "db:migrate:remote": "wrangler d1 migrations apply ai_vocab_db --remote",
-    "db:migrations:list": "wrangler d1 migrations list ai_vocab_db"
+    "db:migrations:list": "wrangler d1 migrations list ai_vocab_db",
+    "db:seed:local": "wrangler d1 execute ai_vocab_db --local --file=seed/0001_topics_and_fallback.sql",
+    "db:seed:remote": "wrangler d1 execute ai_vocab_db --remote --file=seed/0001_topics_and_fallback.sql",
+    "seed:settings:local": "node scripts/seed-settings.mjs",
+    "seed:settings:remote": "node scripts/seed-settings.mjs --remote"
   },
   "dependencies": {
     "@vocab/shared": "workspace:*",
@@ -22,6 +26,7 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.16.7",
     "@cloudflare/workers-types": "^4.20260521.1",
+    "@vitest/coverage-istanbul": "^4.1.9",
     "typescript": "^6.0.3",
     "vitest": "4.1.7",
     "wrangler": "^4.93.0"

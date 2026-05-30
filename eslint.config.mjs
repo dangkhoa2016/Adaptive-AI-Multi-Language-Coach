@@ -56,5 +56,16 @@ export default [
       'vue/multi-word-component-names': 'off',
     },
   },
+  {
+    files: ['backend/scripts/**/*.mjs', 'backend/scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-undef': 'error',
+    },
+  },
   prettier,
 ]

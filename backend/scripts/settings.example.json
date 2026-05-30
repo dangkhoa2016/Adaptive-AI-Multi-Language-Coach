@@ -1,0 +1,8 @@
+{
+  "aiEndpointUrl": "https://api.openai.com/v1/responses",
+  "aiModelName": "gpt-4o-mini",
+  "aiModelOptions": {
+    "max_output_tokens": 4096,
+    "temperature": 0.3
+  }
+}

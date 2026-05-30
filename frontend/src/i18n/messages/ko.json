@@ -1,0 +1,64 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "적응형 다국어 어휘 및 문구 트레이너.",
+    "ui_language": "인터페이스 언어",
+    "source_language": "출발 언어",
+    "target_language": "목표 언어",
+    "learning_mode": "학습 모드",
+    "topic": "주제",
+    "level": "레벨",
+    "count": "개수",
+    "start": "학습 시작",
+    "mode_word": "단어",
+    "mode_phrase": "구문 & 관용구",
+    "mode_mix": "혼합",
+    "select_source": "출발 언어 선택",
+    "select_target": "목표 언어 선택",
+    "beginner": "초급",
+    "elementary": "기초",
+    "intermediate": "중급",
+    "upper_intermediate": "중상급"
+  },
+  "flashcard": {
+    "title": "플래시카드",
+    "front": "앞면",
+    "back": "뒷면",
+    "tap_flip": "탭하여 뒤집기",
+    "next": "다음",
+    "previous": "이전",
+    "start_quiz": "퀴즈 시작",
+    "card_progress": "카드 {current} / {total}"
+  },
+  "quiz": {
+    "title": "퀴즈",
+    "question_progress": "문제 {current} / {total}",
+    "submit": "제출",
+    "correct": "정답!",
+    "incorrect": "오답",
+    "next": "다음",
+    "see_results": "결과 보기"
+  },
+  "result": {
+    "title": "결과",
+    "score": "점수",
+    "out_of": "/",
+    "try_again": "다시 시도",
+    "continue_learning": "학습 계속",
+    "go_home": "홈으로 돌아가기",
+    "excellent": "훌륭해요!",
+    "good_job": "잘했어요!",
+    "keep_practicing": "계속 연습하세요!"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "retry": "재시도",
+    "back": "뒤로"
+  },
+  "errors": {
+    "rate_limited": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
+    "generic": "오류가 발생했습니다. 다시 시도해주세요.",
+    "generation_failed": "어휘 생성에 실패했습니다. 다시 시도해주세요."
+  }
+}

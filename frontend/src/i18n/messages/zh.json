@@ -1,0 +1,64 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "自适应多语言词汇和短语训练器。",
+    "ui_language": "界面语言",
+    "source_language": "源语言",
+    "target_language": "目标语言",
+    "learning_mode": "学习模式",
+    "topic": "主题",
+    "level": "级别",
+    "count": "数量",
+    "start": "开始学习",
+    "mode_word": "单词",
+    "mode_phrase": "短语和习语",
+    "mode_mix": "混合",
+    "select_source": "选择源语言",
+    "select_target": "选择目标语言",
+    "beginner": "初级",
+    "elementary": "基础",
+    "intermediate": "中级",
+    "upper_intermediate": "中高级"
+  },
+  "flashcard": {
+    "title": "抽认卡",
+    "front": "正面",
+    "back": "背面",
+    "tap_flip": "点击翻转",
+    "next": "下一个",
+    "previous": "上一个",
+    "start_quiz": "开始测验",
+    "card_progress": "卡片 {current} / {total}"
+  },
+  "quiz": {
+    "title": "测验",
+    "question_progress": "问题 {current} / {total}",
+    "submit": "提交",
+    "correct": "正确！",
+    "incorrect": "错误",
+    "next": "下一个",
+    "see_results": "查看结果"
+  },
+  "result": {
+    "title": "结果",
+    "score": "得分",
+    "out_of": "/",
+    "try_again": "再试一次",
+    "continue_learning": "继续学习",
+    "go_home": "返回首页",
+    "excellent": "太棒了！",
+    "good_job": "做得好！",
+    "keep_practicing": "继续练习！"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "retry": "重试",
+    "back": "返回"
+  },
+  "errors": {
+    "rate_limited": "请求过多，请稍后再试。",
+    "generic": "发生错误，请重试。",
+    "generation_failed": "生成词汇失败，请重试。"
+  }
+}

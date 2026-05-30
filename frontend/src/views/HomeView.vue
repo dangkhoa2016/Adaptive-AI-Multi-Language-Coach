@@ -1,16 +1,85 @@
 <script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from '@vocab/shared'
 import { usePrefsStore } from '../stores/prefs'
+import { useSessionStore } from '../stores/session'
+import { useLocale } from '../composables/useLocale'
+import { generateVocab, fetchTopics, type Topic } from '../api/client'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
-const { t, locale } = useI18n()
+const router = useRouter()
+const { t } = useI18n()
 const prefs = usePrefsStore()
+const session = useSessionStore()
+const { setLocale } = useLocale()
 
-function setLocale(value: Locale) {
-  locale.value = value
-  prefs.uiLocale = value
-  document.documentElement.lang = value
+const topics = ref<Topic[]>([])
+const level = ref<'A1' | 'A2' | 'B1' | 'B2'>('A1')
+const count = ref(10)
+const isGenerating = ref(false)
+const error = ref<string | null>(null)
+
+const canStart = computed(() => {
+  return prefs.source !== prefs.target
+})
+
+onMounted(async () => {
+  try {
+    topics.value = await fetchTopics(prefs.uiLocale)
+  } catch {
+    topics.value = []
+  }
+})
+
+watch(
+  () => prefs.uiLocale,
+  async (locale) => {
+    await setLocale(locale)
+    try {
+      topics.value = await fetchTopics(locale)
+    } catch {
+      topics.value = []
+    }
+  },
+)
+
+async function start() {
+  if (!canStart.value) return
+  isGenerating.value = true
+  error.value = null
+
+  const topicKey = topics.value[0]?.key ?? 'travel'
+
+  try {
+    const res = await generateVocab({
+      source: prefs.source,
+      target: prefs.target,
+      topic: topicKey,
+      level: level.value,
+      count: count.value,
+      uiLocale: prefs.uiLocale,
+      mode: prefs.learningMode,
+    })
+    session.setPairs(res.pairs)
+    router.push({ name: 'flashcard' })
+  } catch (err) {
+    if (err instanceof Error && (err as { status?: number }).status === 429) {
+      error.value = 'errors.rate_limited'
+    } else {
+      error.value = 'errors.generation_failed'
+    }
+  } finally {
+    isGenerating.value = false
+  }
 }
+
+const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
+  { value: 'A1', labelKey: 'home.beginner' },
+  { value: 'A2', labelKey: 'home.elementary' },
+  { value: 'B1', labelKey: 'home.intermediate' },
+  { value: 'B2', labelKey: 'home.upper_intermediate' },
+]
 </script>
 
 <template>
@@ -18,20 +87,91 @@ function setLocale(value: Locale) {
     <h1 class="text-3xl font-bold tracking-tight">{{ t('home.title') }}</h1>
     <p class="mt-3 text-slate-600 dark:text-slate-300">{{ t('home.tagline') }}</p>
 
+    <!-- UI Language -->
     <div class="mt-8">
-      <label for="ui-locale" class="block text-sm font-medium">
-        {{ t('home.ui_language') }}
-      </label>
+      <label for="ui-locale" class="block text-sm font-medium">{{ t('home.ui_language') }}</label>
+      <LanguageSwitcher v-model="prefs.uiLocale" class="mt-2" />
+    </div>
+
+    <!-- Source / Target -->
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="source" class="block text-sm font-medium">{{
+          t('home.source_language')
+        }}</label>
+        <LanguageSwitcher v-model="prefs.source" class="mt-2" />
+      </div>
+      <div>
+        <label for="target" class="block text-sm font-medium">{{
+          t('home.target_language')
+        }}</label>
+        <LanguageSwitcher v-model="prefs.target" class="mt-2" />
+      </div>
+    </div>
+
+    <!-- Learning Mode -->
+    <div class="mt-6">
+      <label for="mode" class="block text-sm font-medium">{{ t('home.learning_mode') }}</label>
       <select
-        id="ui-locale"
-        :value="locale"
-        class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
-        @change="setLocale(($event.target as HTMLSelectElement).value as Locale)"
+        id="mode"
+        v-model="prefs.learningMode"
+        class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
       >
-        <option v-for="code in SUPPORTED_LOCALES" :key="code" :value="code">
-          {{ LOCALE_LABELS[code] }}
-        </option>
+        <option value="word">{{ t('home.mode_word') }}</option>
+        <option value="phrase">{{ t('home.mode_phrase') }}</option>
+        <option value="mix">{{ t('home.mode_mix') }}</option>
       </select>
+    </div>
+
+    <!-- Level -->
+    <div class="mt-6">
+      <span class="block text-sm font-medium">{{ t('home.level') }}</span>
+      <div class="mt-2 flex flex-wrap gap-2">
+        <label
+          v-for="l in levels"
+          :key="l.value"
+          class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-700 dark:has-[:checked]:border-indigo-400 dark:has-[:checked]:bg-indigo-900/30 dark:has-[:checked]:text-indigo-300"
+        >
+          <input v-model="level" type="radio" :value="l.value" class="sr-only" />
+          {{ t(l.labelKey) }} ({{ l.value }})
+        </label>
+      </div>
+    </div>
+
+    <!-- Count Slider -->
+    <div class="mt-6">
+      <label for="count" class="block text-sm font-medium">
+        {{ t('home.count') }}: {{ count }}
+      </label>
+      <input
+        id="count"
+        v-model.number="count"
+        type="range"
+        min="5"
+        max="20"
+        step="1"
+        class="mt-2 w-full accent-indigo-600"
+      />
+    </div>
+
+    <!-- Error -->
+    <div
+      v-if="error"
+      class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400"
+    >
+      {{ t(error) }}
+    </div>
+
+    <!-- Start Button -->
+    <div class="mt-8">
+      <button
+        class="w-full rounded-xl bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="!canStart || isGenerating"
+        @click="start()"
+      >
+        <span v-if="isGenerating">{{ t('common.loading') }}</span>
+        <span v-else>{{ t('home.start') }}</span>
+      </button>
     </div>
   </section>
 </template>

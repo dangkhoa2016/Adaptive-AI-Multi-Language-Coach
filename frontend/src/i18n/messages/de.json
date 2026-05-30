@@ -1,0 +1,64 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "Adaptiver mehrsprachiger Vokabel- und Phrasentrainer.",
+    "ui_language": "Oberflächensprache",
+    "source_language": "Ausgangssprache",
+    "target_language": "Zielsprache",
+    "learning_mode": "Lernmodus",
+    "topic": "Thema",
+    "level": "Niveau",
+    "count": "Anzahl",
+    "start": "Lernen starten",
+    "mode_word": "Einzelwörter",
+    "mode_phrase": "Phrasen & Redewendungen",
+    "mode_mix": "Gemischt",
+    "select_source": "Ausgangssprache wählen",
+    "select_target": "Zielsprache wählen",
+    "beginner": "Anfänger",
+    "elementary": "Grundlagen",
+    "intermediate": "Mittelstufe",
+    "upper_intermediate": "Obere Mittelstufe"
+  },
+  "flashcard": {
+    "title": "Lernkarten",
+    "front": "Vorderseite",
+    "back": "Rückseite",
+    "tap_flip": "Tippen zum Wenden",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "start_quiz": "Quiz starten",
+    "card_progress": "Karte {current} / {total}"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "question_progress": "Frage {current} / {total}",
+    "submit": "Absenden",
+    "correct": "Richtig!",
+    "incorrect": "Falsch",
+    "next": "Weiter",
+    "see_results": "Ergebnisse anzeigen"
+  },
+  "result": {
+    "title": "Ergebnisse",
+    "score": "Punktzahl",
+    "out_of": "von",
+    "try_again": "Nochmal versuchen",
+    "continue_learning": "Weiterlernen",
+    "go_home": "Zur Startseite",
+    "excellent": "Ausgezeichnet!",
+    "good_job": "Gut gemacht!",
+    "keep_practicing": "Weiter üben!"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "retry": "Wiederholen",
+    "back": "Zurück"
+  },
+  "errors": {
+    "rate_limited": "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+    "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "generation_failed": "Vokabelgenerierung fehlgeschlagen. Bitte versuchen Sie es erneut."
+  }
+}

@@ -2,9 +2,63 @@
   "home": {
     "title": "AI Vocab Coach",
     "tagline": "Ứng dụng học từ vựng và cụm từ AI đa ngôn ngữ.",
-    "ui_language": "Ngôn ngữ giao diện"
+    "ui_language": "Ngôn ngữ giao diện",
+    "source_language": "Ngôn ngữ nguồn",
+    "target_language": "Ngôn ngữ đích",
+    "learning_mode": "Chế độ học",
+    "topic": "Chủ đề",
+    "level": "Trình độ",
+    "count": "Số lượng",
+    "start": "Bắt đầu học",
+    "mode_word": "Từ đơn",
+    "mode_phrase": "Cụm từ & thành ngữ",
+    "mode_mix": "Trộn",
+    "select_source": "Chọn ngôn ngữ nguồn",
+    "select_target": "Chọn ngôn ngữ đích",
+    "beginner": "Sơ cấp",
+    "elementary": "Cơ bản",
+    "intermediate": "Trung cấp",
+    "upper_intermediate": "Trên trung cấp"
+  },
+  "flashcard": {
+    "title": "Thẻ ghi nhớ",
+    "front": "Mặt trước",
+    "back": "Mặt sau",
+    "tap_flip": "Nhấn để lật",
+    "next": "Tiếp",
+    "previous": "Trước",
+    "start_quiz": "Làm bài kiểm tra",
+    "card_progress": "Thẻ {current} / {total}"
+  },
+  "quiz": {
+    "title": "Bài kiểm tra",
+    "question_progress": "Câu {current} / {total}",
+    "submit": "Nộp bài",
+    "correct": "Chính xác!",
+    "incorrect": "Sai rồi",
+    "next": "Tiếp",
+    "see_results": "Xem kết quả"
+  },
+  "result": {
+    "title": "Kết quả",
+    "score": "Điểm",
+    "out_of": "trên",
+    "try_again": "Thử lại",
+    "continue_learning": "Tiếp tục học",
+    "go_home": "Về trang chủ",
+    "excellent": "Xuất sắc!",
+    "good_job": "Làm tốt!",
+    "keep_practicing": "Tiếp tục luyện tập!"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Đã có lỗi xảy ra",
+    "retry": "Thử lại",
+    "back": "Quay lại"
   },
   "errors": {
-    "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát."
+    "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",
+    "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
+    "generation_failed": "Không thể tạo từ vựng. Vui lòng thử lại."
   }
 }

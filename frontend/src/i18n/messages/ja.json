@@ -1,0 +1,64 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "適応型多言語ボキャブラリー＆フレーズトレーナー。",
+    "ui_language": "インターフェース言語",
+    "source_language": "ソース言語",
+    "target_language": "ターゲット言語",
+    "learning_mode": "学習モード",
+    "topic": "トピック",
+    "level": "レベル",
+    "count": "数",
+    "start": "学習を始める",
+    "mode_word": "単語",
+    "mode_phrase": "フレーズ＆イディオム",
+    "mode_mix": "ミックス",
+    "select_source": "ソース言語を選択",
+    "select_target": "ターゲット言語を選択",
+    "beginner": "初級",
+    "elementary": "基礎",
+    "intermediate": "中級",
+    "upper_intermediate": "中上級"
+  },
+  "flashcard": {
+    "title": "フラッシュカード",
+    "front": "表面",
+    "back": "裏面",
+    "tap_flip": "タップして裏返す",
+    "next": "次",
+    "previous": "前",
+    "start_quiz": "クイズを受ける",
+    "card_progress": "カード {current} / {total}"
+  },
+  "quiz": {
+    "title": "クイズ",
+    "question_progress": "問題 {current} / {total}",
+    "submit": "送信",
+    "correct": "正解！",
+    "incorrect": "不正解",
+    "next": "次",
+    "see_results": "結果を見る"
+  },
+  "result": {
+    "title": "結果",
+    "score": "スコア",
+    "out_of": "/",
+    "try_again": "もう一度",
+    "continue_learning": "学習を続ける",
+    "go_home": "ホームに戻る",
+    "excellent": "素晴らしい！",
+    "good_job": "よくできました！",
+    "keep_practicing": "練習を続けましょう！"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "back": "戻る"
+  },
+  "errors": {
+    "rate_limited": "リクエストが多すぎます。少し待ってから再度お試しください。",
+    "generic": "エラーが発生しました。もう一度お試しください。",
+    "generation_failed": "ボキャブラリーの生成に失敗しました。もう一度お試しください。"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "ระบบฝึกคำศัพท์และวลีหลายภาษาแบบปรับตัวได้",
+    "ui_language": "ภาษาหน้าจอ",
+    "source_language": "ภาษาต้นทาง",
+    "target_language": "ภาษาปลายทาง",
+    "learning_mode": "โหมดเรียนรู้",
+    "topic": "หัวข้อ",
+    "level": "ระดับ",
+    "count": "จำนวน",
+    "start": "เริ่มเรียน",
+    "mode_word": "คำศัพท์",
+    "mode_phrase": "วลี & สำนวน",
+    "mode_mix": "ผสม",
+    "select_source": "เลือกภาษาต้นทาง",
+    "select_target": "เลือกภาษาปลายทาง",
+    "beginner": "เริ่มต้น",
+    "elementary": "พื้นฐาน",
+    "intermediate": "ปานกลาง",
+    "upper_intermediate": "กลางตอนปลาย"
+  },
+  "flashcard": {
+    "title": "บัตรคำ",
+    "front": "ด้านหน้า",
+    "back": "ด้านหลัง",
+    "tap_flip": "แตะเพื่อพลิก",
+    "next": "ถัดไป",
+    "previous": "ก่อนหน้า",
+    "start_quiz": "ทำแบบทดสอบ",
+    "card_progress": "บัตร {current} / {total}"
+  },
+  "quiz": {
+    "title": "แบบทดสอบ",
+    "question_progress": "ข้อ {current} / {total}",
+    "submit": "ส่ง",
+    "correct": "ถูกต้อง!",
+    "incorrect": "ผิด",
+    "next": "ถัดไป",
+    "see_results": "ดูผล"
+  },
+  "result": {
+    "title": "ผลการทดสอบ",
+    "score": "คะแนน",
+    "out_of": "จาก",
+    "try_again": "ลองอีกครั้ง",
+    "continue_learning": "เรียนต่อ",
+    "go_home": "กลับหน้าหลัก",
+    "excellent": "ยอดเยี่ยม!",
+    "good_job": "ทำได้ดี!",
+    "keep_practicing": "ฝึกต่อไป!"
+  },
+  "common": {
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด",
+    "retry": "ลองใหม่",
+    "back": "ย้อนกลับ"
+  },
+  "errors": {
+    "rate_limited": "มีคำขอมากเกินไป กรุณาลองอีกครั้งในสักครู่",
+    "generic": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
+    "generation_failed": "ไม่สามารถสร้างคำศัพท์ได้ กรุณาลองอีกครั้ง"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "home": {
+    "title": "AI Vocab Coach",
+    "tagline": "Entraîneur de vocabulaire et phrases multilingue adaptatif.",
+    "ui_language": "Langue de l'interface",
+    "source_language": "Langue source",
+    "target_language": "Langue cible",
+    "learning_mode": "Mode d'apprentissage",
+    "topic": "Thème",
+    "level": "Niveau",
+    "count": "Nombre",
+    "start": "Commencer",
+    "mode_word": "Mots simples",
+    "mode_phrase": "Expressions & idiomes",
+    "mode_mix": "Mélangé",
+    "select_source": "Choisir la langue source",
+    "select_target": "Choisir la langue cible",
+    "beginner": "Débutant",
+    "elementary": "Élémentaire",
+    "intermediate": "Intermédiaire",
+    "upper_intermediate": "Intermédiaire supérieur"
+  },
+  "flashcard": {
+    "title": "Cartes mémoire",
+    "front": "Recto",
+    "back": "Verso",
+    "tap_flip": "Appuyer pour retourner",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "start_quiz": "Passer au quiz",
+    "card_progress": "Carte {current} / {total}"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "question_progress": "Question {current} / {total}",
+    "submit": "Valider",
+    "correct": "Correct !",
+    "incorrect": "Incorrect",
+    "next": "Suivant",
+    "see_results": "Voir les résultats"
+  },
+  "result": {
+    "title": "Résultats",
+    "score": "Score",
+    "out_of": "sur",
+    "try_again": "Réessayer",
+    "continue_learning": "Continuer à apprendre",
+    "go_home": "Retour à l'accueil",
+    "excellent": "Excellent !",
+    "good_job": "Bien joué !",
+    "keep_practicing": "Continuez à pratiquer !"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "back": "Retour"
+  },
+  "errors": {
+    "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un instant.",
+    "generic": "Une erreur est survenue. Veuillez réessayer.",
+    "generation_failed": "Échec de la génération du vocabulaire. Veuillez réessayer."
+  }
+}

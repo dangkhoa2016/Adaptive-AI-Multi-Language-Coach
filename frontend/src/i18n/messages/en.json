@@ -2,9 +2,63 @@
   "home": {
     "title": "AI Vocab Coach",
     "tagline": "Adaptive multi-language vocabulary & phrase trainer.",
-    "ui_language": "Interface language"
+    "ui_language": "Interface language",
+    "source_language": "Source language",
+    "target_language": "Target language",
+    "learning_mode": "Learning mode",
+    "topic": "Topic",
+    "level": "Level",
+    "count": "Number of items",
+    "start": "Start learning",
+    "mode_word": "Single words",
+    "mode_phrase": "Phrases & idioms",
+    "mode_mix": "Mixed",
+    "select_source": "Select source",
+    "select_target": "Select target",
+    "beginner": "Beginner",
+    "elementary": "Elementary",
+    "intermediate": "Intermediate",
+    "upper_intermediate": "Upper Intermediate"
+  },
+  "flashcard": {
+    "title": "Flashcards",
+    "front": "Front",
+    "back": "Back",
+    "tap_flip": "Tap to flip",
+    "next": "Next",
+    "previous": "Previous",
+    "start_quiz": "Take a quiz",
+    "card_progress": "Card {current} / {total}"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "question_progress": "Question {current} / {total}",
+    "submit": "Submit",
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "next": "Next",
+    "see_results": "See results"
+  },
+  "result": {
+    "title": "Results",
+    "score": "Score",
+    "out_of": "out of",
+    "try_again": "Try again",
+    "continue_learning": "Continue learning",
+    "go_home": "Back to home",
+    "excellent": "Excellent!",
+    "good_job": "Good job!",
+    "keep_practicing": "Keep practicing!"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "back": "Back"
   },
   "errors": {
-    "rate_limited": "Too many requests. Please slow down and try again in a moment."
+    "rate_limited": "Too many requests. Please slow down and try again in a moment.",
+    "generic": "Something went wrong. Please try again.",
+    "generation_failed": "Failed to generate vocabulary. Please try again."
   }
 }

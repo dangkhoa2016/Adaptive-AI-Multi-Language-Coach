@@ -83,7 +83,7 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
 </script>
 
 <template>
-  <section class="mx-auto max-w-3xl px-6 py-12">
+  <section class="mx-auto max-w-3xl px-6 py-12" aria-label="Vocabulary generator form">
     <h1 class="text-3xl font-bold tracking-tight">{{ t('home.title') }}</h1>
     <p class="mt-3 text-slate-600 dark:text-slate-300">{{ t('home.tagline') }}</p>
 
@@ -125,8 +125,8 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
 
     <!-- Level -->
     <div class="mt-6">
-      <span class="block text-sm font-medium">{{ t('home.level') }}</span>
-      <div class="mt-2 flex flex-wrap gap-2">
+      <span id="level-label" class="block text-sm font-medium">{{ t('home.level') }}</span>
+      <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-labelledby="level-label">
         <label
           v-for="l in levels"
           :key="l.value"
@@ -157,6 +157,8 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
     <!-- Error -->
     <div
       v-if="error"
+      role="alert"
+      aria-live="assertive"
       class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400"
     >
       {{ t(error) }}
@@ -165,6 +167,7 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
     <!-- Start Button -->
     <div class="mt-8">
       <button
+        role="button"
         class="w-full rounded-xl bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="!canStart || isGenerating"
         @click="start()"

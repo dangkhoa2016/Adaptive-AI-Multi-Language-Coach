@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "AI生成が一時的に利用できないため、ビルトインの語彙リストを表示しています。"
+  },
+  "tts": {
+    "listen": "聞く",
+    "play_audio": "音声を再生",
+    "audio_error": "音声再生に失敗しました"
+  },
+  "drills": {
+    "listening": "リスニング練習",
+    "speaking": "スピーキング練習",
+    "typing": "タイピング練習",
+    "type_what_you_hear": "聞こえたことを入力",
+    "speak_the_phrase": "フレーズを発音",
+    "check": "チェック",
+    "hint": "ヒント",
+    "similarity": "類似度",
+    "transcript": "文字起こし",
+    "record": "録音",
+    "stop": "停止",
+    "recording": "録音中...",
+    "mic_error": "マイクへのアクセスが拒否されました",
+    "too_short": "回答が短すぎます",
+    "great_job": "素晴らしい！",
+    "close": "惜しい、もう一度",
+    "keep_practicing": "練習を続けて"
   }
 }

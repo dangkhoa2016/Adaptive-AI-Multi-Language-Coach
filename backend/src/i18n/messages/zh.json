@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "AI生成暂时不可用，显示内置词汇列表。"
+  },
+  "tts": {
+    "listen": "听",
+    "play_audio": "播放音频",
+    "audio_error": "音频播放失败"
+  },
+  "drills": {
+    "listening": "听力练习",
+    "speaking": "口语练习",
+    "typing": "打字练习",
+    "type_what_you_hear": "输入你听到的内容",
+    "speak_the_phrase": "说出短语",
+    "check": "检查",
+    "hint": "提示",
+    "similarity": "相似度",
+    "transcript": "转录",
+    "record": "录音",
+    "stop": "停止",
+    "recording": "录音中...",
+    "mic_error": "麦克风访问被拒绝",
+    "too_short": "答案太短",
+    "great_job": "做得好！",
+    "close": "接近了，再试一次",
+    "keep_practicing": "继续练习"
   }
 }

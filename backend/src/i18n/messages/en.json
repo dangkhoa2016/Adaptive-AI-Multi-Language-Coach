@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "Showing pre-built vocabulary list while AI generation is unavailable."
+  },
+  "tts": {
+    "listen": "Listen",
+    "play_audio": "Play audio",
+    "audio_error": "Audio playback failed"
+  },
+  "drills": {
+    "listening": "Listening Drill",
+    "speaking": "Speaking Drill",
+    "typing": "Typing Drill",
+    "type_what_you_hear": "Type what you hear",
+    "speak_the_phrase": "Speak the phrase",
+    "check": "Check",
+    "hint": "Hint",
+    "similarity": "Similarity",
+    "transcript": "Transcript",
+    "record": "Record",
+    "stop": "Stop",
+    "recording": "Recording...",
+    "mic_error": "Microphone access denied",
+    "too_short": "Answer too short",
+    "great_job": "Great job!",
+    "close": "Close, try again",
+    "keep_practicing": "Keep practicing"
   }
 }

@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "Affichage de la liste de vocabulaire intégrée pendant que la génération IA est temporairement indisponible."
+  },
+  "tts": {
+    "listen": "Écouter",
+    "play_audio": "Jouer l'audio",
+    "audio_error": "Échec de la reproduction audio"
+  },
+  "drills": {
+    "listening": "Exercice d'écoute",
+    "speaking": "Exercice d'expression orale",
+    "typing": "Exercice de frappe",
+    "type_what_you_hear": "Tapez ce que vous entendez",
+    "speak_the_phrase": "Prononcez la phrase",
+    "check": "Vérifier",
+    "hint": "Indice",
+    "similarity": "Similarité",
+    "transcript": "Transcription",
+    "record": "Enregistrer",
+    "stop": "Arrêter",
+    "recording": "Enregistrement...",
+    "mic_error": "Accès au microphone refusé",
+    "too_short": "Réponse trop courte",
+    "great_job": "Excellent !",
+    "close": "Presse, réessayez",
+    "keep_practicing": "Continuez à pratiquer"
   }
 }

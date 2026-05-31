@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "Affichage de la liste de vocabulaire intégrée pendant que la génération IA est temporairement indisponible."
+  },
+  "tts": {
+    "listen": "Anhören",
+    "play_audio": "Audio abspielen",
+    "audio_error": "Audiowiedergabe fehlgeschlagen"
+  },
+  "drills": {
+    "listening": "Hörübung",
+    "speaking": "Sprechübung",
+    "typing": "Tippübung",
+    "type_what_you_hear": "Tippen Sie, was Sie hören",
+    "speak_the_phrase": "Sprechen Sie die Phrase",
+    "check": "Prüfen",
+    "hint": "Hinweis",
+    "similarity": "Ähnlichkeit",
+    "transcript": "Transkript",
+    "record": "Aufnehmen",
+    "stop": "Stopp",
+    "recording": "Aufnahme...",
+    "mic_error": "Mikrofonzugriff verweigert",
+    "too_short": "Antwort zu kurz",
+    "great_job": "Großartig!",
+    "close": "Knapp, nochmal versuchen",
+    "keep_practicing": "Weiter üben"
   }
 }

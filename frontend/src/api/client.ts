@@ -108,3 +108,33 @@ export async function createQuiz(pairs: VocabPair[]): Promise<QuizResponse> {
     body: { pairs },
   })
 }
+
+export async function fetchTtsAudio(text: string, locale: string): Promise<Blob> {
+  const res = await fetch(`${BASE}/tts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, locale }),
+  })
+
+  if (!res.ok) {
+    throw new Error('TTS request failed')
+  }
+
+  return res.blob()
+}
+
+export async function submitSttAudio(
+  audioBlob: Blob,
+  reference: string,
+): Promise<{ transcript: string; similarity: number | null }> {
+  const res = await fetch(`${BASE}/stt?reference=${encodeURIComponent(reference)}`, {
+    method: 'POST',
+    body: audioBlob,
+  })
+
+  if (!res.ok) {
+    throw new Error('STT request failed')
+  }
+
+  return res.json()
+}

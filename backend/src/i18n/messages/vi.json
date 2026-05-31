@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "Đang hiển thị danh sách từ vựng có sẵn trong khi AI tạm thời không khả dụng."
+  },
+  "tts": {
+    "listen": "Nghe",
+    "play_audio": "Phát âm thanh",
+    "audio_error": "Phát âm thanh thất bại"
+  },
+  "drills": {
+    "listening": "Luyện nghe",
+    "speaking": "Luyện nói",
+    "typing": "Luyện gõ",
+    "type_what_you_hear": "Gõ những gì bạn nghe",
+    "speak_the_phrase": "Nói cụm từ",
+    "check": "Kiểm tra",
+    "hint": "Gợi ý",
+    "similarity": "Độ tương đồng",
+    "transcript": "Bản chép lời",
+    "record": "Ghi âm",
+    "stop": "Dừng",
+    "recording": "Đang ghi âm...",
+    "mic_error": "Không thể truy cập micro",
+    "too_short": "Câu trả lời quá ngắn",
+    "great_job": "Tuyệt vời!",
+    "close": "Gần đúng, thử lại",
+    "keep_practicing": "Tiếp tục luyện tập"
   }
 }

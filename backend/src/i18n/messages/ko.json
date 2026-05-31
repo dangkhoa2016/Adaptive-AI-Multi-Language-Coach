@@ -15,5 +15,29 @@
   },
   "generate": {
     "fallback_notice": "AI 생성이 일시적으로 unavailable하여 기본 어휘 목록을 표시합니다."
+  },
+  "tts": {
+    "listen": "듣기",
+    "play_audio": "오디오 재생",
+    "audio_error": "오디오 재생 실패"
+  },
+  "drills": {
+    "listening": "듣기 연습",
+    "speaking": "말하기 연습",
+    "typing": "타이핑 연습",
+    "type_what_you_hear": "들은 것을 입력하세요",
+    "speak_the_phrase": "문장을 말하세요",
+    "check": "확인",
+    "hint": "힌트",
+    "similarity": "유사도",
+    "transcript": "자막",
+    "record": "녹음",
+    "stop": "중지",
+    "recording": "녹음 중...",
+    "mic_error": "마이크 접근이 거부되었습니다",
+    "too_short": "답변이 너무 짧습니다",
+    "great_job": "잘했어요!",
+    "close": "아쉬워요, 다시 시도",
+    "keep_practicing": "계속 연습하세요"
   }
 }

@@ -77,6 +77,7 @@ function startQuiz() {
 
       <div class="mt-4 flex items-center justify-between gap-4">
         <button
+          aria-label="Previous card"
           class="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
           :class="
             session.currentCardIndex > 0
@@ -90,6 +91,7 @@ function startQuiz() {
         </button>
 
         <button
+          aria-label="Listen to pronunciation"
           class="rounded-lg bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
           @click="tts()"
         >
@@ -97,6 +99,7 @@ function startQuiz() {
         </button>
 
         <button
+          aria-label="Next card"
           class="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
           :class="
             session.currentCardIndex < session.pairs.length - 1

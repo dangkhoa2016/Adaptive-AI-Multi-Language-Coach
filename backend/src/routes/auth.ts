@@ -5,6 +5,7 @@ import { t } from '../i18n'
 import { createJwt, generateMagicToken, hashToken } from '../services/auth'
 import { requireAuth } from '../middleware/auth'
 import { createRateLimitMiddleware } from '../middleware/rateLimit'
+import { sendEmail } from '../services/mail'
 
 const router = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -24,14 +25,30 @@ router.post('/auth/request', async (c) => {
   const raw = generateMagicToken()
   const tokenHash = await hashToken(raw)
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString()
+  const normalizedEmail = email.toLowerCase()
 
   await c.env.DB.prepare(
     `INSERT INTO magic_tokens (token_hash, email, expires_at) VALUES (?, ?, ?)`,
   )
-    .bind(tokenHash, email.toLowerCase(), expiresAt)
+    .bind(tokenHash, normalizedEmail, expiresAt)
     .run()
 
-  console.log(`[auth] Magic link for ${email}: ${raw}`)
+  const origin = c.req.header('origin') ?? 'http://localhost:5173'
+  const magicLink = `${origin}/auth/verify?token=${raw}`
+
+  const sent = await sendEmail(c.env.DB, {
+    to: normalizedEmail,
+    subject: 'Your AI Vocab Coach magic sign-in link',
+    html: `<p>Click the link below to sign in to AI Vocab Coach:</p><p><a href="${magicLink}">${magicLink}</a></p><p>This link expires in 15 minutes.</p>`,
+    from: 'noreply@vocab.app',
+  }).catch((err) => {
+    console.log(`[auth] Email send failed: ${err}`)
+    return false
+  })
+
+  if (!sent) {
+    console.log(`[auth] Magic link for ${normalizedEmail}: ${raw}`)
+  }
 
   return c.json({ success: true, message: t(c, 'auth.link_sent') })
 })

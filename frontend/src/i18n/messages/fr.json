@@ -56,6 +56,21 @@
     "retry": "Réessayer",
     "back": "Retour"
   },
+  "auth": {
+    "login_title": "Connexion",
+    "email_label": "Adresse e-mail",
+    "send_link": "Envoyer le lien magique",
+    "link_sent": "Lien magique envoyé !",
+    "check_email": "Consultez vos e-mails pour le lien de connexion. Il expire dans 15 minutes.",
+    "verify_title": "Vérification du lien de connexion...",
+    "verify_error": "Ce lien est invalide ou a expiré.",
+    "profile_title": "Votre profil",
+    "logout": "Déconnexion",
+    "export_data": "Exporter mes données",
+    "not_logged_in": "Vous n'êtes pas connecté.",
+    "activated_date": "Activé le",
+    "member_since": "Membre depuis"
+  },
   "errors": {
     "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un instant.",
     "generic": "Une erreur est survenue. Veuillez réessayer.",

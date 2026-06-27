@@ -82,6 +82,21 @@
     "close": "Close, try again",
     "keep_practicing": "Keep practicing"
   },
+  "auth": {
+    "login_title": "Sign in",
+    "email_label": "Email address",
+    "send_link": "Send magic link",
+    "link_sent": "Magic link sent!",
+    "check_email": "Check your email for the sign-in link. It expires in 15 minutes.",
+    "verify_title": "Verifying your sign-in link...",
+    "verify_error": "This link is invalid or has expired.",
+    "profile_title": "Your Profile",
+    "logout": "Sign out",
+    "export_data": "Export my data",
+    "not_logged_in": "You are not signed in.",
+    "activated_date": "Activated",
+    "member_since": "Member since"
+  },
   "errors": {
     "rate_limited": "Too many requests. Please slow down and try again in a moment.",
     "generic": "Something went wrong. Please try again.",

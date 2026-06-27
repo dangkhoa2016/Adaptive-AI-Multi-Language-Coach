@@ -26,6 +26,21 @@ const routes: RouteRecordRaw[] = [
     name: 'drill',
     component: () => import('../views/DrillView.vue'),
   },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/LoginView.vue'),
+  },
+  {
+    path: '/auth/verify',
+    name: 'verify',
+    component: () => import('../views/VerifyView.vue'),
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/ProfileView.vue'),
+  },
 ]
 
 export const router = createRouter({

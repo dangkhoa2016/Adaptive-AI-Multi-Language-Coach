@@ -82,6 +82,21 @@
     "close": "Gần đúng, thử lại",
     "keep_practicing": "Tiếp tục luyện tập"
   },
+  "auth": {
+    "login_title": "Đăng nhập",
+    "email_label": "Địa chỉ email",
+    "send_link": "Gửi mã đăng nhập",
+    "link_sent": "Đã gửi mã đăng nhập!",
+    "check_email": "Kiểm tra email để xem mã đăng nhập. Mã có hiệu lực trong 15 phút.",
+    "verify_title": "Đang xác thực mã đăng nhập...",
+    "verify_error": "Mã đăng nhập không hợp lệ hoặc đã hết hạn.",
+    "profile_title": "Hồ sơ của bạn",
+    "logout": "Đăng xuất",
+    "export_data": "Xuất dữ liệu",
+    "not_logged_in": "Bạn chưa đăng nhập.",
+    "activated_date": "Ngày kích hoạt",
+    "member_since": "Thành viên từ"
+  },
   "errors": {
     "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",
     "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",

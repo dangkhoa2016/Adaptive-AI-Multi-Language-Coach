@@ -56,6 +56,21 @@
     "retry": "Wiederholen",
     "back": "Zurück"
   },
+  "auth": {
+    "login_title": "Anmelden",
+    "email_label": "E-Mail-Adresse",
+    "send_link": "Magic-Link senden",
+    "link_sent": "Magic-Link gesendet!",
+    "check_email": "Prüfen Sie Ihre E-Mails auf den Anmelde-Link. Er läuft in 15 Minuten ab.",
+    "verify_title": "Überprüfe Ihren Anmelde-Link...",
+    "verify_error": "Dieser Link ist ungültig oder abgelaufen.",
+    "profile_title": "Ihr Profil",
+    "logout": "Abmelden",
+    "export_data": "Meine Daten exportieren",
+    "not_logged_in": "Sie sind nicht angemeldet.",
+    "activated_date": "Aktiviert am",
+    "member_since": "Mitglied seit"
+  },
   "errors": {
     "rate_limited": "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
     "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",

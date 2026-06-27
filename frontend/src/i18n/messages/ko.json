@@ -56,6 +56,21 @@
     "retry": "재시도",
     "back": "뒤로"
   },
+  "auth": {
+    "login_title": "로그인",
+    "email_label": "이메일 주소",
+    "send_link": "매직 링크 보내기",
+    "link_sent": "매직 링크 전송 완료!",
+    "check_email": "이메일의 로그인 링크를 확인하세요. 15분 후 만료됩니다.",
+    "verify_title": "로그인 링크 확인 중...",
+    "verify_error": "이 링크는 유효하지 않거나 만료되었습니다.",
+    "profile_title": "프로필",
+    "logout": "로그아웃",
+    "export_data": "데이터 내보내기",
+    "not_logged_in": "로그인되어 있지 않습니다.",
+    "activated_date": "활성화 날짜",
+    "member_since": "가입일"
+  },
   "errors": {
     "rate_limited": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
     "generic": "오류가 발생했습니다. 다시 시도해주세요.",

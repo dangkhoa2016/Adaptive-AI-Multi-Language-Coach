@@ -56,6 +56,21 @@
     "retry": "再試行",
     "back": "戻る"
   },
+  "auth": {
+    "login_title": "サインイン",
+    "email_label": "メールアドレス",
+    "send_link": "マジックリンクを送信",
+    "link_sent": "マジックリンクを送信しました！",
+    "check_email": "メールのサインインリンクをご確認ください。15分で期限切れになります。",
+    "verify_title": "サインインリンクを確認中...",
+    "verify_error": "このリンクは無効または期限切れです。",
+    "profile_title": "プロフィール",
+    "logout": "サインアウト",
+    "export_data": "データをエクスポート",
+    "not_logged_in": "サインインしていません。",
+    "activated_date": "アクティベート日",
+    "member_since": "登録日"
+  },
   "errors": {
     "rate_limited": "リクエストが多すぎます。少し待ってから再度お試しください。",
     "generic": "エラーが発生しました。もう一度お試しください。",

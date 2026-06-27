@@ -6,7 +6,16 @@
     "not_found": "Resource not found.",
     "internal_error": "An unexpected error occurred.",
     "cache_error": "Cache unavailable, continuing without cache.",
-    "insufficient_distractors": "Not enough distractors available for quiz."
+    "insufficient_distractors": "Not enough distractors available for quiz.",
+    "invalid_email": "Please provide a valid email address.",
+    "invalid_token": "Invalid or malformed verification token.",
+    "token_used": "This link has already been used. Please request a new one.",
+    "token_expired": "This link has expired. Please request a new one.",
+    "unauthorized": "You must be logged in to access this resource.",
+    "user_not_found": "User not found."
+  },
+  "auth": {
+    "link_sent": "If an account with that email exists, a magic link has been sent."
   },
   "quiz": {
     "correct": "Correct!",

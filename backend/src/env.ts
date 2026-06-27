@@ -7,9 +7,11 @@ export interface Bindings {
   RATE_LIMITER_API: RateLimit
   RATE_LIMITER_AUTH: RateLimit
   ENCRYPTION_KEY: string
+  JWT_SECRET: string
   AI: Ai
 }
 
 export interface Variables {
   locale: Locale
+  userId?: string
 }

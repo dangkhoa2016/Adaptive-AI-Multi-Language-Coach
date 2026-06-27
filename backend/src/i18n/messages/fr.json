@@ -6,7 +6,13 @@
     "not_found": "Ressource introuvable.",
     "internal_error": "Une erreur inattendue s'est produite.",
     "cache_error": "Cache indisponible, poursuite sans cache.",
-    "insufficient_distractors": "Pas assez de distracteurs disponibles pour le quiz."
+    "insufficient_distractors": "Pas assez de distracteurs disponibles pour le quiz.",
+    "invalid_email": "Veuillez fournir une adresse e-mail valide.",
+    "invalid_token": "Jeton de vérification invalide.",
+    "token_used": "Ce lien a déjà été utilisé. Veuillez en demander un nouveau.",
+    "token_expired": "Ce lien a expiré. Veuillez en demander un nouveau.",
+    "unauthorized": "Vous devez être connecté pour accéder à cette ressource.",
+    "user_not_found": "Utilisateur introuvable."
   },
   "quiz": {
     "correct": "Correct !",
@@ -39,5 +45,8 @@
     "great_job": "Excellent !",
     "close": "Presse, réessayez",
     "keep_practicing": "Continuez à pratiquer"
+  },
+  "auth": {
+    "link_sent": "Si un compte avec cet e-mail existe, un lien magique a été envoyé."
   }
 }

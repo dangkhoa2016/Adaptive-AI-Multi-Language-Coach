@@ -7,3 +7,4 @@
 # For production, set these via `wrangler secret put`.
 
 ENCRYPTION_KEY = "test-encryption-key-not-for-production"
+JWT_SECRET = "test-jwt-secret-not-for-production"

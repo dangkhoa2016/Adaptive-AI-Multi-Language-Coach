@@ -6,7 +6,13 @@
     "not_found": "未找到资源。",
     "internal_error": "发生意外错误。",
     "cache_error": "缓存不可用，继续不使用缓存。",
-    "insufficient_distractors": "测验选项不足。"
+    "insufficient_distractors": "测验选项不足。",
+    "invalid_email": "请提供有效的电子邮件地址。",
+    "invalid_token": "验证令牌无效。",
+    "token_used": "此链接已被使用。请请求新链接。",
+    "token_expired": "此链接已过期。请请求新链接。",
+    "unauthorized": "您需要登录才能访问此资源。",
+    "user_not_found": "未找到用户。"
   },
   "quiz": {
     "correct": "正确！",
@@ -39,5 +45,8 @@
     "great_job": "做得好！",
     "close": "接近了，再试一次",
     "keep_practicing": "继续练习"
+  },
+  "auth": {
+    "link_sent": "如果该邮箱的账户存在，魔幻链接已发送。"
   }
 }

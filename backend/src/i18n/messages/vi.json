@@ -6,7 +6,16 @@
     "not_found": "Không tìm thấy tài nguyên.",
     "internal_error": "Đã xảy ra lỗi không mong muốn.",
     "cache_error": "Bộ nhớ tạm không khả dụng, tiếp tục không dùng cache.",
-    "insufficient_distractors": "Không đủ lựa chọn nhiễu cho bài quiz."
+    "insufficient_distractors": "Không đủ lựa chọn nhiễu cho bài quiz.",
+    "invalid_email": "Vui lòng cung cấp địa chỉ email hợp lệ.",
+    "invalid_token": "Mã xác thực không hợp lệ.",
+    "token_used": "Liên kết này đã được sử dụng. Vui lòng yêu cầu liên kết mới.",
+    "token_expired": "Liên kết này đã hết hạn. Vui lòng yêu cầu liên kết mới.",
+    "unauthorized": "Bạn cần đăng nhập để truy cập tài nguyên này.",
+    "user_not_found": "Không tìm thấy người dùng."
+  },
+  "auth": {
+    "link_sent": "Nếu tài khoản với email đó tồn tại, một liên kết đăng nhập đã được gửi."
   },
   "quiz": {
     "correct": "Chính xác!",

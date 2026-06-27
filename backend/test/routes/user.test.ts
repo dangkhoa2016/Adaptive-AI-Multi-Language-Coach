@@ -1,5 +1,4 @@
 import { describe, expect, it, beforeEach } from 'vitest'
-import { hashToken } from '../../src/services/auth'
 
 const users = new Map<
   string,

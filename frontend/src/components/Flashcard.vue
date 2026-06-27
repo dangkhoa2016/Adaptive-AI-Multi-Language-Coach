@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { VocabPair } from '../api/client'
+import type { VocabPair, LearnedPair } from '../api/client'
 
 const props = defineProps<{
-  pair: VocabPair
+  pair: VocabPair | LearnedPair
   flipped: boolean
   sourceLang: string
 }>()
@@ -12,8 +12,32 @@ const emit = defineEmits<{
   flip: []
 }>()
 
+const display = computed(() => {
+  const p = props.pair
+  if ('source_text' in p) {
+    return {
+      source: p.source_text,
+      target: p.target_text,
+      ipa: p.ipa,
+      pos: p.pos,
+      exampleSource: p.example_source,
+      exampleTarget: p.example_target,
+      isPhrase: p.is_phrase === 1,
+    }
+  }
+  return {
+    source: p.source,
+    target: p.target,
+    ipa: p.ipa,
+    pos: p.pos,
+    exampleSource: p.exampleSource,
+    exampleTarget: p.exampleTarget,
+    isPhrase: p.isPhrase,
+  }
+})
+
 const fontSizeClass = computed(() => {
-  const len = props.pair.source.length + props.pair.target.length
+  const len = display.value.source.length + display.value.target.length
   if (len > 60) return 'text-xl'
   if (len > 40) return 'text-2xl'
   return 'text-3xl'
@@ -24,7 +48,7 @@ const fontSizeClass = computed(() => {
   <div
     role="button"
     tabindex="0"
-    :aria-label="flipped ? pair.target : pair.source"
+    :aria-label="flipped ? display.target : display.source"
     class="perspective-1000 h-64 cursor-pointer"
     @click="emit('flip')"
     @keydown.enter="emit('flip')"
@@ -43,9 +67,14 @@ const fontSizeClass = computed(() => {
             {{ sourceLang }}
           </span>
           <span :class="fontSizeClass" class="font-semibold text-slate-800 dark:text-slate-100">
-            {{ pair.source }}
+            {{ display.source }}
           </span>
-          <span v-if="pair.ipa" class="mt-1 text-sm text-slate-400">{{ pair.ipa }}</span>
+          <span v-if="display.ipa" class="mt-1 text-sm text-slate-400">{{ display.ipa }}</span>
+          <span
+            v-if="display.isPhrase"
+            class="mt-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+            >Phrase</span
+          >
           <span class="mt-3 text-xs text-slate-400">Tap to flip</span>
         </div>
       </div>
@@ -56,11 +85,13 @@ const fontSizeClass = computed(() => {
       >
         <div class="flex h-full flex-col items-center justify-center text-center">
           <span :class="fontSizeClass" class="font-semibold text-slate-800 dark:text-slate-100">
-            {{ pair.target }}
+            {{ display.target }}
           </span>
-          <span class="mt-2 text-sm text-slate-500 dark:text-slate-400">{{ pair.pos }}</span>
-          <span class="mt-3 max-w-xs text-xs text-slate-400 italic">
-            {{ pair.exampleSource }}
+          <span v-if="display.pos" class="mt-2 text-sm text-slate-500 dark:text-slate-400">{{
+            display.pos
+          }}</span>
+          <span v-if="display.exampleSource" class="mt-3 max-w-xs text-xs text-slate-400 italic">
+            {{ display.exampleSource }}
           </span>
         </div>
       </div>

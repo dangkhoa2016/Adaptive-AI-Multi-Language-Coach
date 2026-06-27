@@ -225,6 +225,37 @@ export async function resetCard(learnedPairId: string): Promise<LearnedPair> {
   return res.pair
 }
 
+export interface ReviewLogEntry {
+  id: string
+  learnedPairId: string
+  source: string
+  target: string
+  quality: number
+  reviewedAt: string
+}
+
+export interface ReviewHistoryResponse {
+  logs: ReviewLogEntry[]
+  total: number
+  page: number
+  limit: number
+}
+
+export interface ReviewHistoryStats {
+  totalReviews: number
+  todayReviews: number
+  thisWeek: number
+  avgQuality: number
+}
+
+export async function fetchReviewHistory(page = 1, limit = 20): Promise<ReviewHistoryResponse> {
+  return request<ReviewHistoryResponse>(`/review/history?page=${page}&limit=${limit}`)
+}
+
+export async function fetchReviewHistoryStats(): Promise<ReviewHistoryStats> {
+  return request<ReviewHistoryStats>('/review/history/stats')
+}
+
 export async function submitSttAudio(
   audioBlob: Blob,
   reference: string,

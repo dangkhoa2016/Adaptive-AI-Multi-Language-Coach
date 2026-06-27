@@ -24,6 +24,13 @@ onMounted(() => {
         >
           {{ t('nav.review') }}
         </RouterLink>
+        <RouterLink
+          v-if="auth.user"
+          :to="{ name: 'reviews' }"
+          class="text-sm text-blue-600 hover:underline"
+        >
+          {{ t('nav.reviewHistory') }}
+        </RouterLink>
       </div>
       <div class="space-x-4 text-sm">
         <RouterLink

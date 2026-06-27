@@ -98,7 +98,8 @@
     "member_since": "Member since"
   },
   "nav": {
-    "review": "Review"
+    "review": "Review",
+    "reviewHistory": "Review History"
   },
   "review": {
     "dashboard_title": "Review Dashboard",
@@ -120,6 +121,23 @@
     "saved": "Saved",
     "save_all": "Save All",
     "saving": "Saving..."
+  },
+  "reviewHistory": {
+    "title": "Review History",
+    "stats_total": "Total Reviews",
+    "stats_today": "Today",
+    "stats_week": "This Week",
+    "stats_avg": "Avg Quality",
+    "date": "Date",
+    "word": "Word",
+    "quality": "Quality",
+    "no_data": "No review history yet",
+    "prev": "Previous",
+    "next": "Next",
+    "again": "Again",
+    "hard": "Hard",
+    "good": "Good",
+    "easy": "Easy"
   },
   "errors": {
     "rate_limited": "Too many requests. Please slow down and try again in a moment.",

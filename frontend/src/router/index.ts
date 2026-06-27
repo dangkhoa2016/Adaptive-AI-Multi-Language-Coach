@@ -46,6 +46,11 @@ const routes: RouteRecordRaw[] = [
     name: 'review',
     component: () => import('../views/ReviewView.vue'),
   },
+  {
+    path: '/reviews',
+    name: 'reviews',
+    component: () => import('../views/ReviewHistoryView.vue'),
+  },
 ]
 
 export const router = createRouter({

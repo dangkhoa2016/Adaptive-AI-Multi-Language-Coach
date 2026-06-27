@@ -53,6 +53,7 @@ router.get('/review/due', requireAuth(), async (c) => {
 
   const result = await c.env.DB.prepare(
     `SELECT id, user_id, source, target, source_text, target_text, is_phrase,
+            ipa, pos, example_source, example_target,
             ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at
      FROM learned_pairs
      WHERE user_id = ? AND (next_review IS NULL OR next_review <= date('now'))
@@ -120,7 +121,7 @@ router.post('/review/grade', requireAuth(), async (c) => {
     .run()
 
   const updated = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
   )
     .bind(learnedPairId)
     .first()
@@ -136,6 +137,10 @@ const saveSchema = z.object({
   sourceText: z.string().min(1),
   targetText: z.string().min(1),
   isPhrase: z.boolean().optional().default(false),
+  ipa: z.string().optional(),
+  pos: z.string().optional(),
+  exampleSource: z.string().optional(),
+  exampleTarget: z.string().optional(),
 })
 
 router.post('/vocab/save', requireAuth(), async (c) => {
@@ -146,19 +151,43 @@ router.post('/vocab/save', requireAuth(), async (c) => {
     return c.json({ error: 'validation_error', message: t(c, 'errors.validation_error') }, 400)
   }
 
-  const { source, target, sourceText, targetText, isPhrase } = parsed.data
+  const {
+    source,
+    target,
+    sourceText,
+    targetText,
+    isPhrase,
+    ipa,
+    pos,
+    exampleSource,
+    exampleTarget,
+  } = parsed.data
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
 
   await c.env.DB.prepare(
-    `INSERT INTO learned_pairs (id, user_id, source, target, source_text, target_text, is_phrase, ease, interval, repetitions, status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 2.5, 0, 0, 'learning', ?, ?)`,
+    `INSERT INTO learned_pairs (id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 2.5, 0, 0, 'learning', ?, ?)`,
   )
-    .bind(id, userId, source, target, sourceText, targetText, isPhrase ? 1 : 0, now, now)
+    .bind(
+      id,
+      userId,
+      source,
+      target,
+      sourceText,
+      targetText,
+      isPhrase ? 1 : 0,
+      ipa ?? null,
+      pos ?? null,
+      exampleSource ?? null,
+      exampleTarget ?? null,
+      now,
+      now,
+    )
     .run()
 
   const pair = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
   )
     .bind(id)
     .first()
@@ -194,7 +223,7 @@ router.post('/vocab/reset', requireAuth(), async (c) => {
     .run()
 
   const updated = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
   )
     .bind(body.learnedPairId)
     .first()

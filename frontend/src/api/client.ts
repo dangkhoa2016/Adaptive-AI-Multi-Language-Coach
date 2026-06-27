@@ -123,6 +123,34 @@ export async function fetchTtsAudio(text: string, locale: string): Promise<Blob>
   return res.blob()
 }
 
+export interface User {
+  id: string
+  email: string
+  emailVerified: boolean
+  activatedDate: string | null
+  activationMethod: string | null
+  timezone: string
+  createdAt: string
+}
+
+export const requestMagicLink = (email: string) =>
+  request<{ success: boolean }>('/auth/request', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  })
+
+export const verifyMagicLink = (token: string) =>
+  request<{ success: boolean; user: User }>('/auth/verify', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  })
+
+export const fetchCurrentUser = () => request<{ user: User }>('/auth/me')
+
+export const logout = () => request<{ success: boolean }>('/auth/logout', { method: 'POST' })
+
+export const exportUserData = () => request<unknown>('/user/export')
+
 export async function submitSttAudio(
   audioBlob: Blob,
   reference: string,

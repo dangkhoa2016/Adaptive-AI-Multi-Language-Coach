@@ -13,6 +13,7 @@ import { adminRouter } from './routes/admin'
 import { ttsRouter } from './routes/tts'
 import { sttRouter } from './routes/stt'
 import { authRouter } from './routes/auth'
+import { userRouter } from './routes/user'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -38,6 +39,7 @@ app.route('/api', adminRouter)
 app.route('/api', ttsRouter)
 app.route('/api', sttRouter)
 app.route('/api', authRouter)
+app.route('/api', userRouter)
 
 // Error handlers
 app.notFound((c) => c.json({ error: 'not_found', message: t(c, 'errors.not_found') }, 404))

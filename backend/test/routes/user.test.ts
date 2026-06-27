@@ -86,17 +86,16 @@ describe('user routes', () => {
     })
     learnedPairs.set(userId, [
       {
-        source_lang: 'en',
-        target_lang: 'vi',
-        source_word: 'hello',
-        target_word: 'xin chào',
-        level: 'A1',
+        source: 'en',
+        target: 'vi',
+        source_text: 'hello',
+        target_text: 'xin chào',
+        is_phrase: 0,
         ease: 2.5,
         interval_days: 0,
         due_date: '2026-06-01',
         repetitions: 0,
-        correct_count: 0,
-        incorrect_count: 0,
+        status: 'learning',
         created_at: '2026-05-01',
       },
     ])

@@ -12,7 +12,10 @@
     "token_used": "Ce lien a déjà été utilisé. Veuillez en demander un nouveau.",
     "token_expired": "Ce lien a expiré. Veuillez en demander un nouveau.",
     "unauthorized": "Vous devez être connecté pour accéder à cette ressource.",
-    "user_not_found": "Utilisateur introuvable."
+    "user_not_found": "Utilisateur introuvable.",
+    "invalid_quality": "La note doit être comprise entre 0 et 5.",
+    "pair_not_found": "Paire de vocabulaire introuvable.",
+    "validation_error": "Données de requête invalides."
   },
   "quiz": {
     "correct": "Correct !",

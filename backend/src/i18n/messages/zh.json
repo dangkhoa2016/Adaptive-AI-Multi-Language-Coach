@@ -12,7 +12,10 @@
     "token_used": "此链接已被使用。请请求新链接。",
     "token_expired": "此链接已过期。请请求新链接。",
     "unauthorized": "您需要登录才能访问此资源。",
-    "user_not_found": "未找到用户。"
+    "user_not_found": "未找到用户。",
+    "invalid_quality": "评分必须在 0–5 之间。",
+    "pair_not_found": "未找到词汇对。",
+    "validation_error": "请求数据无效。"
   },
   "quiz": {
     "correct": "正确！",

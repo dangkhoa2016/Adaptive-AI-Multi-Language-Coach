@@ -12,7 +12,10 @@
     "token_used": "Dieser Link wurde bereits verwendet. Bitte fordern Sie einen neuen an.",
     "token_expired": "Dieser Link ist abgelaufen. Bitte fordern Sie einen neuen an.",
     "unauthorized": "Sie müssen angemeldet sein, um auf diese Ressource zuzugreifen.",
-    "user_not_found": "Benutzer nicht gefunden."
+    "user_not_found": "Benutzer nicht gefunden.",
+    "invalid_quality": "Bewertung muss zwischen 0 und 5 liegen.",
+    "pair_not_found": "Vokabelpaar nicht gefunden.",
+    "validation_error": "Ungültige Anfragedaten."
   },
   "quiz": {
     "correct": "Correct !",

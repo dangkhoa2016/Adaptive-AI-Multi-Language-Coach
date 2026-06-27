@@ -12,7 +12,10 @@
     "token_used": "This link has already been used. Please request a new one.",
     "token_expired": "This link has expired. Please request a new one.",
     "unauthorized": "You must be logged in to access this resource.",
-    "user_not_found": "User not found."
+    "user_not_found": "User not found.",
+    "invalid_quality": "Rating must be 0–5.",
+    "pair_not_found": "Vocabulary pair not found.",
+    "validation_error": "Invalid request data."
   },
   "auth": {
     "link_sent": "If an account with that email exists, a magic link has been sent."

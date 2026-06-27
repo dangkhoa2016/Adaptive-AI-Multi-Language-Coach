@@ -26,7 +26,7 @@ router.get('/user/export', requireAuth(), async (c) => {
   }
 
   const pairs = await c.env.DB.prepare(
-    'SELECT source_lang, target_lang, source_word, target_word, level, ease, interval_days, due_date, repetitions, correct_count, incorrect_count, created_at FROM learned_pairs WHERE user_id = ?',
+    'SELECT source, target, source_text, target_text, is_phrase, ease, interval AS interval_days, next_review AS due_date, repetitions, status, created_at FROM learned_pairs WHERE user_id = ?',
   )
     .bind(userId)
     .all()

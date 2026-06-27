@@ -12,7 +12,10 @@
     "token_used": "Liên kết này đã được sử dụng. Vui lòng yêu cầu liên kết mới.",
     "token_expired": "Liên kết này đã hết hạn. Vui lòng yêu cầu liên kết mới.",
     "unauthorized": "Bạn cần đăng nhập để truy cập tài nguyên này.",
-    "user_not_found": "Không tìm thấy người dùng."
+    "user_not_found": "Không tìm thấy người dùng.",
+    "invalid_quality": "Điểm đánh giá phải từ 0–5.",
+    "pair_not_found": "Không tìm thấy cặp từ vựng.",
+    "validation_error": "Dữ liệu yêu cầu không hợp lệ."
   },
   "auth": {
     "link_sent": "Nếu tài khoản với email đó tồn tại, một liên kết đăng nhập đã được gửi."

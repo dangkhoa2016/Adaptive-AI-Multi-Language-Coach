@@ -71,6 +71,30 @@
     "activated_date": "Activé le",
     "member_since": "Membre depuis"
   },
+  "nav": {
+    "review": "Révision"
+  },
+  "review": {
+    "dashboard_title": "Tableau de bord de révision",
+    "due_count": "À réviser",
+    "learning_count": "En apprentissage",
+    "mastered_count": "Maîtrisé",
+    "total_count": "Total",
+    "start_review": "Commencer la révision",
+    "no_due_cards": "Aucune carte à réviser !",
+    "again": "Encore",
+    "hard": "Difficile",
+    "good": "Bien",
+    "easy": "Facile",
+    "session_complete": "Révision terminée !",
+    "cards_reviewed": "cartes révisées",
+    "review_again": "Re-réviser",
+    "back_to_dashboard": "Retour au tableau de bord",
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "save_all": "Tout enregistrer",
+    "saving": "Enregistrement..."
+  },
   "errors": {
     "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un instant.",
     "generic": "Une erreur est survenue. Veuillez réessayer.",

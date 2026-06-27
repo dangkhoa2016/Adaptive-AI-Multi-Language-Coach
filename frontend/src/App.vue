@@ -2,8 +2,10 @@
 import { onMounted } from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import { useI18n } from 'vue-i18n'
 
 const auth = useAuthStore()
+const { t } = useI18n()
 
 onMounted(() => {
   auth.fetchUser()
@@ -13,7 +15,16 @@ onMounted(() => {
 <template>
   <main class="min-h-screen">
     <nav class="flex items-center justify-between border-b px-6 py-3">
-      <RouterLink :to="{ name: 'home' }" class="text-lg font-bold">AI Vocab Coach</RouterLink>
+      <div class="flex items-center gap-6">
+        <RouterLink :to="{ name: 'home' }" class="text-lg font-bold">AI Vocab Coach</RouterLink>
+        <RouterLink
+          v-if="auth.user"
+          :to="{ name: 'review' }"
+          class="text-sm text-blue-600 hover:underline"
+        >
+          {{ t('nav.review') }}
+        </RouterLink>
+      </div>
       <div class="space-x-4 text-sm">
         <RouterLink
           v-if="auth.user"

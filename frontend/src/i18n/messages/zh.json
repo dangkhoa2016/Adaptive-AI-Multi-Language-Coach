@@ -71,6 +71,30 @@
     "activated_date": "激活日期",
     "member_since": "注册时间"
   },
+  "nav": {
+    "review": "复习"
+  },
+  "review": {
+    "dashboard_title": "复习仪表板",
+    "due_count": "待复习",
+    "learning_count": "学习中",
+    "mastered_count": "已掌握",
+    "total_count": "总计",
+    "start_review": "开始复习",
+    "no_due_cards": "没有待复习的卡片！",
+    "again": "重来",
+    "hard": "困难",
+    "good": "良好",
+    "easy": "简单",
+    "session_complete": "复习完成！",
+    "cards_reviewed": "张卡片已复习",
+    "review_again": "再次复习",
+    "back_to_dashboard": "返回仪表板",
+    "save": "保存",
+    "saved": "已保存",
+    "save_all": "保存全部",
+    "saving": "保存中..."
+  },
   "errors": {
     "rate_limited": "请求过多，请稍后再试。",
     "generic": "发生错误，请重试。",

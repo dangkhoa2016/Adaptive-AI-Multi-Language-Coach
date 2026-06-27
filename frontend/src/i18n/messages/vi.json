@@ -97,6 +97,30 @@
     "activated_date": "Ngày kích hoạt",
     "member_since": "Thành viên từ"
   },
+  "nav": {
+    "review": "Ôn tập"
+  },
+  "review": {
+    "dashboard_title": "Bảng điều khiển Ôn tập",
+    "due_count": "Đến hạn",
+    "learning_count": "Đang học",
+    "mastered_count": "Đã thuộc",
+    "total_count": "Tổng số",
+    "start_review": "Bắt đầu ôn tập",
+    "no_due_cards": "Không có thẻ nào đến hạn ôn tập!",
+    "again": "Lại",
+    "hard": "Khó",
+    "good": "Tốt",
+    "easy": "Dễ",
+    "session_complete": "Hoàn thành Ôn tập!",
+    "cards_reviewed": "thẻ đã ôn",
+    "review_again": "Ôn tập lại",
+    "back_to_dashboard": "Quay lại Bảng điều khiển",
+    "save": "Lưu",
+    "saved": "Đã lưu",
+    "save_all": "Lưu tất cả",
+    "saving": "Đang lưu..."
+  },
   "errors": {
     "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",
     "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",

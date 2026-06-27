@@ -71,6 +71,30 @@
     "activated_date": "วันที่เปิดใช้งาน",
     "member_since": "เป็นสมาชิกตั้งแต่"
   },
+  "nav": {
+    "review": "ทบทวน"
+  },
+  "review": {
+    "dashboard_title": "แดชบอร์ดทบทวน",
+    "due_count": "ถึงกำหนด",
+    "learning_count": "กำลังเรียน",
+    "mastered_count": "เชี่ยวชาญแล้ว",
+    "total_count": "ทั้งหมด",
+    "start_review": "เริ่มทบทวน",
+    "no_due_cards": "ไม่มีบัตรที่ถึงกำหนดทบทวน!",
+    "again": "อีกครั้ง",
+    "hard": "ยาก",
+    "good": "ดี",
+    "easy": "ง่าย",
+    "session_complete": "ทบทวนเสร็จสิ้น!",
+    "cards_reviewed": "ใบที่ทบทวนแล้ว",
+    "review_again": "ทบทวนอีกครั้ง",
+    "back_to_dashboard": "กลับไปแดชบอร์ด",
+    "save": "บันทึก",
+    "saved": "บันทึกแล้ว",
+    "save_all": "บันทึกทั้งหมด",
+    "saving": "กำลังบันทึก..."
+  },
   "errors": {
     "rate_limited": "มีคำขอมากเกินไป กรุณาลองอีกครั้งในสักครู่",
     "generic": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",

@@ -71,6 +71,30 @@
     "activated_date": "Aktiviert am",
     "member_since": "Mitglied seit"
   },
+  "nav": {
+    "review": "Wiederholung"
+  },
+  "review": {
+    "dashboard_title": "Wiederholungs-Dashboard",
+    "due_count": "Fällig",
+    "learning_count": "In Bearbeitung",
+    "mastered_count": "Gemeistert",
+    "total_count": "Gesamt",
+    "start_review": "Wiederholung starten",
+    "no_due_cards": "Keine Karten zur Wiederholung fällig!",
+    "again": "Erneut",
+    "hard": "Schwer",
+    "good": "Gut",
+    "easy": "Leicht",
+    "session_complete": "Wiederholung abgeschlossen!",
+    "cards_reviewed": "Karten wiederholt",
+    "review_again": "Erneut wiederholen",
+    "back_to_dashboard": "Zurück zum Dashboard",
+    "save": "Speichern",
+    "saved": "Gespeichert",
+    "save_all": "Alle speichern",
+    "saving": "Speichern..."
+  },
   "errors": {
     "rate_limited": "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
     "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",

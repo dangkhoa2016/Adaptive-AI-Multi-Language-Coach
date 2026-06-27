@@ -71,6 +71,30 @@
     "activated_date": "활성화 날짜",
     "member_since": "가입일"
   },
+  "nav": {
+    "review": "복습"
+  },
+  "review": {
+    "dashboard_title": "복습 대시보드",
+    "due_count": "복습 예정",
+    "learning_count": "학습 중",
+    "mastered_count": "완료",
+    "total_count": "전체",
+    "start_review": "복습 시작",
+    "no_due_cards": "복습할 카드가 없습니다!",
+    "again": "다시",
+    "hard": "어려움",
+    "good": "좋음",
+    "easy": "쉬움",
+    "session_complete": "복습 완료!",
+    "cards_reviewed": "개 카드 복습함",
+    "review_again": "다시 복습",
+    "back_to_dashboard": "대시보드로 돌아가기",
+    "save": "저장",
+    "saved": "저장됨",
+    "save_all": "모두 저장",
+    "saving": "저장 중..."
+  },
   "errors": {
     "rate_limited": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
     "generic": "오류가 발생했습니다. 다시 시도해주세요.",

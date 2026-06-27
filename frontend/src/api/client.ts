@@ -151,6 +151,80 @@ export const logout = () => request<{ success: boolean }>('/auth/logout', { meth
 
 export const exportUserData = () => request<unknown>('/user/export')
 
+export interface LearnedPair {
+  id: string
+  user_id: string
+  source: string
+  target: string
+  source_text: string
+  target_text: string
+  is_phrase: number
+  ipa: string | null
+  pos: string | null
+  example_source: string | null
+  example_target: string | null
+  ease: number
+  interval: number
+  repetitions: number
+  next_review: string | null
+  last_seen: string | null
+  status: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ReviewStats {
+  dueCount: number
+  learningCount: number
+  masteredCount: number
+  totalCount: number
+}
+
+export interface SaveVocabRequest {
+  source: string
+  target: string
+  sourceText: string
+  targetText: string
+  isPhrase?: boolean
+  ipa?: string
+  pos?: string
+  exampleSource?: string
+  exampleTarget?: string
+}
+
+export async function fetchReviewStats(): Promise<ReviewStats> {
+  return request<ReviewStats>('/review/stats')
+}
+
+export async function fetchDueCards(): Promise<LearnedPair[]> {
+  const res = await request<{ pairs: LearnedPair[] }>('/review/due')
+  return res.pairs
+}
+
+export async function gradeCard(learnedPairId: string, quality: number): Promise<LearnedPair> {
+  const res = await request<{ pair: LearnedPair }>('/review/grade', {
+    method: 'POST',
+    body: { learnedPairId, quality },
+  })
+  return res.pair
+}
+
+export async function saveVocabPair(req: SaveVocabRequest): Promise<LearnedPair> {
+  const res = await request<{ pair: LearnedPair }>('/vocab/save', {
+    method: 'POST',
+    body: req,
+  })
+  return res.pair
+}
+
+export async function resetCard(learnedPairId: string): Promise<LearnedPair> {
+  const res = await request<{ pair: LearnedPair }>('/vocab/reset', {
+    method: 'POST',
+    body: { learnedPairId },
+  })
+  return res.pair
+}
+
 export async function submitSttAudio(
   audioBlob: Blob,
   reference: string,

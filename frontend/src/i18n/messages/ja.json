@@ -71,6 +71,30 @@
     "activated_date": "アクティベート日",
     "member_since": "登録日"
   },
+  "nav": {
+    "review": "復習"
+  },
+  "review": {
+    "dashboard_title": "復習ダッシュボード",
+    "due_count": "復習予定",
+    "learning_count": "学習中",
+    "mastered_count": "習得済み",
+    "total_count": "合計",
+    "start_review": "復習を開始",
+    "no_due_cards": "復習すべきカードはありません！",
+    "again": "もう一度",
+    "hard": "難しい",
+    "good": "良い",
+    "easy": "簡単",
+    "session_complete": "復習完了！",
+    "cards_reviewed": "枚のカードを復習",
+    "review_again": "もう一度復習",
+    "back_to_dashboard": "ダッシュボードに戻る",
+    "save": "保存",
+    "saved": "保存しました",
+    "save_all": "すべて保存",
+    "saving": "保存中..."
+  },
   "errors": {
     "rate_limited": "リクエストが多すぎます。少し待ってから再度お試しください。",
     "generic": "エラーが発生しました。もう一度お試しください。",

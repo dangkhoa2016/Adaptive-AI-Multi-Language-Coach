@@ -97,6 +97,30 @@
     "activated_date": "Activated",
     "member_since": "Member since"
   },
+  "nav": {
+    "review": "Review"
+  },
+  "review": {
+    "dashboard_title": "Review Dashboard",
+    "due_count": "Due",
+    "learning_count": "Learning",
+    "mastered_count": "Mastered",
+    "total_count": "Total",
+    "start_review": "Start Review",
+    "no_due_cards": "No cards due for review!",
+    "again": "Again",
+    "hard": "Hard",
+    "good": "Good",
+    "easy": "Easy",
+    "session_complete": "Review Complete!",
+    "cards_reviewed": "cards reviewed",
+    "review_again": "Review Again",
+    "back_to_dashboard": "Back to Dashboard",
+    "save": "Save",
+    "saved": "Saved",
+    "save_all": "Save All",
+    "saving": "Saving..."
+  },
   "errors": {
     "rate_limited": "Too many requests. Please slow down and try again in a moment.",
     "generic": "Something went wrong. Please try again.",

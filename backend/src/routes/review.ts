@@ -84,10 +84,18 @@ router.post('/review/grade', requireAuth(), async (c) => {
   const { learnedPairId, quality } = parsed.data
 
   const pair = await c.env.DB.prepare(
-    'SELECT id, ease, interval, repetitions, user_id FROM learned_pairs WHERE id = ?',
+    'SELECT id, ease, interval, repetitions, user_id, source_text, target_text FROM learned_pairs WHERE id = ?',
   )
     .bind(learnedPairId)
-    .first<{ id: string; ease: number; interval: number; repetitions: number; user_id: string }>()
+    .first<{
+      id: string
+      ease: number
+      interval: number
+      repetitions: number
+      user_id: string
+      source_text: string
+      target_text: string
+    }>()
 
   if (!pair) {
     return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
@@ -118,6 +126,14 @@ router.post('/review/grade', requireAuth(), async (c) => {
       now,
       learnedPairId,
     )
+    .run()
+
+  const logId = crypto.randomUUID()
+  await c.env.DB.prepare(
+    `INSERT INTO review_logs (id, user_id, learned_pair_id, source_text, target_text, quality, reviewed_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(logId, userId, learnedPairId, pair.source_text, pair.target_text, quality, now)
     .run()
 
   const updated = await c.env.DB.prepare(
@@ -229,6 +245,73 @@ router.post('/vocab/reset', requireAuth(), async (c) => {
     .first()
 
   return c.json({ pair: updated })
+})
+
+// --- Review history ---
+
+router.get('/review/history/stats', requireAuth(), async (c) => {
+  const userId = c.get('userId')!
+
+  const [totalResult, todayResult, weekResult, avgResult] = await Promise.all([
+    c.env.DB.prepare('SELECT COUNT(*) as count FROM review_logs WHERE user_id = ?')
+      .bind(userId)
+      .first<{ count: number }>(),
+    c.env.DB.prepare(
+      "SELECT COUNT(*) as count FROM review_logs WHERE user_id = ? AND reviewed_at >= date('now')",
+    )
+      .bind(userId)
+      .first<{ count: number }>(),
+    c.env.DB.prepare(
+      "SELECT COUNT(*) as count FROM review_logs WHERE user_id = ? AND reviewed_at >= datetime('now', '-7 days')",
+    )
+      .bind(userId)
+      .first<{ count: number }>(),
+    c.env.DB.prepare('SELECT COALESCE(AVG(quality), 0) as avg FROM review_logs WHERE user_id = ?')
+      .bind(userId)
+      .first<{ avg: number }>(),
+  ])
+
+  return c.json({
+    totalReviews: totalResult?.count ?? 0,
+    todayReviews: todayResult?.count ?? 0,
+    thisWeek: weekResult?.count ?? 0,
+    avgQuality: Math.round((avgResult?.avg ?? 0) * 10) / 10,
+  })
+})
+
+router.get('/review/history', requireAuth(), async (c) => {
+  const userId = c.get('userId')!
+  const page = Math.max(1, parseInt(c.req.query('page') ?? '1'))
+  const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '20')))
+  const offset = (page - 1) * limit
+
+  const countResult = await c.env.DB.prepare(
+    'SELECT COUNT(*) as count FROM review_logs WHERE user_id = ?',
+  )
+    .bind(userId)
+    .first<{ count: number }>()
+
+  const logsResult = await c.env.DB.prepare(
+    'SELECT id, learned_pair_id, source_text, target_text, quality, reviewed_at FROM review_logs WHERE user_id = ? ORDER BY reviewed_at DESC LIMIT ? OFFSET ?',
+  )
+    .bind(userId, limit, offset)
+    .all()
+
+  const logs = (logsResult.results ?? []).map((row: any) => ({
+    id: row.id,
+    learnedPairId: row.learned_pair_id,
+    source: row.source_text,
+    target: row.target_text,
+    quality: row.quality,
+    reviewedAt: row.reviewed_at,
+  }))
+
+  return c.json({
+    logs,
+    total: countResult?.count ?? 0,
+    page,
+    limit,
+  })
 })
 
 export { router as reviewRouter }

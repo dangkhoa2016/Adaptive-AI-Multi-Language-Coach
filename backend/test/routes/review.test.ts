@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach } from 'vitest'
 
 const users = new Map<string, { id: string; email: string }>()
 const learnedPairs = new Map<string, Array<Record<string, unknown>>>()
+const reviewLogs = new Map<string, Array<Record<string, unknown>>>()
 
 function createMockDB(): D1Database {
   return {
@@ -47,6 +48,16 @@ function createMockDB(): D1Database {
               return { results: [{ count: mastered }] as any, success: true }
             }
             return { results: [{ count: pairs.length }] as any, success: true }
+          }
+          if (sql.includes('FROM review_logs') && sql.includes('WHERE user_id =')) {
+            const uid = values[0] as string
+            const logs = reviewLogs.get(uid) ?? []
+            const limit = values[1] as number
+            const offset = values[2] as number
+            return {
+              results: logs.slice(offset, offset + limit) as unknown as T[],
+              success: true,
+            }
           }
           return { results: [] as unknown as T[], success: true }
         },
@@ -107,6 +118,29 @@ function createMockDB(): D1Database {
             }
             return null
           }
+          // Review logs COUNT/AVG
+          if (sql.includes('FROM review_logs') && (sql.includes('COUNT') || sql.includes('AVG'))) {
+            const uid = values[0] as string
+            const logs = reviewLogs.get(uid) ?? []
+            if (sql.includes('AVG(quality)')) {
+              if (logs.length === 0) return { avg: 0 } as unknown as T
+              const avg = logs.reduce((s: number, l: any) => s + l.quality, 0) / logs.length
+              return { avg } as unknown as T
+            }
+            if (sql.includes("reviewed_at >= date('now')")) {
+              const today = new Date().toISOString().split('T')[0]
+              return {
+                count: logs.filter((l: any) => l.reviewed_at >= today).length,
+              } as unknown as T
+            }
+            if (sql.includes("reviewed_at >= datetime('now', '-7 days')")) {
+              const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
+              return {
+                count: logs.filter((l: any) => l.reviewed_at >= weekAgo).length,
+              } as unknown as T
+            }
+            return { count: logs.length } as unknown as T
+          }
           return null
         },
         run: async () => {
@@ -142,6 +176,35 @@ function createMockDB(): D1Database {
                 learnedPairs.set(userIdVal, [])
               }
               learnedPairs.get(userIdVal)!.push(record)
+            }
+          } else if (sql.includes('INSERT INTO review_logs')) {
+            const colMatch = sql.match(/\(([\w_,\s]+)\)\s*VALUES\s*\(([^)]+)\)/i)
+            if (colMatch) {
+              const cols = colMatch[1].split(',').map((c: string) => c.trim())
+              const valsRaw = colMatch[2].split(',').map((c: string) => c.trim())
+              const record: Record<string, unknown> = {}
+              let valueIdx = 0
+              cols.forEach((col: string, i: number) => {
+                if (valsRaw[i] === '?') {
+                  record[col] = values[valueIdx++]
+                } else {
+                  let lit = valsRaw[i]
+                  if (lit.startsWith("'") && lit.endsWith("'")) {
+                    record[col] = lit.slice(1, -1)
+                  } else if (lit === 'NULL') {
+                    record[col] = null
+                  } else if (/^\d+$/.test(lit)) {
+                    record[col] = Number(lit)
+                  } else {
+                    record[col] = lit
+                  }
+                }
+              })
+              const uid = record.user_id as string
+              if (!reviewLogs.has(uid)) {
+                reviewLogs.set(uid, [])
+              }
+              reviewLogs.get(uid)!.push(record)
             }
           } else if (sql.includes('UPDATE learned_pairs')) {
             // Find the pair by the last bound value (WHERE id = ?)
@@ -220,6 +283,7 @@ describe('review routes', () => {
   beforeEach(async () => {
     users.clear()
     learnedPairs.clear()
+    reviewLogs.clear()
     users.set(userId, { id: userId, email: 'review@test.com' })
     const { createJwt } = await import('../../src/services/auth')
     jwt = await createJwt(userId, 'test-jwt-secret-32-chars-long!!')
@@ -402,5 +466,98 @@ describe('review routes', () => {
     expect(res.status).toBe(200)
     const body = (await res.json()) as any
     expect(body.pairs.length).toBe(2)
+  })
+
+  it('GET /api/review/history returns empty list initially', async () => {
+    const res = await callApp('http://localhost/api/review/history', {}, `auth_token=${jwt}`)
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.logs).toEqual([])
+    expect(body.total).toBe(0)
+  })
+
+  it('GET /api/review/history returns logged grades', async () => {
+    const savedRes = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'hello',
+          targetText: 'xin chào',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const saved = (await savedRes.json()) as any
+    const pairId = saved.pair.id
+
+    await callApp(
+      'http://localhost/api/review/grade',
+      {
+        method: 'POST',
+        body: JSON.stringify({ learnedPairId: pairId, quality: 4 }),
+      },
+      `auth_token=${jwt}`,
+    )
+
+    const res = await callApp('http://localhost/api/review/history', {}, `auth_token=${jwt}`)
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.logs.length).toBe(1)
+    expect(body.logs[0].quality).toBe(4)
+    expect(body.logs[0].source).toBe('hello')
+    expect(body.logs[0].target).toBe('xin chào')
+    expect(body.total).toBe(1)
+  })
+
+  it('GET /api/review/history/stats returns correct counts', async () => {
+    const savedRes = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'apple',
+          targetText: 'táo',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const saved = (await savedRes.json()) as any
+    const pairId = saved.pair.id
+
+    await callApp(
+      'http://localhost/api/review/grade',
+      {
+        method: 'POST',
+        body: JSON.stringify({ learnedPairId: pairId, quality: 5 }),
+      },
+      `auth_token=${jwt}`,
+    )
+
+    const statsRes = await callApp(
+      'http://localhost/api/review/history/stats',
+      {},
+      `auth_token=${jwt}`,
+    )
+    expect(statsRes.status).toBe(200)
+    const stats = (await statsRes.json()) as any
+    expect(stats.totalReviews).toBe(1)
+    expect(stats.todayReviews).toBe(1)
+    expect(stats.thisWeek).toBe(1)
+    expect(stats.avgQuality).toBe(5)
+  })
+
+  it('GET /api/review/history returns 401 without auth', async () => {
+    const res = await callApp('http://localhost/api/review/history')
+    expect(res.status).toBe(401)
+  })
+
+  it('GET /api/review/history/stats returns 401 without auth', async () => {
+    const res = await callApp('http://localhost/api/review/history/stats')
+    expect(res.status).toBe(401)
   })
 })

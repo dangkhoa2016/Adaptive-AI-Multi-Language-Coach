@@ -11,7 +11,7 @@ function createMockDB(): D1Database {
         all: async <T>() => {
           if (sql.includes('FROM learned_pairs') && sql.includes('WHERE user_id =')) {
             const uid = values[0] as string
-            const pairs = learnedPairs.get(uid) ?? []
+            let pairs = learnedPairs.get(uid) ?? []
             if (sql.includes('next_review IS NULL OR next_review <= date')) {
               const today = new Date().toISOString().split('T')[0]
               return {
@@ -20,6 +20,23 @@ function createMockDB(): D1Database {
                 ) as unknown as T[],
                 success: true,
               }
+            }
+            // Apply search filter for vocab list
+            if (sql.includes('LIKE')) {
+              const pattern = (values[1] as string).replace(/%/g, '')
+              pairs = pairs.filter(
+                (p: any) =>
+                  (p.source_text && String(p.source_text).includes(pattern)) ||
+                  (p.target_text && String(p.target_text).includes(pattern)),
+              )
+            }
+            // Apply pagination
+            if (sql.includes('LIMIT') && sql.includes('OFFSET')) {
+              const limitIdx = values.length - 2
+              const offsetIdx = values.length - 1
+              const l = values[limitIdx] as number
+              const o = values[offsetIdx] as number
+              return { results: pairs.slice(o, o + l) as unknown as T[], success: true }
             }
             return { results: pairs as unknown as T[], success: true }
           }
@@ -64,7 +81,7 @@ function createMockDB(): D1Database {
         first: async <T>() => {
           const uid = values[0] as string
           if (sql.includes('SELECT COUNT')) {
-            const pairs = learnedPairs.get(uid) ?? []
+            let pairs = learnedPairs.get(uid) ?? []
             if (sql.includes('next_review IS NULL OR next_review <= date')) {
               const due = pairs.filter(
                 (p: any) =>
@@ -81,6 +98,15 @@ function createMockDB(): D1Database {
               return {
                 count: pairs.filter((p: any) => p.status === 'mastered').length,
               } as unknown as T
+            }
+            // Handle search filter for vocab count
+            if (sql.includes('LIKE')) {
+              const pattern = (values[1] as string).replace(/%/g, '')
+              pairs = pairs.filter(
+                (p: any) =>
+                  (p.source_text && String(p.source_text).includes(pattern)) ||
+                  (p.target_text && String(p.target_text).includes(pattern)),
+              )
             }
             return { count: pairs.length } as unknown as T
           }
@@ -237,6 +263,18 @@ function createMockDB(): D1Database {
                   existing.updated_at = values[0]
                 }
               }
+            }
+          } else if (sql.includes('DELETE FROM review_logs')) {
+            const lpId = values[0] as string
+            for (const [, logs] of reviewLogs) {
+              const idx = logs.findIndex((l: any) => l.learned_pair_id === lpId)
+              if (idx !== -1) logs.splice(idx, 1)
+            }
+          } else if (sql.includes('DELETE FROM learned_pairs')) {
+            const pid = values[0] as string
+            for (const [, pairs] of learnedPairs) {
+              const idx = pairs.findIndex((p: any) => p.id === pid)
+              if (idx !== -1) pairs.splice(idx, 1)
             }
           }
           return { success: true, meta: { changes: 1 } as any }
@@ -558,6 +596,208 @@ describe('review routes', () => {
 
   it('GET /api/review/history/stats returns 401 without auth', async () => {
     const res = await callApp('http://localhost/api/review/history/stats')
+    expect(res.status).toBe(401)
+  })
+
+  // --- Vocabulary management ---
+
+  it('GET /api/vocab returns empty list for new user', async () => {
+    const res = await callApp('http://localhost/api/vocab', {}, `auth_token=${jwt}`)
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.pairs).toEqual([])
+    expect(body.total).toBe(0)
+    expect(body.page).toBe(1)
+    expect(body.limit).toBe(20)
+  })
+
+  it('GET /api/vocab returns saved pairs', async () => {
+    await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'hello',
+          targetText: 'xin chào',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'world',
+          targetText: 'thế giới',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+
+    const res = await callApp('http://localhost/api/vocab', {}, `auth_token=${jwt}`)
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.pairs.length).toBe(2)
+    expect(body.total).toBe(2)
+  })
+
+  it('GET /api/vocab?search= filters correctly', async () => {
+    await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'hello',
+          targetText: 'xin chào',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'world',
+          targetText: 'thế giới',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+
+    const res = await callApp('http://localhost/api/vocab?search=world', {}, `auth_token=${jwt}`)
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.pairs.length).toBe(1)
+    expect(body.pairs[0].source_text).toBe('world')
+    expect(body.total).toBe(1)
+  })
+
+  it('GET /api/vocab paginates correctly', async () => {
+    for (let i = 0; i < 5; i++) {
+      await callApp(
+        'http://localhost/api/vocab/save',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            source: 'en',
+            target: 'vi',
+            sourceText: `word${i}`,
+            targetText: `từ${i}`,
+          }),
+        },
+        `auth_token=${jwt}`,
+      )
+    }
+
+    const page1 = await callApp(
+      'http://localhost/api/vocab?page=1&limit=2',
+      {},
+      `auth_token=${jwt}`,
+    )
+    const body1 = (await page1.json()) as any
+    expect(body1.pairs.length).toBe(2)
+    expect(body1.total).toBe(5)
+    expect(body1.page).toBe(1)
+
+    const page2 = await callApp(
+      'http://localhost/api/vocab?page=2&limit=2',
+      {},
+      `auth_token=${jwt}`,
+    )
+    const body2 = (await page2.json()) as any
+    expect(body2.pairs.length).toBe(2)
+    expect(body2.page).toBe(2)
+  })
+
+  it('DELETE /api/vocab/:id deletes and returns success', async () => {
+    const saved = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'delete',
+          targetText: 'xóa',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const pair = (await saved.json()) as any
+    const pairId = pair.pair.id
+
+    const del = await callApp(
+      `http://localhost/api/vocab/${pairId}`,
+      { method: 'DELETE' },
+      `auth_token=${jwt}`,
+    )
+    expect(del.status).toBe(200)
+    const delBody = (await del.json()) as any
+    expect(delBody.success).toBe(true)
+
+    // verify it's gone
+    const list = await callApp('http://localhost/api/vocab', {}, `auth_token=${jwt}`)
+    const listBody = (await list.json()) as any
+    expect(listBody.pairs.length).toBe(0)
+  })
+
+  it('DELETE /api/vocab/:id returns 404 for unknown id', async () => {
+    const res = await callApp(
+      'http://localhost/api/vocab/nonexistent',
+      { method: 'DELETE' },
+      `auth_token=${jwt}`,
+    )
+    expect(res.status).toBe(404)
+  })
+
+  it("DELETE /api/vocab/:id returns 403 for other user's pair", async () => {
+    const users2 = new Map<string, { id: string; email: string }>()
+    const otherUserId = 'other-user'
+    users2.set(otherUserId, { id: otherUserId, email: 'other@test.com' })
+    const { createJwt } = await import('../../src/services/auth')
+    const otherJwt = await createJwt(otherUserId, 'test-jwt-secret-32-chars-long!!')
+
+    const saved = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'other',
+          targetText: 'khác',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const pair = (await saved.json()) as any
+    const pairId = pair.pair.id
+
+    const res = await callApp(
+      `http://localhost/api/vocab/${pairId}`,
+      { method: 'DELETE' },
+      `auth_token=${otherJwt}`,
+    )
+    expect(res.status).toBe(403)
+  })
+
+  it('GET /api/vocab returns 401 without auth', async () => {
+    const res = await callApp('http://localhost/api/vocab')
+    expect(res.status).toBe(401)
+  })
+
+  it('DELETE /api/vocab/:id returns 401 without auth', async () => {
+    const res = await callApp('http://localhost/api/vocab/some-id', { method: 'DELETE' })
     expect(res.status).toBe(401)
   })
 })

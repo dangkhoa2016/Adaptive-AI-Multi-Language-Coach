@@ -314,4 +314,75 @@ router.get('/review/history', requireAuth(), async (c) => {
   })
 })
 
+// --- Vocabulary list ---
+
+router.get('/vocab', requireAuth(), async (c) => {
+  const userId = c.get('userId')!
+  const search = c.req.query('search') ?? ''
+  const page = Math.max(1, parseInt(c.req.query('page') ?? '1'))
+  const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '20')))
+  const offset = (page - 1) * limit
+
+  let countSql = 'SELECT COUNT(*) as count FROM learned_pairs WHERE user_id = ?'
+  let listSql = `SELECT id, user_id, source, target, source_text, target_text, is_phrase,
+            ipa, pos, example_source, example_target,
+            ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at
+     FROM learned_pairs
+     WHERE user_id = ?`
+  const countParams: unknown[] = [userId]
+  const listParams: unknown[] = [userId]
+
+  if (search) {
+    const searchClause = ' AND (source_text LIKE ? OR target_text LIKE ?)'
+    const searchPattern = `%${search}%`
+    countSql += searchClause
+    listSql += searchClause
+    countParams.push(searchPattern, searchPattern)
+    listParams.push(searchPattern, searchPattern)
+  }
+
+  listSql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?'
+  listParams.push(limit, offset)
+
+  const [{ count }, pairsResult] = await Promise.all([
+    c.env.DB.prepare(countSql)
+      .bind(...countParams)
+      .first<{ count: number }>(),
+    c.env.DB.prepare(listSql)
+      .bind(...listParams)
+      .all<Record<string, unknown>>(),
+  ])
+
+  return c.json({
+    pairs: pairsResult.results ?? [],
+    total: count ?? 0,
+    page,
+    limit,
+  })
+})
+
+// --- Delete a vocabulary pair ---
+
+router.delete('/vocab/:id', requireAuth(), async (c) => {
+  const userId = c.get('userId')!
+  const pairId = c.req.param('id')
+
+  const pair = await c.env.DB.prepare('SELECT id, user_id FROM learned_pairs WHERE id = ?')
+    .bind(pairId)
+    .first<{ id: string; user_id: string }>()
+
+  if (!pair) {
+    return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
+  }
+  if (pair.user_id !== userId) {
+    return c.json({ error: 'forbidden', message: t(c, 'errors.forbidden') }, 403)
+  }
+
+  // Delete associated review logs first
+  await c.env.DB.prepare('DELETE FROM review_logs WHERE learned_pair_id = ?').bind(pairId).run()
+  await c.env.DB.prepare('DELETE FROM learned_pairs WHERE id = ?').bind(pairId).run()
+
+  return c.json({ success: true })
+})
+
 export { router as reviewRouter }

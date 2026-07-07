@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { fetchVocabList, deleteVocabPair, type LearnedPair } from '../api/client'
@@ -89,6 +89,10 @@ async function handleDelete(pairId: string) {
   }
 }
 
+onBeforeUnmount(() => {
+  if (searchTimer) clearTimeout(searchTimer)
+})
+
 onMounted(() => {
   loadPage(1)
 })
@@ -171,6 +175,7 @@ onMounted(() => {
                 <button
                   :disabled="deleting.has(pair.id)"
                   class="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40 dark:text-red-400 dark:hover:bg-red-900/20"
+                  aria-label="Delete"
                   @click="handleDelete(pair.id)"
                 >
                   {{ deleting.has(pair.id) ? '...' : '🗑' }}

@@ -761,9 +761,7 @@ describe('review routes', () => {
   })
 
   it("DELETE /api/vocab/:id returns 403 for other user's pair", async () => {
-    const users2 = new Map<string, { id: string; email: string }>()
     const otherUserId = 'other-user'
-    users2.set(otherUserId, { id: otherUserId, email: 'other@test.com' })
     const { createJwt } = await import('../../src/services/auth')
     const otherJwt = await createJwt(otherUserId, 'test-jwt-secret-32-chars-long!!')
 

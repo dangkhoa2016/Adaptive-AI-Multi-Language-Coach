@@ -51,6 +51,11 @@ const routes: RouteRecordRaw[] = [
     name: 'reviews',
     component: () => import('../views/ReviewHistoryView.vue'),
   },
+  {
+    path: '/vocabulary',
+    name: 'vocabulary',
+    component: () => import('../views/VocabularyView.vue'),
+  },
 ]
 
 export const router = createRouter({

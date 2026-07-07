@@ -31,6 +31,13 @@ onMounted(() => {
         >
           {{ t('nav.reviewHistory') }}
         </RouterLink>
+        <RouterLink
+          v-if="auth.user"
+          :to="{ name: 'vocabulary' }"
+          class="text-sm text-blue-600 hover:underline"
+        >
+          {{ t('nav.vocabulary') }}
+        </RouterLink>
       </div>
       <div class="space-x-4 text-sm">
         <RouterLink

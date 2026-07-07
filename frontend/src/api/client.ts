@@ -225,6 +225,27 @@ export async function resetCard(learnedPairId: string): Promise<LearnedPair> {
   return res.pair
 }
 
+export interface VocabListResponse {
+  pairs: LearnedPair[]
+  total: number
+  page: number
+  limit: number
+}
+
+export async function fetchVocabList(
+  page = 1,
+  limit = 20,
+  search?: string,
+): Promise<VocabListResponse> {
+  let path = `/vocab?page=${page}&limit=${limit}`
+  if (search) path += `&search=${encodeURIComponent(search)}`
+  return request<VocabListResponse>(path)
+}
+
+export async function deleteVocabPair(id: string): Promise<{ success: boolean }> {
+  return request<{ success: boolean }>(`/vocab/${id}`, { method: 'DELETE' })
+}
+
 export interface ReviewLogEntry {
   id: string
   learnedPairId: string

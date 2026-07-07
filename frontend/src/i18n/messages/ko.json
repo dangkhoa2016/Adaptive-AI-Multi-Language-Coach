@@ -73,7 +73,29 @@
   },
   "nav": {
     "review": "복습",
-    "reviewHistory": "복습 기록"
+    "reviewHistory": "복습 기록",
+    "vocabulary": "Vocabulary"
+  },
+  "vocabulary": {
+    "title": "Vocabulary",
+    "search_placeholder": "Search your vocabulary...",
+    "word": "Word",
+    "status": "Status",
+    "ease": "Ease",
+    "next_review": "Next Review",
+    "actions": "Actions",
+    "delete_confirm": "Delete this pair?",
+    "delete_success": "Pair deleted",
+    "no_results": "No vocabulary found. Generate some pairs to get started!",
+    "total_count": "Total",
+    "learning_count": "Learning",
+    "mastered_count": "Mastered",
+    "page": "Page",
+    "prev": "Previous",
+    "next": "Next",
+    "status_learning": "Learning",
+    "status_mastered": "Mastered",
+    "now": "Now"
   },
   "review": {
     "dashboard_title": "복습 대시보드",

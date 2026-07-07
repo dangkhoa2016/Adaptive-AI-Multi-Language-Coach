@@ -99,7 +99,29 @@
   },
   "nav": {
     "review": "Ôn tập",
-    "reviewHistory": "Lịch sử ôn tập"
+    "reviewHistory": "Lịch sử ôn tập",
+    "vocabulary": "Từ vựng"
+  },
+  "vocabulary": {
+    "title": "Từ vựng",
+    "search_placeholder": "Tìm kiếm từ vựng...",
+    "word": "Từ",
+    "status": "Trạng thái",
+    "ease": "Độ dễ",
+    "next_review": "Ôn tiếp",
+    "actions": "Thao tác",
+    "delete_confirm": "Xóa cặp từ này?",
+    "delete_success": "Đã xóa cặp từ",
+    "no_results": "Không tìm thấy từ vựng. Hãy tạo một số cặp từ để bắt đầu!",
+    "total_count": "Tổng số",
+    "learning_count": "Đang học",
+    "mastered_count": "Đã thuộc",
+    "page": "Trang",
+    "prev": "Trước",
+    "next": "Tiếp",
+    "status_learning": "Đang học",
+    "status_mastered": "Đã thuộc",
+    "now": "Ngay"
   },
   "review": {
     "dashboard_title": "Bảng điều khiển Ôn tập",

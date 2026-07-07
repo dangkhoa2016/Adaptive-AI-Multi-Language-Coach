@@ -72,7 +72,8 @@
     "member_since": "注册时间"
   },
   "nav": {
-    "review": "复习"
+    "review": "复习",
+    "reviewHistory": "复习历史"
   },
   "review": {
     "dashboard_title": "复习仪表板",
@@ -94,6 +95,23 @@
     "saved": "已保存",
     "save_all": "保存全部",
     "saving": "保存中..."
+  },
+  "reviewHistory": {
+    "title": "复习历史",
+    "stats_total": "复习总数",
+    "stats_today": "今天",
+    "stats_week": "本周",
+    "stats_avg": "平均质量",
+    "date": "日期",
+    "word": "单词",
+    "quality": "质量",
+    "no_data": "暂无复习历史",
+    "prev": "上一个",
+    "next": "下一个",
+    "again": "重来",
+    "hard": "困难",
+    "good": "良好",
+    "easy": "简单"
   },
   "errors": {
     "rate_limited": "请求过多，请稍后再试。",

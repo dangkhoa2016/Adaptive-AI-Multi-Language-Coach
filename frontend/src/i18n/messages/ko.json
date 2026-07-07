@@ -72,7 +72,8 @@
     "member_since": "가입일"
   },
   "nav": {
-    "review": "복습"
+    "review": "복습",
+    "reviewHistory": "복습 기록"
   },
   "review": {
     "dashboard_title": "복습 대시보드",
@@ -94,6 +95,23 @@
     "saved": "저장됨",
     "save_all": "모두 저장",
     "saving": "저장 중..."
+  },
+  "reviewHistory": {
+    "title": "복습 기록",
+    "stats_total": "총 복습 횟수",
+    "stats_today": "오늘",
+    "stats_week": "이번 주",
+    "stats_avg": "평균 품질",
+    "date": "날짜",
+    "word": "단어",
+    "quality": "품질",
+    "no_data": "아직 복습 기록이 없습니다",
+    "prev": "이전",
+    "next": "다음",
+    "again": "다시",
+    "hard": "어려움",
+    "good": "좋음",
+    "easy": "쉬움"
   },
   "errors": {
     "rate_limited": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",

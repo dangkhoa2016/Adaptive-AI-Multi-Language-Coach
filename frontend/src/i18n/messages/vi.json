@@ -98,7 +98,8 @@
     "member_since": "Thành viên từ"
   },
   "nav": {
-    "review": "Ôn tập"
+    "review": "Ôn tập",
+    "reviewHistory": "Lịch sử ôn tập"
   },
   "review": {
     "dashboard_title": "Bảng điều khiển Ôn tập",
@@ -120,6 +121,23 @@
     "saved": "Đã lưu",
     "save_all": "Lưu tất cả",
     "saving": "Đang lưu..."
+  },
+  "reviewHistory": {
+    "title": "Lịch sử ôn tập",
+    "stats_total": "Tổng số lần ôn tập",
+    "stats_today": "Hôm nay",
+    "stats_week": "Tuần này",
+    "stats_avg": "Chất lượng TB",
+    "date": "Ngày",
+    "word": "Từ",
+    "quality": "Chất lượng",
+    "no_data": "Chưa có lịch sử ôn tập",
+    "prev": "Trước",
+    "next": "Tiếp",
+    "again": "Lại",
+    "hard": "Khó",
+    "good": "Tốt",
+    "easy": "Dễ"
   },
   "errors": {
     "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",

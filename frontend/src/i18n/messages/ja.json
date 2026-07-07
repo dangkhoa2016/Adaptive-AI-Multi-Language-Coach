@@ -72,7 +72,8 @@
     "member_since": "登録日"
   },
   "nav": {
-    "review": "復習"
+    "review": "復習",
+    "reviewHistory": "復習履歴"
   },
   "review": {
     "dashboard_title": "復習ダッシュボード",
@@ -94,6 +95,23 @@
     "saved": "保存しました",
     "save_all": "すべて保存",
     "saving": "保存中..."
+  },
+  "reviewHistory": {
+    "title": "復習履歴",
+    "stats_total": "総復習回数",
+    "stats_today": "今日",
+    "stats_week": "今週",
+    "stats_avg": "平均品質",
+    "date": "日付",
+    "word": "単語",
+    "quality": "品質",
+    "no_data": "復習履歴がありません",
+    "prev": "前",
+    "next": "次",
+    "again": "もう一度",
+    "hard": "難しい",
+    "good": "良い",
+    "easy": "簡単"
   },
   "errors": {
     "rate_limited": "リクエストが多すぎます。少し待ってから再度お試しください。",

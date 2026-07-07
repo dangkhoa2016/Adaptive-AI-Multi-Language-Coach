@@ -72,7 +72,8 @@
     "member_since": "Mitglied seit"
   },
   "nav": {
-    "review": "Wiederholung"
+    "review": "Wiederholung",
+    "reviewHistory": "Wiederholungsverlauf"
   },
   "review": {
     "dashboard_title": "Wiederholungs-Dashboard",
@@ -94,6 +95,23 @@
     "saved": "Gespeichert",
     "save_all": "Alle speichern",
     "saving": "Speichern..."
+  },
+  "reviewHistory": {
+    "title": "Wiederholungsverlauf",
+    "stats_total": "Gesamtwiederholungen",
+    "stats_today": "Heute",
+    "stats_week": "Diese Woche",
+    "stats_avg": "Durchschn. Qualität",
+    "date": "Datum",
+    "word": "Wort",
+    "quality": "Qualität",
+    "no_data": "Noch kein Wiederholungsverlauf",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "again": "Erneut",
+    "hard": "Schwer",
+    "good": "Gut",
+    "easy": "Leicht"
   },
   "errors": {
     "rate_limited": "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",

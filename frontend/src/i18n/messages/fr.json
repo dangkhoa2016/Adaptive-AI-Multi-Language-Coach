@@ -72,7 +72,8 @@
     "member_since": "Membre depuis"
   },
   "nav": {
-    "review": "Révision"
+    "review": "Révision",
+    "reviewHistory": "Historique des révisions"
   },
   "review": {
     "dashboard_title": "Tableau de bord de révision",
@@ -94,6 +95,23 @@
     "saved": "Enregistré",
     "save_all": "Tout enregistrer",
     "saving": "Enregistrement..."
+  },
+  "reviewHistory": {
+    "title": "Historique des révisions",
+    "stats_total": "Total des révisions",
+    "stats_today": "Aujourd'hui",
+    "stats_week": "Cette semaine",
+    "stats_avg": "Qualité moy.",
+    "date": "Date",
+    "word": "Mot",
+    "quality": "Qualité",
+    "no_data": "Aucun historique de révision",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "again": "Encore",
+    "hard": "Difficile",
+    "good": "Bien",
+    "easy": "Facile"
   },
   "errors": {
     "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un instant.",

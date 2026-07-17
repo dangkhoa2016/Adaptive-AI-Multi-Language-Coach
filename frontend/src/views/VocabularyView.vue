@@ -129,8 +129,16 @@ async function handleSave() {
   if (!editingPair.value) return
   saving.value = true
   editError.value = null
+  const body: UpdateVocabRequest = {
+    sourceText: editForm.value.sourceText,
+    targetText: editForm.value.targetText,
+    ipa: editForm.value.ipa || undefined,
+    pos: editForm.value.pos || undefined,
+    exampleSource: editForm.value.exampleSource || undefined,
+    exampleTarget: editForm.value.exampleTarget || undefined,
+  }
   try {
-    const updated = await updateVocabPair(editingPair.value.id, editForm.value)
+    const updated = await updateVocabPair(editingPair.value.id, body)
     const idx = pairs.value.findIndex((p) => p.id === updated.id)
     if (idx !== -1) pairs.value[idx] = updated
     closeEdit()
@@ -226,6 +234,7 @@ onMounted(() => {
               <td class="px-4 py-3 text-right">
                 <button
                   class="mr-2 rounded-lg px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                  aria-label="Edit"
                   @click="openEdit(pair)"
                 >
                   ✏️

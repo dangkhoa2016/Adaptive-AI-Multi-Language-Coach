@@ -430,7 +430,7 @@ router.put('/vocab/:id', requireAuth(), async (c) => {
   for (const [col, val] of optionalFields) {
     if (val !== undefined) {
       setClauses.push(`${col} = ?`)
-      bindValues.push(val ?? null)
+      bindValues.push(val)
     }
   }
   setClauses.push('updated_at = ?')

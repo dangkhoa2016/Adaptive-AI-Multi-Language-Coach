@@ -132,7 +132,6 @@
     "edit_save": "Save Changes",
     "edit_cancel": "Cancel",
     "edit_saving": "Saving...",
-    "edit_success": "Pair updated",
     "edit_error": "Failed to update pair"
   },
   "review": {

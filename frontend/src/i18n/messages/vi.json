@@ -52,7 +52,8 @@
     "retry": "Thử lại",
     "back": "Quay lại",
     "next": "Tiếp",
-    "previous": "Trước"
+    "previous": "Trước",
+    "back_home": "Back to Home"
   },
   "tts": {
     "play_audio": "Phát âm thanh",
@@ -168,6 +169,7 @@
     "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",
     "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
     "generation_failed": "Không thể tạo từ vựng. Vui lòng thử lại.",
-    "internal_error": "Đã xảy ra lỗi nội bộ"
+    "internal_error": "Đã xảy ra lỗi nội bộ",
+    "not_found": "Page not found"
   }
 }

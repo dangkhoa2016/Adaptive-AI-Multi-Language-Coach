@@ -52,7 +52,8 @@
     "retry": "Retry",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "back_home": "Back to Home"
   },
   "tts": {
     "play_audio": "Play audio",
@@ -168,6 +169,7 @@
     "rate_limited": "Too many requests. Please slow down and try again in a moment.",
     "generic": "Something went wrong. Please try again.",
     "generation_failed": "Failed to generate vocabulary. Please try again.",
-    "internal_error": "An internal error occurred"
+    "internal_error": "An internal error occurred",
+    "not_found": "Page not found"
   }
 }

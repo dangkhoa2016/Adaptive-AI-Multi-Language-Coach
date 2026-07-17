@@ -52,7 +52,8 @@
     "retry": "再試行",
     "back": "戻る",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "back_home": "Back to Home"
   },
   "auth": {
     "login_title": "サインイン",
@@ -146,7 +147,8 @@
     "rate_limited": "リクエストが多すぎます。少し待ってから再度お試しください。",
     "generic": "エラーが発生しました。もう一度お試しください。",
     "generation_failed": "ボキャブラリーの生成に失敗しました。もう一度お試しください。",
-    "internal_error": "An internal error occurred"
+    "internal_error": "An internal error occurred",
+    "not_found": "Page not found"
   },
   "tts": {
     "play_audio": "Play audio",

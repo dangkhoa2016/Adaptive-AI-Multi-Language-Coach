@@ -52,7 +52,8 @@
     "retry": "Réessayer",
     "back": "Retour",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "back_home": "Back to Home"
   },
   "auth": {
     "login_title": "Connexion",
@@ -146,7 +147,8 @@
     "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un instant.",
     "generic": "Une erreur est survenue. Veuillez réessayer.",
     "generation_failed": "Échec de la génération du vocabulaire. Veuillez réessayer.",
-    "internal_error": "An internal error occurred"
+    "internal_error": "An internal error occurred",
+    "not_found": "Page not found"
   },
   "tts": {
     "play_audio": "Play audio",

@@ -52,7 +52,8 @@
     "retry": "재시도",
     "back": "뒤로",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "back_home": "Back to Home"
   },
   "auth": {
     "login_title": "로그인",
@@ -146,7 +147,8 @@
     "rate_limited": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
     "generic": "오류가 발생했습니다. 다시 시도해주세요.",
     "generation_failed": "어휘 생성에 실패했습니다. 다시 시도해주세요.",
-    "internal_error": "An internal error occurred"
+    "internal_error": "An internal error occurred",
+    "not_found": "Page not found"
   },
   "tts": {
     "play_audio": "Play audio",

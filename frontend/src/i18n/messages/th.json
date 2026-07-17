@@ -52,7 +52,8 @@
     "retry": "ลองใหม่",
     "back": "ย้อนกลับ",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "back_home": "Back to Home"
   },
   "auth": {
     "login_title": "เข้าสู่ระบบ",
@@ -146,7 +147,8 @@
     "rate_limited": "มีคำขอมากเกินไป กรุณาลองอีกครั้งในสักครู่",
     "generic": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
     "generation_failed": "ไม่สามารถสร้างคำศัพท์ได้ กรุณาลองอีกครั้ง",
-    "internal_error": "An internal error occurred"
+    "internal_error": "An internal error occurred",
+    "not_found": "Page not found"
   },
   "tts": {
     "play_audio": "Play audio",

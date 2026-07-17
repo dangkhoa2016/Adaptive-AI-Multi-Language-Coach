@@ -56,6 +56,11 @@ const routes: RouteRecordRaw[] = [
     name: 'vocabulary',
     component: () => import('../views/VocabularyView.vue'),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('../views/NotFoundView.vue'),
+  },
 ]
 
 export const router = createRouter({

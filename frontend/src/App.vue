@@ -5,6 +5,7 @@ import { useAuthStore } from './stores/auth'
 import { usePrefsStore } from './stores/prefs'
 import { useI18n } from 'vue-i18n'
 import ToastContainer from './components/ToastContainer.vue'
+import ErrorBoundary from './components/ErrorBoundary.vue'
 
 const auth = useAuthStore()
 const prefs = usePrefsStore()
@@ -70,7 +71,9 @@ onMounted(() => {
         </RouterLink>
       </div>
     </nav>
-    <RouterView />
+    <ErrorBoundary>
+      <RouterView />
+    </ErrorBoundary>
     <ToastContainer />
   </main>
 </template>

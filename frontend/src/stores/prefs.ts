@@ -6,6 +6,7 @@ interface PrefsState {
   source: Locale
   target: Locale
   learningMode: 'word' | 'phrase' | 'mix'
+  theme: 'light' | 'dark'
 }
 
 export const usePrefsStore = defineStore('prefs', {
@@ -14,7 +15,13 @@ export const usePrefsStore = defineStore('prefs', {
     source: 'en',
     target: 'vi',
     learningMode: 'mix',
+    theme: 'light',
   }),
+  actions: {
+    toggleTheme() {
+      this.theme = this.theme === 'light' ? 'dark' : 'light'
+    },
+  },
   persist: {
     key: 'vocab.prefs',
   },

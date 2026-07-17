@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import { usePrefsStore } from './stores/prefs'
 import { useI18n } from 'vue-i18n'
 
 const auth = useAuthStore()
+const prefs = usePrefsStore()
 const { t } = useI18n()
+
+watch(
+  () => prefs.theme,
+  (theme) => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
   auth.fetchUser()
@@ -39,7 +49,14 @@ onMounted(() => {
           {{ t('nav.vocabulary') }}
         </RouterLink>
       </div>
-      <div class="space-x-4 text-sm">
+      <div class="flex items-center gap-4 text-sm">
+        <button
+          class="rounded p-1 text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700"
+          :aria-label="prefs.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+          @click="prefs.toggleTheme()"
+        >
+          {{ prefs.theme === 'dark' ? '☀️' : '🌙' }}
+        </button>
         <RouterLink
           v-if="auth.user"
           :to="{ name: 'profile' }"

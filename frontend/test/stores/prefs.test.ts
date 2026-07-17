@@ -40,4 +40,17 @@ describe('prefs store', () => {
     store.learningMode = 'phrase'
     expect(store.learningMode).toBe('phrase')
   })
+
+  it('has theme default of light', () => {
+    const store = usePrefsStore()
+    expect(store.theme).toBe('light')
+  })
+
+  it('toggleTheme switches to dark and back to light', () => {
+    const store = usePrefsStore()
+    store.toggleTheme()
+    expect(store.theme).toBe('dark')
+    store.toggleTheme()
+    expect(store.theme).toBe('light')
+  })
 })

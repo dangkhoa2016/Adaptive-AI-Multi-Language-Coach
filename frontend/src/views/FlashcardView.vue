@@ -6,6 +6,7 @@ import { useSessionStore } from '../stores/session'
 import { usePrefsStore } from '../stores/prefs'
 import { useTTS } from '../composables/useTTS'
 import { useSavePairs } from '../composables/useSavePairs'
+import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
 import Flashcard from '../components/Flashcard.vue'
 import ProgressBar from '../components/ProgressBar.vue'
 
@@ -41,6 +42,13 @@ function tts() {
 function startQuiz() {
   router.push({ name: 'quiz' })
 }
+
+useKeyboardShortcuts({
+  ' ': session.toggleFlip,
+  ArrowRight: () => session.nextCard(),
+  ArrowLeft: () => session.prevCard(),
+  s: () => savePair(session.currentCardIndex),
+})
 </script>
 
 <template>

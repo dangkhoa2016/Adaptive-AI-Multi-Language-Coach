@@ -6,6 +6,7 @@ import { useSessionStore } from '../stores/session'
 import { usePrefsStore } from '../stores/prefs'
 import { useListeningDrill } from '../composables/useListeningDrill'
 import { useSpeakingDrill } from '../composables/useSpeakingDrill'
+import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
 import EmptyState from '../components/EmptyState.vue'
 
 const route = useRoute()
@@ -98,6 +99,23 @@ const resultPercent = computed(() => {
 const speakingErrorMsg = computed(() => speakingError.value ?? '')
 const listeningErrorMsg = computed(() => listeningError.value ?? '')
 const transcriptText = computed(() => transcript.value ?? '')
+
+function toggleRecording() {
+  if (isRecording.value) {
+    stopRecording.value()
+  } else {
+    startRecording.value()
+  }
+}
+
+useKeyboardShortcuts({
+  Enter: () => {
+    if (drillMode.value === 'listening' || drillMode.value === 'typing') {
+      checkAnswer.value(currentPair.value?.source ?? '')
+    }
+  },
+  r: toggleRecording,
+})
 </script>
 
 <template>

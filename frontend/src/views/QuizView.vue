@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSessionStore } from '../stores/session'
 import { usePrefsStore } from '../stores/prefs'
+import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
 import { createQuiz } from '../api/client'
 import QuizQuestion from '../components/QuizQuestion.vue'
 import ProgressBar from '../components/ProgressBar.vue'
@@ -34,6 +35,18 @@ onMounted(async () => {
 function seeResults() {
   router.push({ name: 'result' })
 }
+
+useKeyboardShortcuts({
+  '1': () => session.recordAnswer(0),
+  '2': () => session.recordAnswer(1),
+  '3': () => session.recordAnswer(2),
+  '4': () => session.recordAnswer(3),
+  Enter: () => {
+    if (session.answers[session.currentQuestionIndex] !== null) {
+      session.isQuizComplete ? seeResults() : session.nextQuestion()
+    }
+  },
+})
 </script>
 
 <template>

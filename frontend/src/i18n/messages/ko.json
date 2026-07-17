@@ -87,7 +87,8 @@
   "nav": {
     "review": "복습",
     "reviewHistory": "복습 기록",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "내용으로 건너뛰기"
   },
   "vocabulary": {
     "title": "Vocabulary",

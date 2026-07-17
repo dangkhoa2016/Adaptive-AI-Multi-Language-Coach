@@ -87,7 +87,8 @@
   "nav": {
     "review": "ทบทวน",
     "reviewHistory": "ประวัติการทบทวน",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "ข้ามไปที่เนื้อหา"
   },
   "vocabulary": {
     "title": "Vocabulary",

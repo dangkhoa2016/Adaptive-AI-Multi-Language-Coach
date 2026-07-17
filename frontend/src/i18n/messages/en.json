@@ -110,7 +110,8 @@
   "nav": {
     "review": "Review",
     "reviewHistory": "Review History",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "Skip to content"
   },
   "vocabulary": {
     "title": "Vocabulary",

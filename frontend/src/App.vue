@@ -148,13 +148,16 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <ErrorBoundary>
-      <RouterView v-slot="{ Component }">
-        <Transition name="page" mode="out-in">
-          <component :is="Component" />
-        </Transition>
-      </RouterView>
-    </ErrorBoundary>
+    <a href="#main-content" class="sr-only focus:not-sr-only">{{ t('nav.skip_to_content') }}</a>
+    <div id="main-content">
+      <ErrorBoundary>
+        <RouterView v-slot="{ Component }">
+          <Transition name="page" mode="out-in">
+            <component :is="Component" />
+          </Transition>
+        </RouterView>
+      </ErrorBoundary>
+    </div>
     <ToastContainer />
     <ConfirmDialog />
   </main>

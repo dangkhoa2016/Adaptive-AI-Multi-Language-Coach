@@ -110,7 +110,8 @@
   "nav": {
     "review": "Ôn tập",
     "reviewHistory": "Lịch sử ôn tập",
-    "vocabulary": "Từ vựng"
+    "vocabulary": "Từ vựng",
+    "skip_to_content": "Chuyển đến nội dung"
   },
   "vocabulary": {
     "title": "Từ vựng",

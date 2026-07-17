@@ -1,7 +1,27 @@
 <script setup lang="ts">
+import { ref, watch, nextTick } from 'vue'
 import { useConfirm } from '../composables/useConfirm'
 
 const { state, resolveConfirm } = useConfirm()
+
+const cancelBtn = ref<HTMLElement | null>(null)
+const prevFocus = ref<Element | null>(null)
+
+watch(
+  () => state.value,
+  (newState, oldState) => {
+    if (newState && !oldState) {
+      prevFocus.value = document.activeElement
+      nextTick(() => cancelBtn.value?.focus())
+    } else if (!newState && oldState) {
+      const el = prevFocus.value
+      if (el instanceof HTMLElement) {
+        nextTick(() => el.focus())
+      }
+      prevFocus.value = null
+    }
+  },
+)
 </script>
 
 <template>
@@ -21,6 +41,7 @@ const { state, resolveConfirm } = useConfirm()
           </p>
           <div class="mt-6 flex justify-end gap-3">
             <button
+              ref="cancelBtn"
               class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300"
               @click="resolveConfirm(false)"
             >

@@ -87,7 +87,8 @@
   "nav": {
     "review": "Révision",
     "reviewHistory": "Historique des révisions",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "Aller au contenu"
   },
   "vocabulary": {
     "title": "Vocabulary",

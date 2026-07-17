@@ -308,6 +308,7 @@ onMounted(() => {
             </h2>
             <button
               class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              aria-label="Close"
               @click="closeEdit"
             >
               ✕

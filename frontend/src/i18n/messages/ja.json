@@ -87,7 +87,8 @@
   "nav": {
     "review": "復習",
     "reviewHistory": "復習履歴",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "コンテンツにスキップ"
   },
   "vocabulary": {
     "title": "Vocabulary",

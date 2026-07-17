@@ -87,7 +87,8 @@
   "nav": {
     "review": "Wiederholung",
     "reviewHistory": "Wiederholungsverlauf",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "Zum Inhalt springen"
   },
   "vocabulary": {
     "title": "Vocabulary",

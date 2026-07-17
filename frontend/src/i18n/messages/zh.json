@@ -87,7 +87,8 @@
   "nav": {
     "review": "复习",
     "reviewHistory": "复习历史",
-    "vocabulary": "Vocabulary"
+    "vocabulary": "Vocabulary",
+    "skip_to_content": "跳到内容"
   },
   "vocabulary": {
     "title": "Vocabulary",

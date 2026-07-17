@@ -4,6 +4,7 @@ import { RouterView, RouterLink } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { usePrefsStore } from './stores/prefs'
 import { useI18n } from 'vue-i18n'
+import ToastContainer from './components/ToastContainer.vue'
 
 const auth = useAuthStore()
 const prefs = usePrefsStore()
@@ -70,5 +71,6 @@ onMounted(() => {
       </div>
     </nav>
     <RouterView />
+    <ToastContainer />
   </main>
 </template>

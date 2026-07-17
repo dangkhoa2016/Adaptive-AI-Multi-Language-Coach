@@ -1,6 +1,15 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
+  ...(import.meta.env.DEV
+    ? [
+        {
+          path: '/dev/components',
+          name: 'dev-components',
+          component: () => import('../views/DevComponentsView.vue'),
+        },
+      ]
+    : []),
   {
     path: '/',
     name: 'home',

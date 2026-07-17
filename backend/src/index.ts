@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { resolveLocale, type Locale } from '@vocab/shared'
 import type { Bindings, Variables } from './env'
 import { t } from './i18n'
+import { securityHeaders } from './middleware/securityHeaders'
 import { structuredLogger } from './middleware/structuredLogger'
 import { healthRouter } from './routes/health'
 import { localesRouter } from './routes/locales'
@@ -29,6 +30,8 @@ app.use('/api/*', async (c, next) => {
   c.header('Content-Language', locale)
   await next()
 })
+
+app.use('/api/*', securityHeaders())
 
 // Mount sub-routers
 app.route('/', healthRouter)

@@ -15,7 +15,12 @@
     "beginner": "초급",
     "elementary": "기초",
     "intermediate": "중급",
-    "upper_intermediate": "중상급"
+    "upper_intermediate": "중상급",
+    "stats_title": "Your Progress",
+    "stats_vocab": "Vocabulary",
+    "stats_due": "Due for Review",
+    "stats_learning": "Learning",
+    "stats_mastered": "Mastered"
   },
   "flashcard": {
     "title": "플래시카드",

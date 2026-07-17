@@ -15,7 +15,12 @@
     "beginner": "Anfänger",
     "elementary": "Grundlagen",
     "intermediate": "Mittelstufe",
-    "upper_intermediate": "Obere Mittelstufe"
+    "upper_intermediate": "Obere Mittelstufe",
+    "stats_title": "Your Progress",
+    "stats_vocab": "Vocabulary",
+    "stats_due": "Due for Review",
+    "stats_learning": "Learning",
+    "stats_mastered": "Mastered"
   },
   "flashcard": {
     "title": "Lernkarten",

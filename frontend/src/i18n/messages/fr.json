@@ -15,7 +15,12 @@
     "beginner": "Débutant",
     "elementary": "Élémentaire",
     "intermediate": "Intermédiaire",
-    "upper_intermediate": "Intermédiaire supérieur"
+    "upper_intermediate": "Intermédiaire supérieur",
+    "stats_title": "Your Progress",
+    "stats_vocab": "Vocabulary",
+    "stats_due": "Due for Review",
+    "stats_learning": "Learning",
+    "stats_mastered": "Mastered"
   },
   "flashcard": {
     "title": "Cartes mémoire",

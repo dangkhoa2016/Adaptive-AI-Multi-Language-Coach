@@ -15,7 +15,12 @@
     "beginner": "Beginner",
     "elementary": "Elementary",
     "intermediate": "Intermediate",
-    "upper_intermediate": "Upper Intermediate"
+    "upper_intermediate": "Upper Intermediate",
+    "stats_title": "Your Progress",
+    "stats_vocab": "Vocabulary",
+    "stats_due": "Due for Review",
+    "stats_learning": "Learning",
+    "stats_mastered": "Mastered"
   },
   "flashcard": {
     "title": "Flashcards",

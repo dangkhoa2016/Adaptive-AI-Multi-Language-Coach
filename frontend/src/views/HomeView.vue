@@ -4,14 +4,24 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePrefsStore } from '../stores/prefs'
 import { useSessionStore } from '../stores/session'
+import { useAuthStore } from '../stores/auth'
 import { useLocale } from '../composables/useLocale'
-import { generateVocab, fetchTopics, type Topic } from '../api/client'
+import {
+  generateVocab,
+  fetchTopics,
+  fetchVocabList,
+  fetchReviewStats,
+  type Topic,
+  type ReviewStats,
+} from '../api/client'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import StatCard from '../components/StatCard.vue'
 
 const router = useRouter()
 const { t } = useI18n()
 const prefs = usePrefsStore()
 const session = useSessionStore()
+const auth = useAuthStore()
 const { setLocale } = useLocale()
 
 const topics = ref<Topic[]>([])
@@ -19,6 +29,28 @@ const level = ref<'A1' | 'A2' | 'B1' | 'B2'>('A1')
 const count = ref(10)
 const isGenerating = ref(false)
 const error = ref<string | null>(null)
+
+const vocabCount = ref(0)
+const reviewStats = ref<ReviewStats>({
+  dueCount: 0,
+  learningCount: 0,
+  masteredCount: 0,
+  totalCount: 0,
+})
+const statsLoading = ref(true)
+
+async function fetchStats() {
+  statsLoading.value = true
+  try {
+    const [vocab, stats] = await Promise.all([fetchVocabList(1, 1), fetchReviewStats()])
+    vocabCount.value = vocab.total
+    reviewStats.value = stats
+  } catch {
+    // silently fail — stats are non-critical
+  } finally {
+    statsLoading.value = false
+  }
+}
 
 const canStart = computed(() => {
   return prefs.source !== prefs.target
@@ -30,6 +62,7 @@ onMounted(async () => {
   } catch {
     topics.value = []
   }
+  fetchStats()
 })
 
 watch(
@@ -86,6 +119,21 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
   <section class="mx-auto max-w-3xl px-6 py-12" aria-label="Vocabulary generator form">
     <h1 class="text-3xl font-bold tracking-tight">{{ t('home.title') }}</h1>
     <p class="mt-3 text-slate-600 dark:text-slate-300">{{ t('home.tagline') }}</p>
+
+    <!-- Stats Section -->
+    <div
+      v-if="auth.user"
+      class="mb-10 mt-8 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900"
+    >
+      <h2 class="mb-4 text-lg font-semibold">{{ t('home.stats_title') }}</h2>
+      <div v-if="statsLoading" class="text-sm text-slate-500">{{ t('common.loading') }}</div>
+      <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard :label="t('home.stats_vocab')" :value="vocabCount" />
+        <StatCard :label="t('home.stats_due')" :value="reviewStats.dueCount" />
+        <StatCard :label="t('home.stats_learning')" :value="reviewStats.learningCount" />
+        <StatCard :label="t('home.stats_mastered')" :value="reviewStats.masteredCount" />
+      </div>
+    </div>
 
     <!-- UI Language -->
     <div class="mt-8">

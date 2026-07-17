@@ -15,7 +15,12 @@
     "beginner": "初级",
     "elementary": "基础",
     "intermediate": "中级",
-    "upper_intermediate": "中高级"
+    "upper_intermediate": "中高级",
+    "stats_title": "Your Progress",
+    "stats_vocab": "Vocabulary",
+    "stats_due": "Due for Review",
+    "stats_learning": "Learning",
+    "stats_mastered": "Mastered"
   },
   "flashcard": {
     "title": "抽认卡",

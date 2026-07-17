@@ -15,7 +15,12 @@
     "beginner": "เริ่มต้น",
     "elementary": "พื้นฐาน",
     "intermediate": "ปานกลาง",
-    "upper_intermediate": "กลางตอนปลาย"
+    "upper_intermediate": "กลางตอนปลาย",
+    "stats_title": "Your Progress",
+    "stats_vocab": "Vocabulary",
+    "stats_due": "Due for Review",
+    "stats_learning": "Learning",
+    "stats_mastered": "Mastered"
   },
   "flashcard": {
     "title": "บัตรคำ",

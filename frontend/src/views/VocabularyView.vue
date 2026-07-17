@@ -2,7 +2,13 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { fetchVocabList, deleteVocabPair, type LearnedPair } from '../api/client'
+import {
+  fetchVocabList,
+  deleteVocabPair,
+  updateVocabPair,
+  type LearnedPair,
+  type UpdateVocabRequest,
+} from '../api/client'
 
 const { t } = useI18n()
 
@@ -86,6 +92,52 @@ async function handleDelete(pairId: string) {
     error.value = e instanceof Error ? e.message : 'errors.generic'
   } finally {
     deleting.value.delete(pairId)
+  }
+}
+
+const editingPair = ref<LearnedPair | null>(null)
+const editForm = ref<UpdateVocabRequest>({
+  sourceText: '',
+  targetText: '',
+  ipa: '',
+  pos: '',
+  exampleSource: '',
+  exampleTarget: '',
+})
+const saving = ref(false)
+const editError = ref<string | null>(null)
+
+function openEdit(pair: LearnedPair) {
+  editingPair.value = pair
+  editForm.value = {
+    sourceText: pair.source_text,
+    targetText: pair.target_text,
+    ipa: pair.ipa ?? '',
+    pos: pair.pos ?? '',
+    exampleSource: pair.example_source ?? '',
+    exampleTarget: pair.example_target ?? '',
+  }
+  editError.value = null
+}
+
+function closeEdit() {
+  editingPair.value = null
+  editError.value = null
+}
+
+async function handleSave() {
+  if (!editingPair.value) return
+  saving.value = true
+  editError.value = null
+  try {
+    const updated = await updateVocabPair(editingPair.value.id, editForm.value)
+    const idx = pairs.value.findIndex((p) => p.id === updated.id)
+    if (idx !== -1) pairs.value[idx] = updated
+    closeEdit()
+  } catch (e) {
+    editError.value = e instanceof Error ? e.message : t('vocabulary.edit_error')
+  } finally {
+    saving.value = false
   }
 }
 
@@ -173,6 +225,12 @@ onMounted(() => {
               </td>
               <td class="px-4 py-3 text-right">
                 <button
+                  class="mr-2 rounded-lg px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                  @click="openEdit(pair)"
+                >
+                  ✏️
+                </button>
+                <button
                   :disabled="deleting.has(pair.id)"
                   class="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40 dark:text-red-400 dark:hover:bg-red-900/20"
                   aria-label="Delete"
@@ -216,5 +274,110 @@ onMounted(() => {
         </button>
       </div>
     </template>
+
+    <Teleport to="body">
+      <div
+        v-if="editingPair"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        @click.self="closeEdit"
+      >
+        <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
+              {{ t('vocabulary.edit_title') }}
+            </h2>
+            <button
+              class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              @click="closeEdit"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                {{ t('vocabulary.edit_source') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="editForm.sourceText"
+                type="text"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                {{ t('vocabulary.edit_target') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="editForm.targetText"
+                type="text"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                {{ t('vocabulary.edit_ipa') }}
+              </label>
+              <input
+                v-model="editForm.ipa"
+                type="text"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                {{ t('vocabulary.edit_pos') }}
+              </label>
+              <input
+                v-model="editForm.pos"
+                type="text"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                {{ t('vocabulary.edit_example_source') }}
+              </label>
+              <input
+                v-model="editForm.exampleSource"
+                type="text"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                {{ t('vocabulary.edit_example_target') }}
+              </label>
+              <input
+                v-model="editForm.exampleTarget"
+                type="text"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              />
+            </div>
+          </div>
+
+          <div v-if="editError" class="mt-4 text-sm text-red-600">
+            {{ editError }}
+          </div>
+
+          <div class="mt-6 flex justify-end gap-3">
+            <button
+              class="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+              @click="closeEdit"
+            >
+              {{ t('vocabulary.edit_cancel') }}
+            </button>
+            <button
+              :disabled="saving"
+              class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              @click="handleSave"
+            >
+              {{ saving ? t('vocabulary.edit_saving') : t('vocabulary.edit_save') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>

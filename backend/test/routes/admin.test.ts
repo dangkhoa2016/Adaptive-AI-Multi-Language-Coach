@@ -70,3 +70,30 @@ describe('admin settings', () => {
     expect(res.status).toBe(400)
   })
 })
+
+describe('admin role enforcement', () => {
+  async function withUserAuth(): Promise<{ headers: Record<string, string> }> {
+    const token = await createJwt('test-user-id', (env as { JWT_SECRET: string }).JWT_SECRET)
+    return { headers: { cookie: `auth_token=${token}` } }
+  }
+
+  it('GET /admin/settings returns 403 for non-admin user', async () => {
+    const auth = await withUserAuth()
+    const res = await fetchWithEnv('http://localhost/api/admin/settings', {
+      headers: { ...auth.headers },
+    })
+    expect(res.status).toBe(403)
+    const body = (await res.json()) as { error: string }
+    expect(body.error).toBe('forbidden')
+  })
+
+  it('PATCH /admin/settings/:key returns 403 for non-admin user', async () => {
+    const auth = await withUserAuth()
+    const res = await fetchWithEnv('http://localhost/api/admin/settings/TEST_KEY', {
+      method: 'PATCH',
+      headers: { ...auth.headers, 'content-type': 'application/json' },
+      body: JSON.stringify({ value: 'test' }),
+    })
+    expect(res.status).toBe(403)
+  })
+})

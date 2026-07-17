@@ -1,16 +1,15 @@
 import { Hono } from 'hono'
 import type { Bindings, Variables } from '../env'
-import { requireAuth } from '../middleware/auth'
+import { requireAuth, requireAdmin } from '../middleware/auth'
 import { listEnvSettings, setEnvSetting } from '../services/envSettings'
 
 const router = new Hono<{ Bindings: Bindings; Variables: Variables }>()
-router.use('*', requireAuth())
 
 /**
  * GET /api/admin/settings
  * List all env-prefixed system_settings (decrypted).
  */
-router.get('/admin/settings', async (c) => {
+router.get('/admin/settings', requireAuth(), requireAdmin(), async (c) => {
   const { ENCRYPTION_KEY, DB } = c.env
   const settings = await listEnvSettings(DB, ENCRYPTION_KEY)
   return c.json({ settings })
@@ -21,7 +20,7 @@ router.get('/admin/settings', async (c) => {
  * Update a single env var in system_settings.
  * Body: { value: string, encrypted?: boolean }
  */
-router.patch('/admin/settings/:key', async (c) => {
+router.patch('/admin/settings/:key', requireAuth(), requireAdmin(), async (c) => {
   const { ENCRYPTION_KEY, DB } = c.env
   const key = c.req.param('key')
 

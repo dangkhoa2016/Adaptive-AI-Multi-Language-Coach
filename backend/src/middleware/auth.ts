@@ -21,3 +21,22 @@ export function requireAuth(): MiddlewareHandler<{
     await next()
   }
 }
+
+export function requireAdmin(): MiddlewareHandler<{
+  Bindings: Bindings
+  Variables: Variables
+}> {
+  return async (c, next) => {
+    const userId = c.var.userId
+    if (!userId) {
+      return c.json({ error: 'forbidden', message: 'Admin access required' }, 403)
+    }
+    const result = await c.env.DB.prepare('SELECT role FROM users WHERE id = ?')
+      .bind(userId)
+      .first<{ role: string }>()
+    if (!result || result.role !== 'admin') {
+      return c.json({ error: 'forbidden', message: 'Admin access required' }, 403)
+    }
+    await next()
+  }
+}

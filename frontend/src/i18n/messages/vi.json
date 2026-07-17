@@ -121,7 +121,19 @@
     "next": "Tiếp",
     "status_learning": "Đang học",
     "status_mastered": "Đã thuộc",
-    "now": "Ngay"
+    "now": "Ngay",
+    "edit_title": "Chỉnh sửa cặp từ",
+    "edit_source": "Từ gốc",
+    "edit_target": "Bản dịch",
+    "edit_ipa": "IPA",
+    "edit_pos": "Loại từ",
+    "edit_example_source": "Ví dụ (nguồn)",
+    "edit_example_target": "Ví dụ (dịch)",
+    "edit_save": "Lưu thay đổi",
+    "edit_cancel": "Hủy",
+    "edit_saving": "Đang lưu...",
+    "edit_success": "Đã cập nhật cặp từ",
+    "edit_error": "Không thể cập nhật cặp từ"
   },
   "review": {
     "dashboard_title": "Bảng điều khiển Ôn tập",

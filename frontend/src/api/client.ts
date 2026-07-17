@@ -246,6 +246,23 @@ export async function deleteVocabPair(id: string): Promise<{ success: boolean }>
   return request<{ success: boolean }>(`/vocab/${id}`, { method: 'DELETE' })
 }
 
+export interface UpdateVocabRequest {
+  sourceText: string
+  targetText: string
+  ipa?: string
+  pos?: string
+  exampleSource?: string
+  exampleTarget?: string
+}
+
+export async function updateVocabPair(id: string, data: UpdateVocabRequest): Promise<LearnedPair> {
+  const res = await request<{ pair: LearnedPair }>(`/vocab/${id}`, {
+    method: 'PUT',
+    body: data,
+  })
+  return res.pair
+}
+
 export interface ReviewLogEntry {
   id: string
   learnedPairId: string

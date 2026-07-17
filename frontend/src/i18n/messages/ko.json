@@ -95,7 +95,19 @@
     "next": "Next",
     "status_learning": "Learning",
     "status_mastered": "Mastered",
-    "now": "Now"
+    "now": "Now",
+    "edit_title": "Edit Vocabulary Pair",
+    "edit_source": "Source Text",
+    "edit_target": "Translation",
+    "edit_ipa": "IPA",
+    "edit_pos": "Part of Speech",
+    "edit_example_source": "Example Source",
+    "edit_example_target": "Example Translation",
+    "edit_save": "Save Changes",
+    "edit_cancel": "Cancel",
+    "edit_saving": "Saving...",
+    "edit_success": "Pair updated",
+    "edit_error": "Failed to update pair"
   },
   "review": {
     "dashboard_title": "복습 대시보드",

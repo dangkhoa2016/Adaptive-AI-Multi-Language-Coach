@@ -69,6 +69,44 @@ describe('admin settings', () => {
     })
     expect(res.status).toBe(400)
   })
+
+  it('PATCH /admin/settings/:key creates audit log entry', async () => {
+    const auth = await withAuth()
+    const res = await fetchWithEnv('http://localhost/api/admin/settings/AUDIT_TEST_KEY', {
+      method: 'PATCH',
+      headers: { ...auth.headers, 'content-type': 'application/json' },
+      body: JSON.stringify({ value: 'audit-value' }),
+    })
+    expect(res.status).toBe(200)
+
+    // Verify audit log entry
+    const auditRes = await fetchWithEnv('http://localhost/api/admin/audit-log?limit=10', {
+      headers: { ...auth.headers },
+    })
+    expect(auditRes.status).toBe(200)
+    const body = (await auditRes.json()) as {
+      entries: Array<{
+        action: string
+        target: string
+        details: string
+        user_id: string
+      }>
+      total: number
+      page: number
+      limit: number
+    }
+    expect(body.total).toBeGreaterThanOrEqual(1)
+    expect(body.page).toBe(1)
+    expect(body.limit).toBe(10)
+    const entry = body.entries.find((e) => e.target === 'AUDIT_TEST_KEY')
+    expect(entry).toBeDefined()
+    expect(entry!.action).toBe('update_setting')
+    expect(entry!.user_id).toBe('test-admin-id')
+    const details = JSON.parse(entry!.details)
+    expect(details).toHaveProperty('oldValue')
+    expect(details).toHaveProperty('newValue')
+    expect(details.newValue).toBe('audit-value')
+  })
 })
 
 describe('admin role enforcement', () => {
@@ -93,6 +131,14 @@ describe('admin role enforcement', () => {
       method: 'PATCH',
       headers: { ...auth.headers, 'content-type': 'application/json' },
       body: JSON.stringify({ value: 'test' }),
+    })
+    expect(res.status).toBe(403)
+  })
+
+  it('GET /admin/audit-log returns 403 for non-admin user', async () => {
+    const auth = await withUserAuth()
+    const res = await fetchWithEnv('http://localhost/api/admin/audit-log', {
+      headers: { ...auth.headers },
     })
     expect(res.status).toBe(403)
   })

@@ -21,7 +21,8 @@ export function createQuizQuestions(
   pairs: VocabPair[],
   distractorPool: string[] = [],
 ): QuizQuestion[] {
-  return pairs.map((pair) => {
+  const shuffled = [...pairs].sort(() => Math.random() - 0.5)
+  return shuffled.map((pair) => {
     const distractors = distractorPool.filter((d) => d !== pair.target).slice(0, 3)
 
     // If we don't have enough distractors, pad with generic options

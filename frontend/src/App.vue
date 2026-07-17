@@ -5,6 +5,7 @@ import { useAuthStore } from './stores/auth'
 import { usePrefsStore } from './stores/prefs'
 import { useI18n } from 'vue-i18n'
 import ToastContainer from './components/ToastContainer.vue'
+import ConfirmDialog from './components/ConfirmDialog.vue'
 import ErrorBoundary from './components/ErrorBoundary.vue'
 
 const auth = useAuthStore()
@@ -139,5 +140,6 @@ onMounted(() => {
       <RouterView />
     </ErrorBoundary>
     <ToastContainer />
+    <ConfirmDialog />
   </main>
 </template>

@@ -10,10 +10,13 @@ import GradeButtons from '../components/GradeButtons.vue'
 import ReviewStatsCard from '../components/ReviewStatsCard.vue'
 import SkeletonLoader from '../components/SkeletonLoader.vue'
 import EmptyState from '../components/EmptyState.vue'
+import { useConfirm } from '../composables/useConfirm'
 
 const router = useRouter()
 const { t } = useI18n()
 const prefs = usePrefsStore()
+const { confirm } = useConfirm()
+
 const {
   phase,
   pairs,
@@ -26,6 +29,7 @@ const {
   loadStats,
   startSession,
   grade,
+  resetSession,
 } = useReviewSession()
 
 const currentPair = computed(() => pairs.value[currentIndex.value] ?? null)
@@ -54,6 +58,15 @@ onMounted(() => {
 async function reviewAgain() {
   await loadStats()
   await startSession()
+}
+
+async function handleReset() {
+  const ok = await confirm({
+    title: t('common.confirm_reset_title'),
+    message: t('common.confirm_reset'),
+  })
+  if (!ok) return
+  resetSession()
 }
 </script>
 
@@ -102,6 +115,14 @@ async function reviewAgain() {
           >
             {{ stats.dueCount === 0 ? t('review.no_due_cards') : t('review.start_review') }}
           </button>
+          <div class="mt-4">
+            <button
+              class="text-sm text-red-600 hover:underline dark:text-red-400"
+              @click="handleReset"
+            >
+              {{ t('review.reset') }}
+            </button>
+          </div>
         </div>
       </template>
     </template>

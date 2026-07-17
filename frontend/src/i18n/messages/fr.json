@@ -55,7 +55,13 @@
     "back": "Retour",
     "next": "Next",
     "previous": "Previous",
-    "back_home": "Back to Home"
+    "back_home": "Back to Home",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm_delete_title": "Delete vocabulary pair?",
+    "confirm_delete": "This cannot be undone.",
+    "confirm_reset_title": "Reset card progress?",
+    "confirm_reset": "This will reset the card to 'learning' state."
   },
   "auth": {
     "login_title": "Connexion",
@@ -127,7 +133,8 @@
     "save": "Enregistrer",
     "saved": "Enregistré",
     "save_all": "Tout enregistrer",
-    "saving": "Enregistrement..."
+    "saving": "Enregistrement...",
+    "reset": "Reset progress"
   },
   "reviewHistory": {
     "title": "Historique des révisions",

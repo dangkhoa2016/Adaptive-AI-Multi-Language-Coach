@@ -55,7 +55,13 @@
     "back": "Quay lại",
     "next": "Tiếp",
     "previous": "Trước",
-    "back_home": "Back to Home"
+    "back_home": "Back to Home",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm_delete_title": "Delete vocabulary pair?",
+    "confirm_delete": "This cannot be undone.",
+    "confirm_reset_title": "Reset card progress?",
+    "confirm_reset": "This will reset the card to 'learning' state."
   },
   "tts": {
     "play_audio": "Phát âm thanh",
@@ -150,7 +156,8 @@
     "save": "Lưu",
     "saved": "Đã lưu",
     "save_all": "Lưu tất cả",
-    "saving": "Đang lưu..."
+    "saving": "Đang lưu...",
+    "reset": "Reset progress"
   },
   "reviewHistory": {
     "title": "Lịch sử ôn tập",

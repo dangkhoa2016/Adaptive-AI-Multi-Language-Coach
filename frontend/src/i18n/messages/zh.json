@@ -55,7 +55,13 @@
     "back": "返回",
     "next": "Next",
     "previous": "Previous",
-    "back_home": "Back to Home"
+    "back_home": "Back to Home",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm_delete_title": "Delete vocabulary pair?",
+    "confirm_delete": "This cannot be undone.",
+    "confirm_reset_title": "Reset card progress?",
+    "confirm_reset": "This will reset the card to 'learning' state."
   },
   "auth": {
     "login_title": "登录",
@@ -127,7 +133,8 @@
     "save": "保存",
     "saved": "已保存",
     "save_all": "保存全部",
-    "saving": "保存中..."
+    "saving": "保存中...",
+    "reset": "Reset progress"
   },
   "reviewHistory": {
     "title": "复习历史",

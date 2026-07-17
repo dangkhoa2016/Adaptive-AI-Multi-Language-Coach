@@ -55,7 +55,13 @@
     "back": "뒤로",
     "next": "Next",
     "previous": "Previous",
-    "back_home": "Back to Home"
+    "back_home": "Back to Home",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm_delete_title": "Delete vocabulary pair?",
+    "confirm_delete": "This cannot be undone.",
+    "confirm_reset_title": "Reset card progress?",
+    "confirm_reset": "This will reset the card to 'learning' state."
   },
   "auth": {
     "login_title": "로그인",
@@ -127,7 +133,8 @@
     "save": "저장",
     "saved": "저장됨",
     "save_all": "모두 저장",
-    "saving": "저장 중..."
+    "saving": "저장 중...",
+    "reset": "Reset progress"
   },
   "reviewHistory": {
     "title": "복습 기록",

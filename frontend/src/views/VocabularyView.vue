@@ -10,8 +10,10 @@ import {
   type UpdateVocabRequest,
 } from '../api/client'
 import SkeletonLoader from '../components/SkeletonLoader.vue'
+import { useConfirm } from '../composables/useConfirm'
 
 const { t } = useI18n()
+const { confirm } = useConfirm()
 
 const pairs = ref<LearnedPair[]>([])
 const total = ref(0)
@@ -83,7 +85,11 @@ async function loadPage(p: number) {
 }
 
 async function handleDelete(pairId: string) {
-  if (!confirm(t('vocabulary.delete_confirm'))) return
+  const ok = await confirm({
+    title: t('common.confirm_delete_title'),
+    message: t('common.confirm_delete'),
+  })
+  if (!ok) return
   deleting.value.add(pairId)
   try {
     await deleteVocabPair(pairId)

@@ -55,7 +55,13 @@
     "back": "戻る",
     "next": "Next",
     "previous": "Previous",
-    "back_home": "Back to Home"
+    "back_home": "Back to Home",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm_delete_title": "Delete vocabulary pair?",
+    "confirm_delete": "This cannot be undone.",
+    "confirm_reset_title": "Reset card progress?",
+    "confirm_reset": "This will reset the card to 'learning' state."
   },
   "auth": {
     "login_title": "サインイン",
@@ -127,7 +133,8 @@
     "save": "保存",
     "saved": "保存しました",
     "save_all": "すべて保存",
-    "saving": "保存中..."
+    "saving": "保存中...",
+    "reset": "Reset progress"
   },
   "reviewHistory": {
     "title": "復習履歴",

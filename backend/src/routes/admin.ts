@@ -1,8 +1,10 @@
 import { Hono } from 'hono'
 import type { Bindings, Variables } from '../env'
+import { requireAuth } from '../middleware/auth'
 import { listEnvSettings, setEnvSetting } from '../services/envSettings'
 
 const router = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+router.use('*', requireAuth())
 
 /**
  * GET /api/admin/settings

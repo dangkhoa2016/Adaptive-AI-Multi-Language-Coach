@@ -233,34 +233,42 @@ function createMockDB(): D1Database {
               reviewLogs.get(uid)!.push(record)
             }
           } else if (sql.includes('UPDATE learned_pairs')) {
-            // Find the pair by the last bound value (WHERE id = ?)
             const pairId = values[values.length - 1] as string
             for (const [, pairs] of learnedPairs) {
               const idx = pairs.findIndex((p: any) => p.id === pairId)
               if (idx !== -1) {
                 const existing = pairs[idx] as Record<string, unknown>
-                // Map SET clauses in order: ease, interval, repetitions, next_review, last_seen, status, updated_at
-                const setClauses = [
-                  'ease',
-                  'interval',
-                  'repetitions',
-                  'next_review',
-                  'last_seen',
-                  'status',
-                  'updated_at',
-                ]
-                setClauses.forEach((col, i) => {
-                  existing[col] = values[i]
-                })
-                // Also handle the simpler UPDATE for reset
                 if (values.length <= 3) {
-                  // ease = 2.5, interval = 0, repetitions = 0, next_review = NULL, status = 'learning', updated_at = ?
+                  // Reset: ease = 2.5, interval = 0, repetitions = 0, next_review = NULL, status = 'learning', updated_at = ?
                   existing.ease = 2.5
                   existing.interval = 0
                   existing.repetitions = 0
                   existing.next_review = null
                   existing.status = 'learning'
                   existing.updated_at = values[0]
+                } else if (typeof values[0] === 'number') {
+                  // Grade update
+                  const gradeClauses = [
+                    'ease',
+                    'interval',
+                    'repetitions',
+                    'next_review',
+                    'last_seen',
+                    'status',
+                    'updated_at',
+                  ]
+                  gradeClauses.forEach((col, i) => {
+                    existing[col] = values[i]
+                  })
+                } else {
+                  // Edit update — parse SET column names from SQL
+                  const setMatch = sql.match(/SET (.+?) WHERE/i)
+                  if (setMatch) {
+                    const setCols = setMatch[1].split(',').map((s) => s.trim().split('=')[0].trim())
+                    setCols.forEach((col, i) => {
+                      existing[col] = values[i]
+                    })
+                  }
                 }
               }
             }
@@ -796,6 +804,155 @@ describe('review routes', () => {
 
   it('DELETE /api/vocab/:id returns 401 without auth', async () => {
     const res = await callApp('http://localhost/api/vocab/some-id', { method: 'DELETE' })
+    expect(res.status).toBe(401)
+  })
+
+  // --- Edit vocabulary pair ---
+
+  it('PUT /api/vocab/:id updates fields and returns updated pair', async () => {
+    const saved = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'hello',
+          targetText: 'xin chào',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const pair = (await saved.json()) as any
+    const pairId = pair.pair.id
+
+    const res = await callApp(
+      `http://localhost/api/vocab/${pairId}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({
+          sourceText: 'hi',
+          targetText: 'chào',
+          ipa: '/haɪ/',
+          pos: 'interjection',
+          exampleSource: 'Hi there!',
+          exampleTarget: 'Chào bạn!',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.pair.source_text).toBe('hi')
+    expect(body.pair.target_text).toBe('chào')
+    expect(body.pair.ipa).toBe('/haɪ/')
+    expect(body.pair.pos).toBe('interjection')
+    expect(body.pair.example_source).toBe('Hi there!')
+    expect(body.pair.example_target).toBe('Chào bạn!')
+  })
+
+  it('PUT /api/vocab/:id returns 404 for unknown id', async () => {
+    const res = await callApp(
+      'http://localhost/api/vocab/nonexistent',
+      { method: 'PUT', body: JSON.stringify({ sourceText: 'a', targetText: 'b' }) },
+      `auth_token=${jwt}`,
+    )
+    expect(res.status).toBe(404)
+  })
+
+  it("PUT /api/vocab/:id returns 403 for other user's pair", async () => {
+    const otherUserId = 'other-user-edit'
+    const { createJwt } = await import('../../src/services/auth')
+    const otherJwt = await createJwt(otherUserId, 'test-jwt-secret-32-chars-long!!')
+
+    const saved = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'owned',
+          targetText: 'của tôi',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const pair = (await saved.json()) as any
+
+    const res = await callApp(
+      `http://localhost/api/vocab/${pair.pair.id}`,
+      { method: 'PUT', body: JSON.stringify({ sourceText: 'a', targetText: 'b' }) },
+      `auth_token=${otherJwt}`,
+    )
+    expect(res.status).toBe(403)
+  })
+
+  it('PUT /api/vocab/:id returns 400 with missing sourceText', async () => {
+    const saved = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'test',
+          targetText: 'kiểm tra',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const pair = (await saved.json()) as any
+
+    const res = await callApp(
+      `http://localhost/api/vocab/${pair.pair.id}`,
+      { method: 'PUT', body: JSON.stringify({ targetText: 'b' }) },
+      `auth_token=${jwt}`,
+    )
+    expect(res.status).toBe(400)
+  })
+
+  it('PUT /api/vocab/:id optional fields not sent keep existing values', async () => {
+    const saved = await callApp(
+      'http://localhost/api/vocab/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          source: 'en',
+          target: 'vi',
+          sourceText: 'keep',
+          targetText: 'giữ',
+          ipa: '/kiːp/',
+          pos: 'verb',
+          exampleSource: 'Keep it',
+          exampleTarget: 'Giữ nó',
+        }),
+      },
+      `auth_token=${jwt}`,
+    )
+    const pair = (await saved.json()) as any
+
+    // Only update sourceText
+    const res = await callApp(
+      `http://localhost/api/vocab/${pair.pair.id}`,
+      { method: 'PUT', body: JSON.stringify({ sourceText: 'kept', targetText: 'đã giữ' }) },
+      `auth_token=${jwt}`,
+    )
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as any
+    expect(body.pair.source_text).toBe('kept')
+    expect(body.pair.target_text).toBe('đã giữ')
+    expect(body.pair.ipa).toBe('/kiːp/') // unchanged
+    expect(body.pair.pos).toBe('verb') // unchanged
+    expect(body.pair.example_source).toBe('Keep it') // unchanged
+    expect(body.pair.example_target).toBe('Giữ nó') // unchanged
+  })
+
+  it('PUT /api/vocab/:id returns 401 without auth', async () => {
+    const res = await callApp('http://localhost/api/vocab/some-id', {
+      method: 'PUT',
+      body: JSON.stringify({ sourceText: 'a', targetText: 'b' }),
+    })
     expect(res.status).toBe(401)
   })
 })

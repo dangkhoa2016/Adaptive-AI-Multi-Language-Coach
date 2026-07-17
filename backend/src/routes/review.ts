@@ -385,4 +385,68 @@ router.delete('/vocab/:id', requireAuth(), async (c) => {
   return c.json({ success: true })
 })
 
+// --- Edit a vocabulary pair ---
+
+const editSchema = z.object({
+  sourceText: z.string().min(1),
+  targetText: z.string().min(1),
+  ipa: z.string().optional(),
+  pos: z.string().optional(),
+  exampleSource: z.string().optional(),
+  exampleTarget: z.string().optional(),
+})
+
+router.put('/vocab/:id', requireAuth(), async (c) => {
+  const userId = c.get('userId')!
+  const pairId = c.req.param('id')
+  const body = await c.req.json()
+  const parsed = editSchema.safeParse(body)
+  if (!parsed.success) {
+    return c.json({ error: 'validation_error', message: t(c, 'errors.validation_error') }, 400)
+  }
+
+  const pair = await c.env.DB.prepare('SELECT id, user_id FROM learned_pairs WHERE id = ?')
+    .bind(pairId)
+    .first<{ id: string; user_id: string }>()
+
+  if (!pair) {
+    return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
+  }
+  if (pair.user_id !== userId) {
+    return c.json({ error: 'forbidden', message: t(c, 'errors.forbidden') }, 403)
+  }
+
+  const { sourceText, targetText, ipa, pos, exampleSource, exampleTarget } = parsed.data
+  const now = new Date().toISOString()
+
+  const setClauses: string[] = ['source_text = ?', 'target_text = ?']
+  const bindValues: unknown[] = [sourceText, targetText]
+  const optionalFields: [string, string | undefined][] = [
+    ['ipa', ipa],
+    ['pos', pos],
+    ['example_source', exampleSource],
+    ['example_target', exampleTarget],
+  ]
+  for (const [col, val] of optionalFields) {
+    if (val !== undefined) {
+      setClauses.push(`${col} = ?`)
+      bindValues.push(val ?? null)
+    }
+  }
+  setClauses.push('updated_at = ?')
+  bindValues.push(now, pairId)
+
+  await c.env.DB.prepare(`UPDATE learned_pairs SET ${setClauses.join(', ')} WHERE id = ?`)
+    .bind(...bindValues)
+    .run()
+
+  const updated = await c.env.DB.prepare(
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+  )
+    .bind(pairId)
+    .first()
+
+  return c.json({ pair: updated })
+})
+
 export { router as reviewRouter }

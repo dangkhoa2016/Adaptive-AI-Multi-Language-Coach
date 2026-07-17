@@ -7,6 +7,7 @@ interface PrefsState {
   target: Locale
   learningMode: 'word' | 'phrase' | 'mix'
   theme: 'light' | 'dark'
+  reminderEnabled: boolean
 }
 
 export const usePrefsStore = defineStore('prefs', {
@@ -16,6 +17,7 @@ export const usePrefsStore = defineStore('prefs', {
     target: 'vi',
     learningMode: 'mix',
     theme: 'light',
+    reminderEnabled: false,
   }),
   actions: {
     toggleTheme() {

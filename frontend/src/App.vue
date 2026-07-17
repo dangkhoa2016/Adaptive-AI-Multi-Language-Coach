@@ -4,6 +4,7 @@ import { RouterView, RouterLink } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { usePrefsStore } from './stores/prefs'
 import { useI18n } from 'vue-i18n'
+import { useStudyReminder } from './composables/useStudyReminder'
 import ToastContainer from './components/ToastContainer.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
 import ErrorBoundary from './components/ErrorBoundary.vue'
@@ -23,6 +24,17 @@ watch(
     document.documentElement.classList.toggle('dark', theme === 'dark')
   },
   { immediate: true },
+)
+
+const { checkAndNotify } = useStudyReminder()
+
+watch(
+  () => auth.user,
+  (user, oldUser) => {
+    if (user && !oldUser && prefs.reminderEnabled) {
+      checkAndNotify()
+    }
+  },
 )
 
 onMounted(() => {

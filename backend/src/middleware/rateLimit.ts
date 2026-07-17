@@ -22,6 +22,18 @@ export function createRateLimitMiddleware(
       binding === 'RATE_LIMITER_AUTH' ? c.env.RATE_LIMITER_AUTH : c.env.RATE_LIMITER_API
     const result = await limiter.limit({ key: ip })
     if (result.success === false) {
+      try {
+        const id = crypto.randomUUID()
+        const now = new Date().toISOString()
+        const endpoint = c.req.path
+        await c.env.DB.prepare(
+          'INSERT INTO rate_limit_events (id, ip, endpoint, timestamp) VALUES (?, ?, ?, ?)',
+        )
+          .bind(id, ip, endpoint, now)
+          .run()
+      } catch (_err) {
+        console.error('Failed to log rate limit event:', _err)
+      }
       return c.json({ error: 'rate_limited', message: t(c, 'errors.rate_limited') }, 429)
     }
     await next()

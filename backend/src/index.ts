@@ -11,6 +11,7 @@ import { topicsRouter } from './routes/topics'
 import { quizRouter } from './routes/quiz'
 import { generateRouter } from './routes/generate'
 import { adminRouter } from './routes/admin'
+import { adminRateLimitRouter } from './routes/admin-rate-limit'
 import { ttsRouter } from './routes/tts'
 import { sttRouter } from './routes/stt'
 import { authRouter } from './routes/auth'
@@ -42,6 +43,7 @@ app.route('/api', topicsRouter)
 app.route('/api', quizRouter)
 app.route('/api', generateRouter)
 app.route('/api', adminRouter)
+app.route('/api', adminRateLimitRouter)
 app.route('/api', ttsRouter)
 app.route('/api', sttRouter)
 app.route('/api', authRouter)

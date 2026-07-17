@@ -18,10 +18,13 @@ export function useReviewSession() {
   const error = ref<string | null>(null)
 
   async function loadStats() {
+    loading.value = true
     try {
       stats.value = await fetchReviewStats()
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'errors.generic'
+    } finally {
+      loading.value = false
     }
   }
 

@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -24,7 +25,8 @@ onMounted(async () => {
 
 <template>
   <section class="mx-auto max-w-md px-6 py-16 text-center">
-    <div v-if="auth.loading">
+    <div v-if="auth.loading" class="flex flex-col items-center gap-4">
+      <SkeletonLoader variant="card" height="6rem" class="w-48" />
       <p class="text-lg">{{ t('auth.verify_title') }}</p>
     </div>
     <div v-else-if="auth.error" role="alert" class="rounded bg-red-50 p-4 text-red-700">

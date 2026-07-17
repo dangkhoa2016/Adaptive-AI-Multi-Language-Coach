@@ -16,6 +16,7 @@ import {
 } from '../api/client'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import StatCard from '../components/StatCard.vue'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -126,7 +127,13 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
       class="mb-10 mt-8 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900"
     >
       <h2 class="mb-4 text-lg font-semibold">{{ t('home.stats_title') }}</h2>
-      <div v-if="statsLoading" class="text-sm text-slate-500">{{ t('common.loading') }}</div>
+      <template v-if="statsLoading">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div v-for="i in 4" :key="i">
+            <SkeletonLoader variant="card" height="5rem" />
+          </div>
+        </div>
+      </template>
       <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard :label="t('home.stats_vocab')" :value="vocabCount" />
         <StatCard :label="t('home.stats_due')" :value="reviewStats.dueCount" />

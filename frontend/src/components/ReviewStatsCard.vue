@@ -4,11 +4,16 @@ defineProps<{
   count: number
   color: string
   icon: string
+  loading?: boolean
 }>()
 </script>
 
 <template>
+  <div v-if="loading" class="animate-pulse rounded-xl border p-4">
+    <div class="h-8 w-16 rounded bg-slate-200 dark:bg-slate-700" />
+  </div>
   <div
+    v-else
     class="rounded-xl border p-4 shadow-sm"
     :class="[
       color === 'amber' &&

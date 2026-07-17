@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -26,7 +27,11 @@ async function handleExport() {
 
 <template>
   <section class="mx-auto max-w-2xl px-6 py-8">
-    <div v-if="!auth.user && auth.loading" class="text-center">{{ t('common.loading') }}</div>
+    <div v-if="!auth.user && auth.loading" class="space-y-4">
+      <SkeletonLoader variant="text" height="1.5rem" class="w-2/3" />
+      <SkeletonLoader variant="text" height="1.5rem" class="w-1/2" />
+      <SkeletonLoader variant="text" height="1.5rem" class="w-3/4" />
+    </div>
     <div v-else-if="!auth.user" class="text-center">
       <p class="mb-4">{{ t('auth.not_logged_in') }}</p>
       <router-link :to="{ name: 'login' }" class="text-blue-600 hover:underline">

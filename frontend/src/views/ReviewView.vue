@@ -8,6 +8,7 @@ import Flashcard from '../components/Flashcard.vue'
 import ProgressBar from '../components/ProgressBar.vue'
 import GradeButtons from '../components/GradeButtons.vue'
 import ReviewStatsCard from '../components/ReviewStatsCard.vue'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -61,9 +62,13 @@ async function reviewAgain() {
     <template v-if="phase === 'dashboard'">
       <h1 class="text-2xl font-bold tracking-tight">{{ t('review.dashboard_title') }}</h1>
 
-      <div v-if="loading" class="mt-8 text-center text-sm text-slate-400">
-        {{ t('common.loading') }}
-      </div>
+      <template v-if="loading">
+        <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div v-for="i in 4" :key="i">
+            <SkeletonLoader variant="card" height="5rem" />
+          </div>
+        </div>
+      </template>
 
       <template v-else>
         <div class="mt-6 grid grid-cols-2 gap-4">

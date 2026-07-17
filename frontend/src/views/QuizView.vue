@@ -7,6 +7,7 @@ import { usePrefsStore } from '../stores/prefs'
 import { createQuiz } from '../api/client'
 import QuizQuestion from '../components/QuizQuestion.vue'
 import ProgressBar from '../components/ProgressBar.vue'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -54,8 +55,8 @@ function seeResults() {
       </button>
     </div>
 
-    <div v-if="session.isQuizLoading" class="mt-8 text-center text-slate-500">
-      {{ t('common.loading') }}
+    <div v-if="session.isQuizLoading" class="mt-8">
+      <SkeletonLoader variant="card" height="12rem" />
     </div>
 
     <div v-else-if="session.error" class="mt-8 text-center text-red-500">

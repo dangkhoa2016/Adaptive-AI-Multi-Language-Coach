@@ -9,6 +9,7 @@ import {
   type LearnedPair,
   type UpdateVocabRequest,
 } from '../api/client'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const { t } = useI18n()
 
@@ -177,9 +178,13 @@ onMounted(() => {
       <span>{{ t('vocabulary.mastered_count') }}: {{ masteredCount }}</span>
     </div>
 
-    <div v-if="loading" class="mt-8 text-center text-sm text-slate-400">
-      {{ t('common.loading') }}
-    </div>
+    <template v-if="loading">
+      <div class="mt-6 space-y-3">
+        <div v-for="i in 5" :key="i">
+          <SkeletonLoader variant="text" height="3rem" class="w-full" />
+        </div>
+      </div>
+    </template>
 
     <template v-else-if="error">
       <div class="mt-8 text-center text-sm text-red-600">{{ error }}</div>

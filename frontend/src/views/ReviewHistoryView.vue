@@ -8,6 +8,7 @@ import {
   type ReviewHistoryStats,
 } from '../api/client'
 import ReviewStatsCard from '../components/ReviewStatsCard.vue'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
 
 const { t } = useI18n()
 
@@ -108,95 +109,106 @@ onMounted(async () => {
   <section class="mx-auto max-w-2xl px-6 py-8">
     <h1 class="text-2xl font-bold tracking-tight">{{ t('reviewHistory.title') }}</h1>
 
-    <div class="mt-6 grid grid-cols-4 gap-4">
-      <ReviewStatsCard
-        v-for="card in statCards"
-        :key="card.color"
-        :label="card.label"
-        :count="card.count"
-        :color="card.color"
-        :icon="card.icon"
-      />
-    </div>
-
-    <div v-if="loading" class="mt-8 text-center text-sm text-slate-400">
-      {{ t('common.loading') }}
-    </div>
-
-    <template v-else-if="error">
-      <div class="mt-8 text-center text-sm text-red-600">{{ error }}</div>
-    </template>
-
-    <template v-else-if="logs.length === 0">
-      <div class="mt-16 text-center text-sm text-slate-400">
-        {{ t('reviewHistory.no_data') }}
+    <template v-if="loading">
+      <div class="mt-6 grid grid-cols-4 gap-4">
+        <div v-for="i in 4" :key="i">
+          <SkeletonLoader variant="card" height="5rem" />
+        </div>
+      </div>
+      <div class="mt-6 space-y-3">
+        <div v-for="i in 5" :key="i">
+          <SkeletonLoader variant="text" height="3rem" class="w-full" />
+        </div>
       </div>
     </template>
 
     <template v-else>
-      <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-        <table class="w-full text-sm">
-          <thead
-            class="bg-slate-50 text-left text-xs font-medium uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-          >
-            <tr>
-              <th class="px-4 py-3">{{ t('reviewHistory.date') }}</th>
-              <th class="px-4 py-3">{{ t('reviewHistory.word') }}</th>
-              <th class="px-4 py-3 text-right">{{ t('reviewHistory.quality') }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-            <tr
-              v-for="log in logs"
-              :key="log.id"
-              class="hover:bg-slate-50 dark:hover:bg-slate-800/50"
-            >
-              <td class="px-4 py-3 text-slate-500 dark:text-slate-400">
-                {{ formatDate(log.reviewedAt) }}
-              </td>
-              <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
-                {{ log.source }} → {{ log.target }}
-              </td>
-              <td class="px-4 py-3 text-right">
-                <span
-                  class="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
-                  :class="qualityColor(log.quality)"
-                >
-                  {{ qualityLabel(log.quality) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="mt-6 grid grid-cols-4 gap-4">
+        <ReviewStatsCard
+          v-for="card in statCards"
+          :key="card.color"
+          :label="card.label"
+          :count="card.count"
+          :color="card.color"
+          :icon="card.icon"
+        />
       </div>
 
-      <div v-if="totalPages > 1" class="mt-6 flex items-center justify-between">
-        <button
-          :disabled="!hasPrev"
-          class="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
-          :class="
-            hasPrev
-              ? 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600'
-              : 'bg-slate-100 dark:bg-slate-800'
-          "
-          @click="loadPage(page - 1)"
-        >
-          {{ t('reviewHistory.prev') }}
-        </button>
-        <span class="text-xs text-slate-400">Page {{ page }} / {{ totalPages }}</span>
-        <button
-          :disabled="!hasNext"
-          class="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
-          :class="
-            hasNext
-              ? 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600'
-              : 'bg-slate-100 dark:bg-slate-800'
-          "
-          @click="loadPage(page + 1)"
-        >
-          {{ t('reviewHistory.next') }}
-        </button>
-      </div>
+      <template v-if="error">
+        <div class="mt-8 text-center text-sm text-red-600">{{ error }}</div>
+      </template>
+
+      <template v-else-if="logs.length === 0">
+        <div class="mt-16 text-center text-sm text-slate-400">
+          {{ t('reviewHistory.no_data') }}
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+          <table class="w-full text-sm">
+            <thead
+              class="bg-slate-50 text-left text-xs font-medium uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+            >
+              <tr>
+                <th class="px-4 py-3">{{ t('reviewHistory.date') }}</th>
+                <th class="px-4 py-3">{{ t('reviewHistory.word') }}</th>
+                <th class="px-4 py-3 text-right">{{ t('reviewHistory.quality') }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+              <tr
+                v-for="log in logs"
+                :key="log.id"
+                class="hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              >
+                <td class="px-4 py-3 text-slate-500 dark:text-slate-400">
+                  {{ formatDate(log.reviewedAt) }}
+                </td>
+                <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                  {{ log.source }} → {{ log.target }}
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <span
+                    class="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
+                    :class="qualityColor(log.quality)"
+                  >
+                    {{ qualityLabel(log.quality) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-if="totalPages > 1" class="mt-6 flex items-center justify-between">
+          <button
+            :disabled="!hasPrev"
+            class="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
+            :class="
+              hasPrev
+                ? 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600'
+                : 'bg-slate-100 dark:bg-slate-800'
+            "
+            @click="loadPage(page - 1)"
+          >
+            {{ t('reviewHistory.prev') }}
+          </button>
+          <span class="text-xs text-slate-400">Page {{ page }} / {{ totalPages }}</span>
+          <button
+            :disabled="!hasNext"
+            class="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
+            :class="
+              hasNext
+                ? 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600'
+                : 'bg-slate-100 dark:bg-slate-800'
+            "
+            @click="loadPage(page + 1)"
+          >
+            {{ t('reviewHistory.next') }}
+          </button>
+        </div>
+      </template>
     </template>
   </section>
 </template>

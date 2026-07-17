@@ -27,9 +27,6 @@
   "quiz": {
     "title": "Quiz",
     "question_progress": "Question {current} / {total}",
-    "submit": "Submit",
-    "correct": "Correct!",
-    "incorrect": "Incorrect",
     "next": "Next",
     "see_results": "See results"
   },

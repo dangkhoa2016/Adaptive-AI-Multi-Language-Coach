@@ -27,9 +27,6 @@
   "quiz": {
     "title": "Bài kiểm tra",
     "question_progress": "Câu {current} / {total}",
-    "submit": "Nộp bài",
-    "correct": "Chính xác!",
-    "incorrect": "Sai rồi",
     "next": "Tiếp",
     "see_results": "Xem kết quả"
   },

@@ -27,9 +27,6 @@
   "quiz": {
     "title": "クイズ",
     "question_progress": "問題 {current} / {total}",
-    "submit": "送信",
-    "correct": "正解！",
-    "incorrect": "不正解",
     "next": "次",
     "see_results": "結果を見る"
   },

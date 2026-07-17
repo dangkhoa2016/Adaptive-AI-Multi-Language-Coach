@@ -27,9 +27,6 @@
   "quiz": {
     "title": "퀴즈",
     "question_progress": "문제 {current} / {total}",
-    "submit": "제출",
-    "correct": "정답!",
-    "incorrect": "오답",
     "next": "다음",
     "see_results": "결과 보기"
   },

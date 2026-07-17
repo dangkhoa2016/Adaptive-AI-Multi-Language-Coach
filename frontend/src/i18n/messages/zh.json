@@ -27,9 +27,6 @@
   "quiz": {
     "title": "测验",
     "question_progress": "问题 {current} / {total}",
-    "submit": "提交",
-    "correct": "正确！",
-    "incorrect": "错误",
     "next": "下一个",
     "see_results": "查看结果"
   },

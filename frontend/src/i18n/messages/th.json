@@ -27,9 +27,6 @@
   "quiz": {
     "title": "แบบทดสอบ",
     "question_progress": "ข้อ {current} / {total}",
-    "submit": "ส่ง",
-    "correct": "ถูกต้อง!",
-    "incorrect": "ผิด",
     "next": "ถัดไป",
     "see_results": "ดูผล"
   },

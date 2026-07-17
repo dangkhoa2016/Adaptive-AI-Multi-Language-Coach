@@ -20,7 +20,9 @@
     "stats_vocab": "Vocabulary",
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
-    "stats_mastered": "Mastered"
+    "stats_mastered": "Mastered",
+    "stats_error": "Could not load stats",
+    "stats_retry": "Retry"
   },
   "flashcard": {
     "title": "플래시카드",
@@ -114,6 +116,7 @@
     "total_count": "전체",
     "start_review": "복습 시작",
     "no_due_cards": "복습할 카드가 없습니다!",
+    "no_vocab": "No vocabulary yet — generate some pairs to get started!",
     "again": "다시",
     "hard": "어려움",
     "good": "좋음",
@@ -170,6 +173,7 @@
     "mic_error": "Microphone access denied",
     "great_job": "Great job!",
     "close": "Close, try again",
-    "keep_practicing": "Keep practicing"
+    "keep_practicing": "Keep practicing",
+    "no_pairs": "No flashcards available. Create some first!"
   }
 }

@@ -6,6 +6,7 @@ import { useSessionStore } from '../stores/session'
 import { usePrefsStore } from '../stores/prefs'
 import { useListeningDrill } from '../composables/useListeningDrill'
 import { useSpeakingDrill } from '../composables/useSpeakingDrill'
+import EmptyState from '../components/EmptyState.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -343,6 +344,13 @@ const transcriptText = computed(() => transcript.value ?? '')
         </div>
       </div>
     </div>
+    <EmptyState
+      v-else
+      icon="📚"
+      :title="t('drills.no_pairs')"
+      :action-label="t('common.back')"
+      action-link="/flashcard"
+    />
 
     <div class="mt-6 flex justify-between">
       <button

@@ -20,7 +20,9 @@
     "stats_vocab": "Vocabulary",
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
-    "stats_mastered": "Mastered"
+    "stats_mastered": "Mastered",
+    "stats_error": "Could not load stats",
+    "stats_retry": "Retry"
   },
   "flashcard": {
     "title": "Flashcards",
@@ -75,7 +77,8 @@
     "mic_error": "Microphone access denied",
     "great_job": "Great job!",
     "close": "Close, try again",
-    "keep_practicing": "Keep practicing"
+    "keep_practicing": "Keep practicing",
+    "no_pairs": "No flashcards available. Create some first!"
   },
   "auth": {
     "login_title": "Sign in",
@@ -136,6 +139,7 @@
     "total_count": "Total",
     "start_review": "Start Review",
     "no_due_cards": "No cards due for review!",
+    "no_vocab": "No vocabulary yet — generate some pairs to get started!",
     "again": "Again",
     "hard": "Hard",
     "good": "Good",

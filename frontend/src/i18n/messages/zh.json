@@ -20,7 +20,9 @@
     "stats_vocab": "Vocabulary",
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
-    "stats_mastered": "Mastered"
+    "stats_mastered": "Mastered",
+    "stats_error": "Could not load stats",
+    "stats_retry": "Retry"
   },
   "flashcard": {
     "title": "抽认卡",
@@ -114,6 +116,7 @@
     "total_count": "总计",
     "start_review": "开始复习",
     "no_due_cards": "没有待复习的卡片！",
+    "no_vocab": "No vocabulary yet — generate some pairs to get started!",
     "again": "重来",
     "hard": "困难",
     "good": "良好",
@@ -170,6 +173,7 @@
     "mic_error": "Microphone access denied",
     "great_job": "Great job!",
     "close": "Close, try again",
-    "keep_practicing": "Keep practicing"
+    "keep_practicing": "Keep practicing",
+    "no_pairs": "No flashcards available. Create some first!"
   }
 }

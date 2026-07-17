@@ -17,6 +17,7 @@ import {
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import StatCard from '../components/StatCard.vue'
 import SkeletonLoader from '../components/SkeletonLoader.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -39,15 +40,17 @@ const reviewStats = ref<ReviewStats>({
   totalCount: 0,
 })
 const statsLoading = ref(true)
+const statsError = ref(false)
 
 async function fetchStats() {
   statsLoading.value = true
+  statsError.value = false
   try {
     const [vocab, stats] = await Promise.all([fetchVocabList(1, 1), fetchReviewStats()])
     vocabCount.value = vocab.total
     reviewStats.value = stats
   } catch {
-    // silently fail — stats are non-critical
+    statsError.value = true
   } finally {
     statsLoading.value = false
   }
@@ -132,6 +135,17 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
           <div v-for="i in 4" :key="i">
             <SkeletonLoader variant="card" height="5rem" />
           </div>
+        </div>
+      </template>
+      <template v-else-if="statsError">
+        <EmptyState :title="t('home.stats_error')" />
+        <div class="mt-4 text-center">
+          <button
+            class="rounded-xl bg-indigo-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+            @click="fetchStats"
+          >
+            {{ t('home.stats_retry') }}
+          </button>
         </div>
       </template>
       <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-4">

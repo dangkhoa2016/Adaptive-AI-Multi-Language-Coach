@@ -9,6 +9,7 @@ import ProgressBar from '../components/ProgressBar.vue'
 import GradeButtons from '../components/GradeButtons.vue'
 import ReviewStatsCard from '../components/ReviewStatsCard.vue'
 import SkeletonLoader from '../components/SkeletonLoader.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -70,7 +71,14 @@ async function reviewAgain() {
         </div>
       </template>
 
-      <template v-else>
+      <EmptyState
+        v-else-if="!loading && stats.totalCount === 0"
+        icon="📚"
+        :title="t('review.no_vocab')"
+        :action-label="t('common.back_home')"
+        action-link="/"
+      />
+      <template v-else-if="!loading && stats.totalCount > 0">
         <div class="mt-6 grid grid-cols-2 gap-4">
           <ReviewStatsCard
             v-for="card in statCards"

@@ -20,7 +20,9 @@
     "stats_vocab": "Vocabulary",
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
-    "stats_mastered": "Mastered"
+    "stats_mastered": "Mastered",
+    "stats_error": "Could not load stats",
+    "stats_retry": "Retry"
   },
   "flashcard": {
     "title": "フラッシュカード",
@@ -114,6 +116,7 @@
     "total_count": "合計",
     "start_review": "復習を開始",
     "no_due_cards": "復習すべきカードはありません！",
+    "no_vocab": "No vocabulary yet — generate some pairs to get started!",
     "again": "もう一度",
     "hard": "難しい",
     "good": "良い",
@@ -170,6 +173,7 @@
     "mic_error": "Microphone access denied",
     "great_job": "Great job!",
     "close": "Close, try again",
-    "keep_practicing": "Keep practicing"
+    "keep_practicing": "Keep practicing",
+    "no_pairs": "No flashcards available. Create some first!"
   }
 }

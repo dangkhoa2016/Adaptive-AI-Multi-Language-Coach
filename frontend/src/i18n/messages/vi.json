@@ -20,7 +20,9 @@
     "stats_vocab": "Vocabulary",
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
-    "stats_mastered": "Mastered"
+    "stats_mastered": "Mastered",
+    "stats_error": "Could not load stats",
+    "stats_retry": "Retry"
   },
   "flashcard": {
     "title": "Thẻ ghi nhớ",
@@ -75,7 +77,8 @@
     "mic_error": "Không thể truy cập micro",
     "great_job": "Tuyệt vời!",
     "close": "Gần đúng, thử lại",
-    "keep_practicing": "Tiếp tục luyện tập"
+    "keep_practicing": "Tiếp tục luyện tập",
+    "no_pairs": "No flashcards available. Create some first!"
   },
   "auth": {
     "login_title": "Đăng nhập",
@@ -136,6 +139,7 @@
     "total_count": "Tổng số",
     "start_review": "Bắt đầu ôn tập",
     "no_due_cards": "Không có thẻ nào đến hạn ôn tập!",
+    "no_vocab": "No vocabulary yet — generate some pairs to get started!",
     "again": "Lại",
     "hard": "Khó",
     "good": "Tốt",

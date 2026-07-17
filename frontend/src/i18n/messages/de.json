@@ -20,7 +20,9 @@
     "stats_vocab": "Vocabulary",
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
-    "stats_mastered": "Mastered"
+    "stats_mastered": "Mastered",
+    "stats_error": "Could not load stats",
+    "stats_retry": "Retry"
   },
   "flashcard": {
     "title": "Lernkarten",
@@ -114,6 +116,7 @@
     "total_count": "Gesamt",
     "start_review": "Wiederholung starten",
     "no_due_cards": "Keine Karten zur Wiederholung fällig!",
+    "no_vocab": "No vocabulary yet — generate some pairs to get started!",
     "again": "Erneut",
     "hard": "Schwer",
     "good": "Gut",
@@ -170,6 +173,7 @@
     "mic_error": "Microphone access denied",
     "great_job": "Great job!",
     "close": "Close, try again",
-    "keep_practicing": "Keep practicing"
+    "keep_practicing": "Keep practicing",
+    "no_pairs": "No flashcards available. Create some first!"
   }
 }

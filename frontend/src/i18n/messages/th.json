@@ -153,6 +153,17 @@
     "good": "ดี",
     "easy": "ง่าย"
   },
+  "onboarding": {
+    "step1_title": "Welcome to AI Vocab Coach!",
+    "step1_desc": "Choose your source and target languages below.",
+    "step2_title": "Pick a topic and level",
+    "step2_desc": "Select a topic you're interested in and your skill level.",
+    "step3_title": "Start learning!",
+    "step3_desc": "Generate vocabulary pairs, practice with flashcards, take quizzes, and try speaking drills.",
+    "next": "Next",
+    "get_started": "Get Started",
+    "skip": "Skip"
+  },
   "errors": {
     "rate_limited": "มีคำขอมากเกินไป กรุณาลองอีกครั้งในสักครู่",
     "generic": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",

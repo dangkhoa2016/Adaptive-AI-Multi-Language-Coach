@@ -18,6 +18,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import StatCard from '../components/StatCard.vue'
 import SkeletonLoader from '../components/SkeletonLoader.vue'
 import EmptyState from '../components/EmptyState.vue'
+import OnboardingBanner from '../components/OnboardingBanner.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -123,6 +124,8 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
   <section class="mx-auto max-w-3xl px-6 py-12" aria-label="Vocabulary generator form">
     <h1 class="text-3xl font-bold tracking-tight">{{ t('home.title') }}</h1>
     <p class="mt-3 text-slate-600 dark:text-slate-300">{{ t('home.tagline') }}</p>
+
+    <OnboardingBanner />
 
     <!-- Stats Section -->
     <div

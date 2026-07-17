@@ -6,15 +6,12 @@
     "source_language": "Ngôn ngữ nguồn",
     "target_language": "Ngôn ngữ đích",
     "learning_mode": "Chế độ học",
-    "topic": "Chủ đề",
     "level": "Trình độ",
     "count": "Số lượng",
     "start": "Bắt đầu học",
     "mode_word": "Từ đơn",
     "mode_phrase": "Cụm từ & thành ngữ",
     "mode_mix": "Trộn",
-    "select_source": "Chọn ngôn ngữ nguồn",
-    "select_target": "Chọn ngôn ngữ đích",
     "beginner": "Sơ cấp",
     "elementary": "Cơ bản",
     "intermediate": "Trung cấp",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "Thẻ ghi nhớ",
-    "front": "Mặt trước",
-    "back": "Mặt sau",
-    "tap_flip": "Nhấn để lật",
     "next": "Tiếp",
     "previous": "Trước",
     "start_quiz": "Làm bài kiểm tra",
@@ -59,7 +53,6 @@
     "previous": "Trước"
   },
   "tts": {
-    "listen": "Nghe",
     "play_audio": "Phát âm thanh",
     "audio_error": "Phát âm thanh thất bại"
   },
@@ -77,7 +70,6 @@
     "stop": "Dừng",
     "recording": "Đang ghi âm...",
     "mic_error": "Không thể truy cập micro",
-    "too_short": "Câu trả lời quá ngắn",
     "great_job": "Tuyệt vời!",
     "close": "Gần đúng, thử lại",
     "keep_practicing": "Tiếp tục luyện tập"
@@ -111,7 +103,6 @@
     "next_review": "Ôn tiếp",
     "actions": "Thao tác",
     "delete_confirm": "Xóa cặp từ này?",
-    "delete_success": "Đã xóa cặp từ",
     "no_results": "Không tìm thấy từ vựng. Hãy tạo một số cặp từ để bắt đầu!",
     "total_count": "Tổng số",
     "learning_count": "Đang học",
@@ -149,7 +140,6 @@
     "session_complete": "Hoàn thành Ôn tập!",
     "cards_reviewed": "thẻ đã ôn",
     "review_again": "Ôn tập lại",
-    "back_to_dashboard": "Quay lại Bảng điều khiển",
     "save": "Lưu",
     "saved": "Đã lưu",
     "save_all": "Lưu tất cả",
@@ -175,6 +165,7 @@
   "errors": {
     "rate_limited": "Bạn đang gửi quá nhiều yêu cầu. Vui lòng thử lại sau giây lát.",
     "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
-    "generation_failed": "Không thể tạo từ vựng. Vui lòng thử lại."
+    "generation_failed": "Không thể tạo từ vựng. Vui lòng thử lại.",
+    "internal_error": "Đã xảy ra lỗi nội bộ"
   }
 }

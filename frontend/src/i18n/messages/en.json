@@ -6,15 +6,12 @@
     "source_language": "Source language",
     "target_language": "Target language",
     "learning_mode": "Learning mode",
-    "topic": "Topic",
     "level": "Level",
     "count": "Number of items",
     "start": "Start learning",
     "mode_word": "Single words",
     "mode_phrase": "Phrases & idioms",
     "mode_mix": "Mixed",
-    "select_source": "Select source",
-    "select_target": "Select target",
     "beginner": "Beginner",
     "elementary": "Elementary",
     "intermediate": "Intermediate",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "Flashcards",
-    "front": "Front",
-    "back": "Back",
-    "tap_flip": "Tap to flip",
     "next": "Next",
     "previous": "Previous",
     "start_quiz": "Take a quiz",
@@ -59,7 +53,6 @@
     "previous": "Previous"
   },
   "tts": {
-    "listen": "Listen",
     "play_audio": "Play audio",
     "audio_error": "Audio playback failed"
   },
@@ -77,7 +70,6 @@
     "stop": "Stop",
     "recording": "Recording...",
     "mic_error": "Microphone access denied",
-    "too_short": "Answer too short",
     "great_job": "Great job!",
     "close": "Close, try again",
     "keep_practicing": "Keep practicing"
@@ -111,7 +103,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -149,7 +140,6 @@
     "session_complete": "Review Complete!",
     "cards_reviewed": "cards reviewed",
     "review_again": "Review Again",
-    "back_to_dashboard": "Back to Dashboard",
     "save": "Save",
     "saved": "Saved",
     "save_all": "Save All",
@@ -175,6 +165,7 @@
   "errors": {
     "rate_limited": "Too many requests. Please slow down and try again in a moment.",
     "generic": "Something went wrong. Please try again.",
-    "generation_failed": "Failed to generate vocabulary. Please try again."
+    "generation_failed": "Failed to generate vocabulary. Please try again.",
+    "internal_error": "An internal error occurred"
   }
 }

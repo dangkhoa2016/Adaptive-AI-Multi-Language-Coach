@@ -6,15 +6,12 @@
     "source_language": "Ausgangssprache",
     "target_language": "Zielsprache",
     "learning_mode": "Lernmodus",
-    "topic": "Thema",
     "level": "Niveau",
     "count": "Anzahl",
     "start": "Lernen starten",
     "mode_word": "Einzelwörter",
     "mode_phrase": "Phrasen & Redewendungen",
     "mode_mix": "Gemischt",
-    "select_source": "Ausgangssprache wählen",
-    "select_target": "Zielsprache wählen",
     "beginner": "Anfänger",
     "elementary": "Grundlagen",
     "intermediate": "Mittelstufe",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "Lernkarten",
-    "front": "Vorderseite",
-    "back": "Rückseite",
-    "tap_flip": "Tippen zum Wenden",
     "next": "Weiter",
     "previous": "Zurück",
     "start_quiz": "Quiz starten",
@@ -85,7 +79,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -123,7 +116,6 @@
     "session_complete": "Wiederholung abgeschlossen!",
     "cards_reviewed": "Karten wiederholt",
     "review_again": "Erneut wiederholen",
-    "back_to_dashboard": "Zurück zum Dashboard",
     "save": "Speichern",
     "saved": "Gespeichert",
     "save_all": "Alle speichern",
@@ -149,6 +141,7 @@
   "errors": {
     "rate_limited": "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
     "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
-    "generation_failed": "Vokabelgenerierung fehlgeschlagen. Bitte versuchen Sie es erneut."
+    "generation_failed": "Vokabelgenerierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "internal_error": "An internal error occurred"
   }
 }

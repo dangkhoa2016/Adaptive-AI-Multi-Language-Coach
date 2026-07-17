@@ -6,15 +6,12 @@
     "source_language": "ソース言語",
     "target_language": "ターゲット言語",
     "learning_mode": "学習モード",
-    "topic": "トピック",
     "level": "レベル",
     "count": "数",
     "start": "学習を始める",
     "mode_word": "単語",
     "mode_phrase": "フレーズ＆イディオム",
     "mode_mix": "ミックス",
-    "select_source": "ソース言語を選択",
-    "select_target": "ターゲット言語を選択",
     "beginner": "初級",
     "elementary": "基礎",
     "intermediate": "中級",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "フラッシュカード",
-    "front": "表面",
-    "back": "裏面",
-    "tap_flip": "タップして裏返す",
     "next": "次",
     "previous": "前",
     "start_quiz": "クイズを受ける",
@@ -85,7 +79,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -123,7 +116,6 @@
     "session_complete": "復習完了！",
     "cards_reviewed": "枚のカードを復習",
     "review_again": "もう一度復習",
-    "back_to_dashboard": "ダッシュボードに戻る",
     "save": "保存",
     "saved": "保存しました",
     "save_all": "すべて保存",
@@ -149,6 +141,7 @@
   "errors": {
     "rate_limited": "リクエストが多すぎます。少し待ってから再度お試しください。",
     "generic": "エラーが発生しました。もう一度お試しください。",
-    "generation_failed": "ボキャブラリーの生成に失敗しました。もう一度お試しください。"
+    "generation_failed": "ボキャブラリーの生成に失敗しました。もう一度お試しください。",
+    "internal_error": "An internal error occurred"
   }
 }

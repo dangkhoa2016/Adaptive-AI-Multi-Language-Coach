@@ -6,15 +6,12 @@
     "source_language": "출발 언어",
     "target_language": "목표 언어",
     "learning_mode": "학습 모드",
-    "topic": "주제",
     "level": "레벨",
     "count": "개수",
     "start": "학습 시작",
     "mode_word": "단어",
     "mode_phrase": "구문 & 관용구",
     "mode_mix": "혼합",
-    "select_source": "출발 언어 선택",
-    "select_target": "목표 언어 선택",
     "beginner": "초급",
     "elementary": "기초",
     "intermediate": "중급",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "플래시카드",
-    "front": "앞면",
-    "back": "뒷면",
-    "tap_flip": "탭하여 뒤집기",
     "next": "다음",
     "previous": "이전",
     "start_quiz": "퀴즈 시작",
@@ -85,7 +79,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -123,7 +116,6 @@
     "session_complete": "복습 완료!",
     "cards_reviewed": "개 카드 복습함",
     "review_again": "다시 복습",
-    "back_to_dashboard": "대시보드로 돌아가기",
     "save": "저장",
     "saved": "저장됨",
     "save_all": "모두 저장",
@@ -149,6 +141,7 @@
   "errors": {
     "rate_limited": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
     "generic": "오류가 발생했습니다. 다시 시도해주세요.",
-    "generation_failed": "어휘 생성에 실패했습니다. 다시 시도해주세요."
+    "generation_failed": "어휘 생성에 실패했습니다. 다시 시도해주세요.",
+    "internal_error": "An internal error occurred"
   }
 }

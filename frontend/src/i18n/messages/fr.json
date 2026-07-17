@@ -6,15 +6,12 @@
     "source_language": "Langue source",
     "target_language": "Langue cible",
     "learning_mode": "Mode d'apprentissage",
-    "topic": "Thème",
     "level": "Niveau",
     "count": "Nombre",
     "start": "Commencer",
     "mode_word": "Mots simples",
     "mode_phrase": "Expressions & idiomes",
     "mode_mix": "Mélangé",
-    "select_source": "Choisir la langue source",
-    "select_target": "Choisir la langue cible",
     "beginner": "Débutant",
     "elementary": "Élémentaire",
     "intermediate": "Intermédiaire",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "Cartes mémoire",
-    "front": "Recto",
-    "back": "Verso",
-    "tap_flip": "Appuyer pour retourner",
     "next": "Suivant",
     "previous": "Précédent",
     "start_quiz": "Passer au quiz",
@@ -85,7 +79,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -123,7 +116,6 @@
     "session_complete": "Révision terminée !",
     "cards_reviewed": "cartes révisées",
     "review_again": "Re-réviser",
-    "back_to_dashboard": "Retour au tableau de bord",
     "save": "Enregistrer",
     "saved": "Enregistré",
     "save_all": "Tout enregistrer",
@@ -149,6 +141,7 @@
   "errors": {
     "rate_limited": "Trop de requêtes. Veuillez ralentir et réessayer dans un instant.",
     "generic": "Une erreur est survenue. Veuillez réessayer.",
-    "generation_failed": "Échec de la génération du vocabulaire. Veuillez réessayer."
+    "generation_failed": "Échec de la génération du vocabulaire. Veuillez réessayer.",
+    "internal_error": "An internal error occurred"
   }
 }

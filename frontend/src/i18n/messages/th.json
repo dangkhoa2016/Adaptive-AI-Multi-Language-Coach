@@ -6,15 +6,12 @@
     "source_language": "ภาษาต้นทาง",
     "target_language": "ภาษาปลายทาง",
     "learning_mode": "โหมดเรียนรู้",
-    "topic": "หัวข้อ",
     "level": "ระดับ",
     "count": "จำนวน",
     "start": "เริ่มเรียน",
     "mode_word": "คำศัพท์",
     "mode_phrase": "วลี & สำนวน",
     "mode_mix": "ผสม",
-    "select_source": "เลือกภาษาต้นทาง",
-    "select_target": "เลือกภาษาปลายทาง",
     "beginner": "เริ่มต้น",
     "elementary": "พื้นฐาน",
     "intermediate": "ปานกลาง",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "บัตรคำ",
-    "front": "ด้านหน้า",
-    "back": "ด้านหลัง",
-    "tap_flip": "แตะเพื่อพลิก",
     "next": "ถัดไป",
     "previous": "ก่อนหน้า",
     "start_quiz": "ทำแบบทดสอบ",
@@ -85,7 +79,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -123,7 +116,6 @@
     "session_complete": "ทบทวนเสร็จสิ้น!",
     "cards_reviewed": "ใบที่ทบทวนแล้ว",
     "review_again": "ทบทวนอีกครั้ง",
-    "back_to_dashboard": "กลับไปแดชบอร์ด",
     "save": "บันทึก",
     "saved": "บันทึกแล้ว",
     "save_all": "บันทึกทั้งหมด",
@@ -149,6 +141,7 @@
   "errors": {
     "rate_limited": "มีคำขอมากเกินไป กรุณาลองอีกครั้งในสักครู่",
     "generic": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
-    "generation_failed": "ไม่สามารถสร้างคำศัพท์ได้ กรุณาลองอีกครั้ง"
+    "generation_failed": "ไม่สามารถสร้างคำศัพท์ได้ กรุณาลองอีกครั้ง",
+    "internal_error": "An internal error occurred"
   }
 }

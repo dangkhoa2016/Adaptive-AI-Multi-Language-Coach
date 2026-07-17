@@ -6,15 +6,12 @@
     "source_language": "源语言",
     "target_language": "目标语言",
     "learning_mode": "学习模式",
-    "topic": "主题",
     "level": "级别",
     "count": "数量",
     "start": "开始学习",
     "mode_word": "单词",
     "mode_phrase": "短语和习语",
     "mode_mix": "混合",
-    "select_source": "选择源语言",
-    "select_target": "选择目标语言",
     "beginner": "初级",
     "elementary": "基础",
     "intermediate": "中级",
@@ -22,9 +19,6 @@
   },
   "flashcard": {
     "title": "抽认卡",
-    "front": "正面",
-    "back": "背面",
-    "tap_flip": "点击翻转",
     "next": "下一个",
     "previous": "上一个",
     "start_quiz": "开始测验",
@@ -85,7 +79,6 @@
     "next_review": "Next Review",
     "actions": "Actions",
     "delete_confirm": "Delete this pair?",
-    "delete_success": "Pair deleted",
     "no_results": "No vocabulary found. Generate some pairs to get started!",
     "total_count": "Total",
     "learning_count": "Learning",
@@ -123,7 +116,6 @@
     "session_complete": "复习完成！",
     "cards_reviewed": "张卡片已复习",
     "review_again": "再次复习",
-    "back_to_dashboard": "返回仪表板",
     "save": "保存",
     "saved": "已保存",
     "save_all": "保存全部",
@@ -149,6 +141,7 @@
   "errors": {
     "rate_limited": "请求过多，请稍后再试。",
     "generic": "发生错误，请重试。",
-    "generation_failed": "生成词汇失败，请重试。"
+    "generation_failed": "生成词汇失败，请重试。",
+    "internal_error": "An internal error occurred"
   }
 }

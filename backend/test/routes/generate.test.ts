@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest'
-import { fetchWithEnv, resetKV, createMockRateLimiter } from './helpers'
+import { fetchWithEnv, resetKV, createMockRateLimiter } from '../helpers'
 import type { Bindings } from '../src/env'
 
 /**

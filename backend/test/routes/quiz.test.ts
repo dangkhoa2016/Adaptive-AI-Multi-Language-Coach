@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest'
-import { fetchWithEnv, resetKV } from './helpers'
+import { fetchWithEnv, resetKV } from '../helpers'
 
 describe('quiz endpoint', () => {
   beforeEach(() => resetKV())

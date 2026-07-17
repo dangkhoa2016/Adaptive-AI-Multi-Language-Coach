@@ -6,7 +6,7 @@ import {
   resetSystemSettings,
   systemSettingsStore,
   createMockEnv,
-} from './helpers'
+} from '../helpers'
 import type { GenerateRequest, VocabPair } from '../src/services/schemas'
 
 const VALID_PAIRS: VocabPair[] = [

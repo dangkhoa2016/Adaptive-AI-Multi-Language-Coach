@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "连续天数",
+    "streak_longest": "最长连续",
+    "today_reviews": "今日复习",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

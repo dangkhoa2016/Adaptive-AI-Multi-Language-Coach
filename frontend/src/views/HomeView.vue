@@ -11,14 +11,18 @@ import {
   fetchTopics,
   fetchVocabList,
   fetchReviewStats,
+  fetchStreak,
   type Topic,
   type ReviewStats,
+  type StreakData,
 } from '../api/client'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import StatCard from '../components/StatCard.vue'
 import SkeletonLoader from '../components/SkeletonLoader.vue'
 import EmptyState from '../components/EmptyState.vue'
 import OnboardingBanner from '../components/OnboardingBanner.vue'
+import StreakDisplay from '../components/StreakDisplay.vue'
+import ActivityChart from '../components/ActivityChart.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -42,14 +46,20 @@ const reviewStats = ref<ReviewStats>({
 })
 const statsLoading = ref(true)
 const statsError = ref(false)
+const streakData = ref<StreakData | null>(null)
 
 async function fetchStats() {
   statsLoading.value = true
   statsError.value = false
   try {
-    const [vocab, stats] = await Promise.all([fetchVocabList(1, 1), fetchReviewStats()])
+    const [vocab, stats, streak] = await Promise.all([
+      fetchVocabList(1, 1),
+      fetchReviewStats(),
+      fetchStreak(),
+    ])
     vocabCount.value = vocab.total
     reviewStats.value = stats
+    streakData.value = streak
   } catch {
     statsError.value = true
   } finally {
@@ -157,6 +167,12 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
         <StatCard :label="t('home.stats_learning')" :value="reviewStats.learningCount" />
         <StatCard :label="t('home.stats_mastered')" :value="reviewStats.masteredCount" />
       </div>
+    </div>
+
+    <!-- Streak + Chart -->
+    <div v-if="auth.user" class="mb-10 mt-8 space-y-4">
+      <StreakDisplay />
+      <ActivityChart :data="streakData?.dailyActivity ?? []" />
     </div>
 
     <!-- UI Language -->

@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "Day streak",
+    "streak_longest": "Longest streak",
+    "today_reviews": "Today's reviews",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

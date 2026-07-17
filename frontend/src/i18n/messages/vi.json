@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "Chuỗi ngày",
+    "streak_longest": "Chuỗi dài nhất",
+    "today_reviews": "Ôn tập hôm nay",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

@@ -16,6 +16,7 @@ import { sttRouter } from './routes/stt'
 import { authRouter } from './routes/auth'
 import { userRouter } from './routes/user'
 import { reviewRouter } from './routes/review'
+import { streakRouter } from './routes/streak'
 import { docsRouter } from './routes/docs'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -46,6 +47,7 @@ app.route('/api', sttRouter)
 app.route('/api', authRouter)
 app.route('/api', userRouter)
 app.route('/api', reviewRouter)
+app.route('/api', streakRouter)
 app.route('/api/docs', docsRouter)
 
 // Error handlers

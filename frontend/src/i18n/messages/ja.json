@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "連続日数",
+    "streak_longest": "最長連続",
+    "today_reviews": "今日の復習",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

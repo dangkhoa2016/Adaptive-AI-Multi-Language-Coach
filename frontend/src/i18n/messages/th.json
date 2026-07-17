@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "วันที่ติดต่อกัน",
+    "streak_longest": "ติดต่อกันสูงสุด",
+    "today_reviews": "รีวิววันนี้",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

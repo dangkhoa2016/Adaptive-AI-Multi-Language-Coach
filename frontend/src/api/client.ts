@@ -279,6 +279,15 @@ export interface ReviewHistoryResponse {
   limit: number
 }
 
+export interface StreakData {
+  currentStreak: number
+  longestStreak: number
+  todayCount: number
+  dailyActivity: Array<{ day: string; count: number }>
+}
+
+export const fetchStreak = () => request<StreakData>('/review/streak')
+
 export interface ReviewHistoryStats {
   totalReviews: number
   todayReviews: number

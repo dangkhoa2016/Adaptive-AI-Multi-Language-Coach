@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "Série de jours",
+    "streak_longest": "Plus longue série",
+    "today_reviews": "Révisions aujourd'hui",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

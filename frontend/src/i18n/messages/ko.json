@@ -21,6 +21,9 @@
     "stats_due": "Due for Review",
     "stats_learning": "Learning",
     "stats_mastered": "Mastered",
+    "streak": "연속 일수",
+    "streak_longest": "최장 연속",
+    "today_reviews": "오늘의 복습",
     "stats_error": "Could not load stats",
     "stats_retry": "Retry"
   },

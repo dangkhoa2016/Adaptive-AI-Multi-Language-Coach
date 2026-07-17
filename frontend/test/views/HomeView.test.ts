@@ -3,13 +3,14 @@ import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import HomeView from '../../src/views/HomeView.vue'
-import { fetchVocabList, fetchReviewStats, fetchTopics } from '../../src/api/client'
+import { fetchVocabList, fetchReviewStats, fetchTopics, fetchStreak } from '../../src/api/client'
 import en from '../../src/i18n/messages/en.json'
 
 vi.mock('../../src/api/client', () => ({
   fetchVocabList: vi.fn(),
   fetchReviewStats: vi.fn(),
   fetchTopics: vi.fn(),
+  fetchStreak: vi.fn(),
 }))
 
 const i18n = createI18n({
@@ -50,6 +51,18 @@ describe('HomeView', () => {
       totalCount: 42,
     })
     vi.mocked(fetchTopics).mockResolvedValueOnce([])
+    vi.mocked(fetchStreak).mockResolvedValueOnce({
+      currentStreak: 1,
+      longestStreak: 3,
+      todayCount: 5,
+      dailyActivity: [],
+    })
+    vi.mocked(fetchStreak).mockResolvedValueOnce({
+      currentStreak: 1,
+      longestStreak: 3,
+      todayCount: 5,
+      dailyActivity: [],
+    })
 
     const wrapper = mountView()
     const auth = (await import('../../src/stores/auth')).useAuthStore()
@@ -64,7 +77,6 @@ describe('HomeView', () => {
     }
 
     await wrapper.vm.$nextTick()
-    // onMounted triggers fetchStats
     await new Promise((r) => setTimeout(r, 0))
 
     const stats = wrapper.findAll('.stat-card')

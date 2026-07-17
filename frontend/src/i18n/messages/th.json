@@ -45,7 +45,9 @@
     "loading": "กำลังโหลด...",
     "error": "เกิดข้อผิดพลาด",
     "retry": "ลองใหม่",
-    "back": "ย้อนกลับ"
+    "back": "ย้อนกลับ",
+    "next": "Next",
+    "previous": "Previous"
   },
   "auth": {
     "login_title": "เข้าสู่ระบบ",
@@ -140,5 +142,27 @@
     "generic": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
     "generation_failed": "ไม่สามารถสร้างคำศัพท์ได้ กรุณาลองอีกครั้ง",
     "internal_error": "An internal error occurred"
+  },
+  "tts": {
+    "play_audio": "Play audio",
+    "audio_error": "Audio playback failed"
+  },
+  "drills": {
+    "listening": "Listening Drill",
+    "speaking": "Speaking Drill",
+    "typing": "Typing Drill",
+    "type_what_you_hear": "Type what you hear",
+    "speak_the_phrase": "Speak the phrase",
+    "check": "Check",
+    "hint": "Hint",
+    "similarity": "Similarity",
+    "transcript": "Transcript",
+    "record": "Record",
+    "stop": "Stop",
+    "recording": "Recording...",
+    "mic_error": "Microphone access denied",
+    "great_job": "Great job!",
+    "close": "Close, try again",
+    "keep_practicing": "Keep practicing"
   }
 }

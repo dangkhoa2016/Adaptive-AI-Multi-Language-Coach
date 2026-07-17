@@ -45,7 +45,9 @@
     "loading": "加载中...",
     "error": "发生错误",
     "retry": "重试",
-    "back": "返回"
+    "back": "返回",
+    "next": "Next",
+    "previous": "Previous"
   },
   "auth": {
     "login_title": "登录",
@@ -140,5 +142,27 @@
     "generic": "发生错误，请重试。",
     "generation_failed": "生成词汇失败，请重试。",
     "internal_error": "An internal error occurred"
+  },
+  "tts": {
+    "play_audio": "Play audio",
+    "audio_error": "Audio playback failed"
+  },
+  "drills": {
+    "listening": "Listening Drill",
+    "speaking": "Speaking Drill",
+    "typing": "Typing Drill",
+    "type_what_you_hear": "Type what you hear",
+    "speak_the_phrase": "Speak the phrase",
+    "check": "Check",
+    "hint": "Hint",
+    "similarity": "Similarity",
+    "transcript": "Transcript",
+    "record": "Record",
+    "stop": "Stop",
+    "recording": "Recording...",
+    "mic_error": "Microphone access denied",
+    "great_job": "Great job!",
+    "close": "Close, try again",
+    "keep_practicing": "Keep practicing"
   }
 }

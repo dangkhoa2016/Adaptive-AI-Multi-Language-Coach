@@ -45,7 +45,9 @@
     "loading": "로딩 중...",
     "error": "오류가 발생했습니다",
     "retry": "재시도",
-    "back": "뒤로"
+    "back": "뒤로",
+    "next": "Next",
+    "previous": "Previous"
   },
   "auth": {
     "login_title": "로그인",
@@ -140,5 +142,27 @@
     "generic": "오류가 발생했습니다. 다시 시도해주세요.",
     "generation_failed": "어휘 생성에 실패했습니다. 다시 시도해주세요.",
     "internal_error": "An internal error occurred"
+  },
+  "tts": {
+    "play_audio": "Play audio",
+    "audio_error": "Audio playback failed"
+  },
+  "drills": {
+    "listening": "Listening Drill",
+    "speaking": "Speaking Drill",
+    "typing": "Typing Drill",
+    "type_what_you_hear": "Type what you hear",
+    "speak_the_phrase": "Speak the phrase",
+    "check": "Check",
+    "hint": "Hint",
+    "similarity": "Similarity",
+    "transcript": "Transcript",
+    "record": "Record",
+    "stop": "Stop",
+    "recording": "Recording...",
+    "mic_error": "Microphone access denied",
+    "great_job": "Great job!",
+    "close": "Close, try again",
+    "keep_practicing": "Keep practicing"
   }
 }

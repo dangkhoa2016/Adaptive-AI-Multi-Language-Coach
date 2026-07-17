@@ -45,7 +45,9 @@
     "loading": "Chargement...",
     "error": "Une erreur est survenue",
     "retry": "Réessayer",
-    "back": "Retour"
+    "back": "Retour",
+    "next": "Next",
+    "previous": "Previous"
   },
   "auth": {
     "login_title": "Connexion",
@@ -140,5 +142,27 @@
     "generic": "Une erreur est survenue. Veuillez réessayer.",
     "generation_failed": "Échec de la génération du vocabulaire. Veuillez réessayer.",
     "internal_error": "An internal error occurred"
+  },
+  "tts": {
+    "play_audio": "Play audio",
+    "audio_error": "Audio playback failed"
+  },
+  "drills": {
+    "listening": "Listening Drill",
+    "speaking": "Speaking Drill",
+    "typing": "Typing Drill",
+    "type_what_you_hear": "Type what you hear",
+    "speak_the_phrase": "Speak the phrase",
+    "check": "Check",
+    "hint": "Hint",
+    "similarity": "Similarity",
+    "transcript": "Transcript",
+    "record": "Record",
+    "stop": "Stop",
+    "recording": "Recording...",
+    "mic_error": "Microphone access denied",
+    "great_job": "Great job!",
+    "close": "Close, try again",
+    "keep_practicing": "Keep practicing"
   }
 }

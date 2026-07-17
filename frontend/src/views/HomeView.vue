@@ -23,6 +23,7 @@ import EmptyState from '../components/EmptyState.vue'
 import OnboardingBanner from '../components/OnboardingBanner.vue'
 import StreakDisplay from '../components/StreakDisplay.vue'
 import ActivityChart from '../components/ActivityChart.vue'
+import GoalProgress from '../components/GoalProgress.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -169,6 +170,19 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
       </div>
     </div>
 
+    <!-- Goal Progress -->
+    <div
+      v-if="auth.user"
+      class="mb-10 mt-8 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900"
+    >
+      <h2 class="mb-4 text-lg font-semibold">{{ t('home.daily_goal') }}</h2>
+      <GoalProgress
+        :current="streakData?.todayCount ?? 0"
+        :target="prefs.dailyGoal"
+        :label="t('home.goal_type_reviews')"
+      />
+    </div>
+
     <!-- Streak + Chart -->
     <div v-if="auth.user" class="mb-10 mt-8 space-y-4">
       <StreakDisplay />
@@ -178,7 +192,7 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
     <!-- UI Language -->
     <div class="mt-8">
       <label for="ui-locale" class="block text-sm font-medium">{{ t('home.ui_language') }}</label>
-      <LanguageSwitcher v-model="prefs.uiLocale" class="mt-2" />
+      <LanguageSwitcher id="ui-locale" v-model="prefs.uiLocale" class="mt-2" />
     </div>
 
     <!-- Source / Target -->
@@ -187,13 +201,13 @@ const levels: Array<{ value: 'A1' | 'A2' | 'B1' | 'B2'; labelKey: string }> = [
         <label for="source" class="block text-sm font-medium">{{
           t('home.source_language')
         }}</label>
-        <LanguageSwitcher v-model="prefs.source" class="mt-2" />
+        <LanguageSwitcher id="source" v-model="prefs.source" class="mt-2" />
       </div>
       <div>
         <label for="target" class="block text-sm font-medium">{{
           t('home.target_language')
         }}</label>
-        <LanguageSwitcher v-model="prefs.target" class="mt-2" />
+        <LanguageSwitcher id="target" v-model="prefs.target" class="mt-2" />
       </div>
     </div>
 

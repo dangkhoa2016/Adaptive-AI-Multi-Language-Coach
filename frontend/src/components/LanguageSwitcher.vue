@@ -3,6 +3,7 @@ import { LOCALE_LABELS, type Locale } from '@vocab/shared'
 
 defineProps<{
   modelValue: Locale
+  id?: string
 }>()
 
 const emit = defineEmits<{
@@ -15,6 +16,7 @@ const locales = Object.keys(LOCALE_LABELS) as Locale[]
 <template>
   <div class="relative inline-block w-full sm:w-auto">
     <select
+      :id="id"
       :value="modelValue"
       class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 pr-8 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
       @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value as Locale)"

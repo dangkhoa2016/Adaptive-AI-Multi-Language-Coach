@@ -25,7 +25,10 @@
     "streak_longest": "Longest streak",
     "today_reviews": "Today's reviews",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "Daily review goal",
+    "goal_type_reviews": "reviews",
+    "goal_type_new_words": "new words"
   },
   "flashcard": {
     "title": "Flashcards",

@@ -25,7 +25,10 @@
     "streak_longest": "ติดต่อกันสูงสุด",
     "today_reviews": "รีวิววันนี้",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "เป้าหมายการทบทวนประจำวัน",
+    "goal_type_reviews": "การทบทวน",
+    "goal_type_new_words": "คำศัพท์ใหม่"
   },
   "flashcard": {
     "title": "บัตรคำ",

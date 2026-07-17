@@ -25,7 +25,10 @@
     "streak_longest": "Längste Strähne",
     "today_reviews": "Heutige Wiederholungen",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "Tägliches Wiederholungsziel",
+    "goal_type_reviews": "Wiederholungen",
+    "goal_type_new_words": "neue Wörter"
   },
   "flashcard": {
     "title": "Lernkarten",

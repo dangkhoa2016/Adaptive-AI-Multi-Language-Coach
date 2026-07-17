@@ -25,7 +25,10 @@
     "streak_longest": "최장 연속",
     "today_reviews": "오늘의 복습",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "일일 복습 목표",
+    "goal_type_reviews": "복습",
+    "goal_type_new_words": "새 단어"
   },
   "flashcard": {
     "title": "플래시카드",

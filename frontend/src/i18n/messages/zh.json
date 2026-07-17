@@ -25,7 +25,10 @@
     "streak_longest": "最长连续",
     "today_reviews": "今日复习",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "每日复习目标",
+    "goal_type_reviews": "复习",
+    "goal_type_new_words": "新词"
   },
   "flashcard": {
     "title": "抽认卡",

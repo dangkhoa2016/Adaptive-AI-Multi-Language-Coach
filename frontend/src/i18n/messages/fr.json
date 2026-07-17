@@ -25,7 +25,10 @@
     "streak_longest": "Plus longue série",
     "today_reviews": "Révisions aujourd'hui",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "Objectif de révision quotidien",
+    "goal_type_reviews": "révisions",
+    "goal_type_new_words": "nouveaux mots"
   },
   "flashcard": {
     "title": "Cartes mémoire",

@@ -25,7 +25,10 @@
     "streak_longest": "Chuỗi dài nhất",
     "today_reviews": "Ôn tập hôm nay",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "Mục tiêu ôn tập hằng ngày",
+    "goal_type_reviews": "ôn tập",
+    "goal_type_new_words": "từ mới"
   },
   "flashcard": {
     "title": "Thẻ ghi nhớ",

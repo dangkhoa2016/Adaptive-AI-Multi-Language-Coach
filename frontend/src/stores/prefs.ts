@@ -8,6 +8,8 @@ interface PrefsState {
   learningMode: 'word' | 'phrase' | 'mix'
   theme: 'light' | 'dark'
   reminderEnabled: boolean
+  dailyGoal: number
+  goalType: string
 }
 
 export const usePrefsStore = defineStore('prefs', {
@@ -18,6 +20,8 @@ export const usePrefsStore = defineStore('prefs', {
     learningMode: 'mix',
     theme: 'light',
     reminderEnabled: false,
+    dailyGoal: 10,
+    goalType: 'reviews',
   }),
   actions: {
     toggleTheme() {

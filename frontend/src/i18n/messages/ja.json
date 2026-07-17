@@ -25,7 +25,10 @@
     "streak_longest": "最長連続",
     "today_reviews": "今日の復習",
     "stats_error": "Could not load stats",
-    "stats_retry": "Retry"
+    "stats_retry": "Retry",
+    "daily_goal": "1日の復習目標",
+    "goal_type_reviews": "復習",
+    "goal_type_new_words": "新規単語"
   },
   "flashcard": {
     "title": "フラッシュカード",

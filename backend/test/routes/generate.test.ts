@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest'
 import { exports } from 'cloudflare:workers'
 import { fetchWithEnv, resetKV, createMockRateLimiter } from '../helpers'
-import type { Bindings } from '../src/env'
+import type { Bindings } from '../../src/env'
 
 /**
  * Helper to make a request with a custom env that bypasses rate limiting.

@@ -12,12 +12,7 @@ const router = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 router.get('/review/stats', requireAuth(), async (c) => {
   const userId = c.get('userId')!
 
-  const [
-    { count: dueCount },
-    { count: learningCount },
-    { count: masteredCount },
-    { count: totalCount },
-  ] = await Promise.all([
+  const [dueRow, learningRow, masteredRow, totalRow] = await Promise.all([
     c.env.DB.prepare(
       "SELECT COUNT(*) as count FROM learned_pairs WHERE user_id = ? AND (next_review IS NULL OR next_review <= date('now'))",
     )
@@ -39,10 +34,10 @@ router.get('/review/stats', requireAuth(), async (c) => {
   ])
 
   return c.json({
-    dueCount: dueCount ?? 0,
-    learningCount: learningCount ?? 0,
-    masteredCount: masteredCount ?? 0,
-    totalCount: totalCount ?? 0,
+    dueCount: dueRow?.count ?? 0,
+    learningCount: learningRow?.count ?? 0,
+    masteredCount: masteredRow?.count ?? 0,
+    totalCount: totalRow?.count ?? 0,
   })
 })
 
@@ -344,7 +339,7 @@ router.get('/vocab', requireAuth(), async (c) => {
   listSql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?'
   listParams.push(limit, offset)
 
-  const [{ count }, pairsResult] = await Promise.all([
+  const [countRow, pairsResult] = await Promise.all([
     c.env.DB.prepare(countSql)
       .bind(...countParams)
       .first<{ count: number }>(),
@@ -355,7 +350,7 @@ router.get('/vocab', requireAuth(), async (c) => {
 
   return c.json({
     pairs: pairsResult.results ?? [],
-    total: count ?? 0,
+    total: countRow?.count ?? 0,
     page,
     limit,
   })

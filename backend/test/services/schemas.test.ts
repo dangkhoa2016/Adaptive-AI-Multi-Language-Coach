@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { vocabPairSchema } from '../src/services/schemas'
+import { vocabPairSchema } from '../../src/services/schemas'
 
 describe('vocabPairSchema', () => {
   it('accepts boolean isPhrase', () => {

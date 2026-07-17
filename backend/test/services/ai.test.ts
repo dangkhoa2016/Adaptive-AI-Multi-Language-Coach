@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest'
-import { parseAIResponse, callAI } from '../src/services/ai'
+import { parseAIResponse, callAI } from '../../src/services/ai'
 import {
   savedAiContent,
   resetSavedAiContent,
@@ -7,7 +7,7 @@ import {
   systemSettingsStore,
   createMockEnv,
 } from '../helpers'
-import type { GenerateRequest, VocabPair } from '../src/services/schemas'
+import type { GenerateRequest, VocabPair } from '../../src/services/schemas'
 
 const VALID_PAIRS: VocabPair[] = [
   {

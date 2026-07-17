@@ -33,7 +33,10 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       'no-undef': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
@@ -57,7 +60,7 @@ export default [
     },
   },
   {
-    files: ['backend/scripts/**/*.mjs', 'backend/scripts/**/*.js'],
+    files: ['backend/scripts/**/*.mjs', 'backend/scripts/**/*.js', 'scripts/**/*.js'],
     languageOptions: {
       globals: {
         ...globals.node,

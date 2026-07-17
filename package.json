@@ -12,6 +12,7 @@
     "dev:backend": "pnpm --filter @vocab/backend dev",
     "dev:frontend": "pnpm --filter @vocab/frontend dev",
     "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

@@ -16,14 +16,14 @@ function resolveStateDirectory() {
 function resolveDatabasePath() {
   const explicitPath = process.env.DATABASE_PATH
   if (explicitPath) {
-    return path.isAbsolute(explicitPath)
-      ? explicitPath
-      : path.resolve(projectRoot, explicitPath)
+    return path.isAbsolute(explicitPath) ? explicitPath : path.resolve(projectRoot, explicitPath)
   }
 
   const stateDir = resolveStateDirectory()
   if (!fs.existsSync(stateDir)) {
-    throw new Error(`D1 state directory not found at:\n  ${stateDir}\n\nRun migrations first:\n  pnpm --filter @vocab/backend db:migrate:local`)
+    throw new Error(
+      `D1 state directory not found at:\n  ${stateDir}\n\nRun migrations first:\n  pnpm --filter @vocab/backend db:migrate:local`,
+    )
   }
 
   const sqliteFiles = fs
@@ -63,7 +63,10 @@ function runSqlite(dbPath, sql, options = {}) {
 function runSqliteList(dbPath, sql) {
   const out = runSqlite(dbPath, sql, { mode: 'list', headers: false })
   if (!out) return []
-  return out.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+  return out
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
 }
 
 function printSection(title, sqlResult) {
@@ -101,15 +104,20 @@ function inspectTable(dbPath, tableName) {
         const refTable = parts[2]
         const refCol = parts[4]
         if (col && col !== '(null)') {
-          const violations = runSqlite(dbPath, `
+          const violations = runSqlite(
+            dbPath,
+            `
             SELECT COUNT(*) AS orphans
             FROM ${tableName} t
             WHERE t.${col} IS NOT NULL
               AND t.${col} NOT IN (SELECT ${refCol} FROM ${refTable});
-          `)
+          `,
+          )
           const orphanCount = violations.replace(/\D/g, '')
           if (parseInt(orphanCount, 10) > 0) {
-            console.log(`  ⚠  ${orphanCount} orphaned row(s) in ${tableName}.${col} (missing in ${refTable}.${refCol})`)
+            console.log(
+              `  ⚠  ${orphanCount} orphaned row(s) in ${tableName}.${col} (missing in ${refTable}.${refCol})`,
+            )
           }
         }
       }
@@ -117,11 +125,14 @@ function inspectTable(dbPath, tableName) {
   }
 
   // Indexes on this table
-  const tableIndexes = runSqlite(dbPath, `
+  const tableIndexes = runSqlite(
+    dbPath,
+    `
     SELECT name FROM sqlite_master
     WHERE type = 'index' AND tbl_name = '${tableName}' AND name IS NOT NULL
     ORDER BY name;
-  `)
+  `,
+  )
   if (tableIndexes && !tableIndexes.includes('(empty)')) {
     printSection('Indexes', tableIndexes)
   }
@@ -135,7 +146,10 @@ function inspectTable(dbPath, tableName) {
     const notNull = parts[3] === '1'
 
     if (notNull && !isPK) {
-      const nullCount = runSqlite(dbPath, `SELECT COUNT(*) AS null_count FROM ${tableName} WHERE ${colName} IS NULL;`)
+      const nullCount = runSqlite(
+        dbPath,
+        `SELECT COUNT(*) AS null_count FROM ${tableName} WHERE ${colName} IS NULL;`,
+      )
       const n = nullCount.replace(/\D/g, '')
       if (parseInt(n, 10) > 0) {
         console.log(`  ⚠  ${n} NULL(s) in NOT NULL column ${tableName}.${colName}`)
@@ -144,7 +158,10 @@ function inspectTable(dbPath, tableName) {
   }
 
   // Sample data
-  printSection(`Sample data (first ${SAMPLE_LIMIT} rows)`, runSqlite(dbPath, `SELECT * FROM ${tableName} LIMIT ${SAMPLE_LIMIT};`))
+  printSection(
+    `Sample data (first ${SAMPLE_LIMIT} rows)`,
+    runSqlite(dbPath, `SELECT * FROM ${tableName} LIMIT ${SAMPLE_LIMIT};`),
+  )
 
   console.log('└' + '─'.repeat(58))
 }
@@ -166,7 +183,10 @@ function inspectDatabase(dbPath) {
   }
 
   // All tables
-  const tables = runSqliteList(dbPath, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
+  const tables = runSqliteList(
+    dbPath,
+    "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;",
+  )
   console.log(`  Tables        : ${tables.length}`)
   console.log('')
 
@@ -200,7 +220,10 @@ function inspectDatabase(dbPath) {
 
   // All indexes
   console.log('\n')
-  const allIndexes = runSqlite(dbPath, "SELECT name, tbl_name FROM sqlite_master WHERE type='index' AND name IS NOT NULL ORDER BY tbl_name, name;")
+  const allIndexes = runSqlite(
+    dbPath,
+    "SELECT name, tbl_name FROM sqlite_master WHERE type='index' AND name IS NOT NULL ORDER BY tbl_name, name;",
+  )
   if (allIndexes) {
     printSection('All indexes', allIndexes)
   }

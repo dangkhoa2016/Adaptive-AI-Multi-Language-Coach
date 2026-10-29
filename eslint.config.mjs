@@ -60,7 +60,12 @@ export default [
     },
   },
   {
-    files: ['backend/scripts/**/*.mjs', 'backend/scripts/**/*.js', 'scripts/**/*.js'],
+    files: [
+      'backend/scripts/**/*.mjs',
+      'backend/scripts/**/*.js',
+      'backend/manual/**/*.js',
+      'scripts/**/*.js',
+    ],
     languageOptions: {
       globals: {
         ...globals.node,

@@ -6,3 +6,6 @@ coverage
 pnpm-lock.yaml
 frontend/dist
 idea-and-plan
+
+frontend/test-results/
+frontend/playwright-report/

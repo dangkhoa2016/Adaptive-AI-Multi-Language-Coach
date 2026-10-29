@@ -21,3 +21,6 @@ assets
 frontend/dist
 temp
 backend/wrangler.toml
+
+frontend/test-results/
+frontend/playwright-report/

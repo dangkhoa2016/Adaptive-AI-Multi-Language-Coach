@@ -12,6 +12,8 @@ Auth JSON is serialized once, rate limits apply to intended POST routes, and fal
 
 **M0 is not accepted yet**: residual development dependency advisories need owner decisions, and exposed credential rotation is not verified. M1–M4 remain NOT_RUN. Current results, coverage, failures from earlier attempts, dependency decisions and commands recorded on the actual final commit are delivered in the external M0 closure evidence bundle. Previous coverage percentages belong to the first report; they are not reused as current results.
 
+The remaining audit records are high-severity Zod 3 in the development test pool and low-severity esbuild in development tooling; neither is owner-accepted. Frontend Vitest moved from 3 to 4 for security fixes, so its current coverage mapping must not be compared directly with the earlier report.
+
 Deployment remains disabled. No push, remote database read/write, live mail, paid inference, or production data access is authorized in this run. Keep original ZIPs/private backups private and rotate the exposed GitHub credential.
 
 ## Local setup

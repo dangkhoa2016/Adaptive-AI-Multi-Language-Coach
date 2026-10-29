@@ -12,6 +12,8 @@ JSON auth chỉ serialize một lần; limiter chỉ áp dụng đúng các rout
 
 **M0 chưa được nghiệm thu**: còn advisory công cụ phát triển cần chủ dự án quyết định và chưa xác minh việc rotate credential đã lộ. M1–M4 vẫn NOT_RUN. Kết quả mới, coverage, các lần thử thất bại, quyết định dependency và lệnh chạy trên commit cuối thực tế nằm trong gói evidence đóng M0 bên ngoài repo. Các phần trăm coverage cũ thuộc báo cáo vòng đầu, không dùng lại làm kết quả hiện tại.
 
+Hai mục audit còn lại là Zod 3 mức high trong test pool phát triển và esbuild mức low trong công cụ phát triển; chưa mục nào được chủ dự án chấp nhận. Frontend Vitest chuyển từ 3 lên 4 để nhận bản vá bảo mật, nên cách ánh xạ coverage mới không thể so sánh trực tiếp với báo cáo cũ.
+
 Deploy tiếp tục bị vô hiệu. Vòng này không cho phép push, đọc/ghi DB remote, mail thật, inference tính phí hoặc truy cập dữ liệu production. Giữ kín ZIP gốc/backup riêng tư và rotate GitHub credential đã lộ.
 
 ## Thiết lập local

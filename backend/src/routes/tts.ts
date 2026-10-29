@@ -7,9 +7,7 @@ import { createRateLimitMiddleware } from '../middleware/rateLimit'
 
 export const ttsRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-ttsRouter.use('*', createRateLimitMiddleware())
-
-ttsRouter.post('/tts', async (c) => {
+ttsRouter.post('/tts', createRateLimitMiddleware(), async (c) => {
   try {
     const body = await c.req.json()
     const { text, locale } = body as { text?: string; locale?: string }

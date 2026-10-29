@@ -7,9 +7,7 @@ import { createRateLimitMiddleware } from '../middleware/rateLimit'
 
 export const sttRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-sttRouter.use('*', createRateLimitMiddleware())
-
-sttRouter.post('/stt', async (c) => {
+sttRouter.post('/stt', createRateLimitMiddleware(), async (c) => {
   try {
     const contentType = c.req.header('Content-Type') ?? ''
     const reference = c.req.query('reference') ?? ''

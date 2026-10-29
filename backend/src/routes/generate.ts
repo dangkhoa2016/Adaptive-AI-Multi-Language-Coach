@@ -9,9 +9,7 @@ import type { Bindings, Variables } from '../env'
 
 export const generateRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-generateRouter.use('*', createRateLimitMiddleware())
-
-generateRouter.post('/generate', async (c) => {
+generateRouter.post('/generate', createRateLimitMiddleware(), async (c) => {
   let body: unknown
   try {
     body = await c.req.json()
@@ -54,6 +52,10 @@ generateRouter.post('/generate', async (c) => {
     isFallback = true
     pairs = await getFallbackPairsFromDB(c.env.DB, req)
     pairs = pairs.slice(0, req.count)
+  }
+
+  if (pairs.length === 0) {
+    return c.json({ error: 'fallback_unavailable', message: t(c, 'errors.internal_error') }, 503)
   }
 
   // Write to cache

@@ -1,7 +1,8 @@
 import type { VocabPair } from './schemas'
 import type { Bindings } from '../env'
 
-const CACHE_PREFIX = 'cache:'
+// Invalidate legacy entries that may contain unlabelled, wrong-language fallback.
+const CACHE_PREFIX = 'cache:v2:'
 const CACHE_TTL = 86400 // 24 hours in seconds
 
 /**

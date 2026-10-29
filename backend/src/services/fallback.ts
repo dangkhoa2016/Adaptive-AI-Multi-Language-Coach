@@ -2,7 +2,7 @@ import type { VocabPair } from './schemas'
 
 /**
  * Fetch fallback vocabulary pairs from D1 database.
- * Returns specific pairs if found, otherwise generic pairs.
+ * Returns only pairs explicitly labelled for the requested languages.
  */
 function mapRowToVocabPair(row: Record<string, unknown>): VocabPair {
   return {
@@ -33,15 +33,7 @@ export async function getFallbackPairsFromDB(
 
   if (specific && specific.length > 0) return specific.map(mapRowToVocabPair)
 
-  // Fall back to generic pairs
-  const { results: generic } = await db
-    .prepare(
-      `SELECT source, target, example_source as "exampleSource", example_target as "exampleTarget",
-              ipa, pos, CAST(is_phrase AS BOOLEAN) as "isPhrase"
-       FROM fallback_pairs
-       WHERE source_lang = '*' AND target_lang = '*' AND topic = '*' AND level = '*'`,
-    )
-    .all<Record<string, unknown>>()
-
-  return generic ? generic.map(mapRowToVocabPair) : []
+  // Wildcard language metadata does not establish the requested language pair.
+  // Never present unlabelled content as a translation in another language.
+  return []
 }

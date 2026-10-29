@@ -136,13 +136,13 @@ export interface User {
 export const requestMagicLink = (email: string) =>
   request<{ success: boolean }>('/auth/request', {
     method: 'POST',
-    body: JSON.stringify({ email }),
+    body: { email },
   })
 
 export const verifyMagicLink = (token: string) =>
   request<{ success: boolean; user: User }>('/auth/verify', {
     method: 'POST',
-    body: JSON.stringify({ token }),
+    body: { token },
   })
 
 export const fetchCurrentUser = () => request<{ user: User }>('/auth/me')

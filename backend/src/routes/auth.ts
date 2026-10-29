@@ -9,16 +9,14 @@ import { sendEmail } from '../services/mail'
 
 const router = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-// Apply rate limiting to all auth routes (3 req / 15 min by default per wrangler config)
-router.use('*', createRateLimitMiddleware('RATE_LIMITER_AUTH'))
-
+// Limit only auth mutations: child-router wildcard middleware also matches sibling /api routes.
 function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-router.post('/auth/request', async (c) => {
-  const { email } = await c.req.json<{ email: string }>()
-  if (!email || !validateEmail(email)) {
+router.post('/auth/request', createRateLimitMiddleware('RATE_LIMITER_AUTH'), async (c) => {
+  const { email } = (await c.req.json<{ email?: unknown }>().catch(() => null)) ?? {}
+  if (typeof email !== 'string' || !validateEmail(email)) {
     return c.json({ error: 'invalid_email', message: t(c, 'errors.invalid_email') }, 400)
   }
 
@@ -53,9 +51,9 @@ router.post('/auth/request', async (c) => {
   return c.json({ success: true, message: t(c, 'auth.link_sent') })
 })
 
-router.post('/auth/verify', async (c) => {
-  const { token } = await c.req.json<{ token: string }>()
-  if (!token) {
+router.post('/auth/verify', createRateLimitMiddleware('RATE_LIMITER_AUTH'), async (c) => {
+  const { token } = (await c.req.json<{ token?: unknown }>().catch(() => null)) ?? {}
+  if (typeof token !== 'string' || token.length === 0) {
     return c.json({ error: 'invalid_token', message: t(c, 'errors.invalid_token') }, 400)
   }
 
@@ -119,7 +117,7 @@ router.post('/auth/verify', async (c) => {
   return c.json({ success: true, user: { id: userId, email } })
 })
 
-router.post('/auth/logout', (_c) => {
+router.post('/auth/logout', createRateLimitMiddleware('RATE_LIMITER_AUTH'), (_c) => {
   deleteCookie(_c, 'auth_token', { path: '/' })
   return _c.json({ success: true })
 })

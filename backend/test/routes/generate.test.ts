@@ -72,7 +72,7 @@ describe('generate endpoint', () => {
     expect(res.status).toBe(400)
   })
 
-  it('works for ja→en language pair', async () => {
+  it('reports unavailable ja→en fallback instead of serving English/Vietnamese', async () => {
     const res = await fetchWithEnv('http://localhost/api/generate', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'accept-language': 'ja' },
@@ -85,12 +85,11 @@ describe('generate endpoint', () => {
         mode: 'word',
       }),
     })
-    expect(res.status).toBe(200)
-    const body = (await res.json()) as { pairs: unknown[] }
-    expect(body.pairs.length).toBeGreaterThan(0)
+    expect(res.status).toBe(503)
+    expect(await res.json()).toMatchObject({ error: 'fallback_unavailable' })
   })
 
-  it('works for zh→fr language pair', async () => {
+  it('reports unavailable zh→fr fallback instead of serving English/Vietnamese', async () => {
     const res = await fetchWithEnv('http://localhost/api/generate', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'accept-language': 'zh' },
@@ -103,9 +102,8 @@ describe('generate endpoint', () => {
         mode: 'phrase',
       }),
     })
-    expect(res.status).toBe(200)
-    const body = (await res.json()) as { pairs: unknown[] }
-    expect(body.pairs.length).toBeGreaterThan(0)
+    expect(res.status).toBe(503)
+    expect(await res.json()).toMatchObject({ error: 'fallback_unavailable' })
   })
 
   it('returns Korean error message when accept-language=ko', async () => {
@@ -158,12 +156,12 @@ describe('i18n error messages on generate', () => {
 describe('cache behavior', () => {
   it('returns cacheHit on second request for same params', async () => {
     // Use unique params to avoid cache collision with other tests
-    const uniqueTopic = 'health' as string
+    const uniqueTopic = 'food' as string
     const payload = JSON.stringify({
       source: 'en',
-      target: 'th',
+      target: 'vi',
       topic: uniqueTopic,
-      level: 'B2',
+      level: 'A1',
       count: 2,
       mode: 'phrase',
     })

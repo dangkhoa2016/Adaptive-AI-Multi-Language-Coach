@@ -7,9 +7,7 @@ import type { Bindings, Variables } from '../env'
 
 export const quizRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-quizRouter.use('*', createRateLimitMiddleware())
-
-quizRouter.post('/quiz', async (c) => {
+quizRouter.post('/quiz', createRateLimitMiddleware(), async (c) => {
   let body: unknown
   try {
     body = await c.req.json()

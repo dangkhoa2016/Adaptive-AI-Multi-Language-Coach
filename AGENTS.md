@@ -32,9 +32,9 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 
 ## Before Running Locally
 
-1. Copy `backend/.dev.vars.example` to `backend/.dev.vars`
-2. Apply D1 migrations: `pnpm --filter @vocab/backend db:migrate:local`
-3. Replace placeholder KV/D1 IDs in `backend/wrangler.toml` before deploying
+1. Use Node 22.22.3 and pnpm 11.1.3; run `pnpm --filter @vocab/backend setup:local`
+2. Build frontend assets, then apply D1 migrations: `pnpm --filter @vocab/backend db:migrate:local`
+3. Generated config is local-only. See `docs/DEV-SETUP.md` and `docs/DEV-SETUP.vi.md`; deployment is disabled pending hardening review.
 
 ## Code Style
 
@@ -48,7 +48,7 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 ## Testing
 
 - Backend uses Vitest with `@cloudflare/vitest-pool-workers` (uses `wrangler.test.toml`)
-- Frontend has no tests yet (placeholder script)
+- Frontend uses Vitest/jsdom; Playwright is separate: `pnpm --filter @vocab/frontend test:e2e` (requires Chromium and a disposable local backend).
 - Run all tests: `pnpm test`
 
 ## Architecture Gotchas
@@ -63,9 +63,13 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 ## CI/CD
 
 - **ci.yml**: Runs on PRs and push to `main` — install (frozen lockfile) → typecheck → lint → format:check → test → build
-- **deploy.yml**: Push to `main` → production deploy; PR → preview deploy with `--env preview`
+- **deploy.yml**: Manual trigger only, reusable CI dependency, deploy job disabled during M0/M1. No deployment without owner approval.
 
 ## Branch / PR Conventions
 
 - Branch naming: `tembo/` prefix for feature branches (e.g., `tembo/start-plan-step1-idea-docs`)
 - PR titles follow Conventional Commits: `type(scope): description`
+
+## Recovery scope
+
+The 2026-10-29 hardening guide requires a recovery branch, private backup, local synthetic data only, no push/deploy/remote DB changes, and a stop before M1 if M0 does not pass. Preserve all historical migration files; main and recovery have different 0003/0004 identities.

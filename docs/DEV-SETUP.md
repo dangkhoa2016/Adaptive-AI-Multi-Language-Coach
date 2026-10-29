@@ -1,184 +1,55 @@
-# Hướng dẫn Dev — Chạy Local
+# Local development
 
-## 1. Yêu cầu
-
-- **Node.js >= 20.11** (xem `.nvmrc`)
-- **pnpm** (bản trong `package.json`)
-- **Wrangler CLI** (đã bundle trong `devDependencies` của backend)
+Use Node **22.22.3** (`.nvmrc`, supported range `>=22.18.0 <23`) and **pnpm 11.1.3**. Locked tooling requires Node 22.18 or later. Do not reuse production credentials or database snapshots.
 
 ```bash
-node --version   # >= 20.11
-pnpm --version   # 11.x
-```
-
-## 2. Cài đặt dependencies
-
-```bash
-git clone <repo-url>
-cd adaptive-ai-multi-language-coach
-pnpm install
-```
-
-## 3. Cấu hình wrangler.toml
-
-Đã có sẵn `backend/wrangler.toml` cấu hình cho local dev. Kiểm tra lại:
-
-```toml
-name = "ai-vocab-app-dev"
-main = "src/index.ts"
-compatibility_date = "2026-05-20"
-compatibility_flags = ["nodejs_compat"]
-
-[assets]
-directory = "../assets"
-binding = "ASSETS"
-
-[dev]
-port = 8787
-
-[[kv_namespaces]]
-binding = "CACHE"
-id = "dev-cache"
-preview_id = "dev-cache-preview"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "ai_vocab_db"
-database_id = "dev-db"
-migrations_dir = "migrations"
-
-[[ratelimits]]
-name = "RATE_LIMITER_API"
-namespace_id = "1001"
-simple = { limit = 100, period = 60 }
-
-[[ratelimits]]
-name = "RATE_LIMITER_AUTH"
-namespace_id = "1002"
-simple = { limit = 10, period = 60 }
-```
-
-> **Lưu ý**: `database_name = "ai_vocab_db"` phải khớp với tên DB trong script `db:migrate:local` ở `backend/package.json`.
-
-## 4. Tạo file .dev.vars
-
-Đã có sẵn `backend/.dev.vars`:
-
-```
-ENCRYPTION_KEY = "development-encryption-key-not-for-production"
-JWT_SECRET = "development-jwt-secret-not-for-production"
-```
-
-## 5. Migrate D1 database
-
-```bash
+nvm use
+corepack enable
+pnpm install --frozen-lockfile
+pnpm --filter @vocab/backend setup:local
+pnpm --filter @vocab/frontend build
 pnpm --filter @vocab/backend db:migrate:local
-```
-
-Lệnh này chạy toàn bộ migration trong `backend/migrations/` (0012_audit_log.sql). Output thành công sẽ hiển thị tất cả migrations với ✅.
-
-## 6. Seed dữ liệu
-
-### Seed topics & fallback pairs
-
-```bash
 pnpm --filter @vocab/backend db:seed:local
 ```
 
-### Seed admin user
+`setup:local` creates ignored `backend/wrangler.toml` and `backend/.dev.vars` only if absent. Existing files are preserved; inspect them privately before use. The generated configuration uses local placeholder IDs, D1, KV, assets, and rate limiters. Never deploy it. It deliberately omits Workers AI because that binding can invoke remote, billable inference. The deployment template declares AI; account bindings and approval are required for live checks. Local AI/audio functionality is not verified by health checks.
 
-```bash
-pnpm --filter @vocab/backend exec wrangler d1 execute ai_vocab_db --local \
-  --file=seed/0002_test_users.sql
-```
-
-Kết quả: thêm 2 user:
-| Email | Role |
-|-------------------|---------|
-| admin@test.com | admin |
-| user@test.com | user |
-
-### Seed app settings (tuỳ chọn)
-
-Xem `backend/scripts/README-settings.md`.
-
-## 7. Chạy dev
-
-### Backend (cổng 8787)
+Run two terminals:
 
 ```bash
 pnpm dev:backend
 ```
 
-### Frontend (cổng 5173)
-
-Mở terminal khác:
-
 ```bash
 pnpm dev:frontend
 ```
 
-> Frontend dev server tự động proxy `/api` về `http://127.0.0.1:8787`.
+Visit `http://localhost:5173`. Vite proxies `/api` to `127.0.0.1:8787`. Check `http://127.0.0.1:8787/health` and `/api/locales` (eight locales). Built assets go to root `assets/`.
 
-Mở trình duyệt: `http://localhost:5173`
+For disposable validation, always pass a new `--persist-to` directory to Wrangler migration, seed, and dev commands, using the same absolute path for all three. This avoids reusing an existing local database. Never use `--remote` in the M0/M1 review run.
 
-## 8. Đăng nhập Admin (Magic Link)
-
-Hệ thống dùng **magic link**, không có mật khẩu.
-
-### Cách 1 — Qua console log
-
-Đảm bảo backend đang chạy (`pnpm dev:backend`), sau đó từ terminal khác:
+## Verification
 
 ```bash
-curl -X POST http://localhost:8787/api/auth/request \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@test.com"}'
-```
-
-Kiểm tra terminal chạy backend — sẽ thấy dòng log chứa token, ví dụ:
-
-```
-[LOG] Magic link for admin@test.com: http://localhost:5173/auth/verify?token=xxxx-xxxx-xxxx
-```
-
-Copy URL đó và mở trong trình duyệt.
-
-### Cách 2 — Tạo token thủ công trong D1
-
-Chạy lệnh sau để tạo token 15 phút trực tiếp trong database:
-
-```bash
-pnpm --filter @vocab/backend exec wrangler d1 execute ai_vocab_db --local \
-  --command="INSERT INTO magic_tokens (id, email, token_hash, expires_at) VALUES ('dev-' || lower(hex(randomblob(16))), 'admin@test.com', lower(hex(randomblob(32))), datetime('now', '+15 minutes'));
-
-SELECT 'MAGIC_TOKEN=' || id FROM magic_tokens WHERE email = 'admin@test.com' ORDER BY created_at DESC LIMIT 1;"
-```
-
-Output sẽ có dạng: `MAGIC_TOKEN=dev-<hex>`
-
-Mở trình duyệt: `http://localhost:5173/auth/verify?token=dev-<hex>`
-
-Sau khi verify thành công, bạn sẽ được redirect về trang chủ với quyền admin.
-
-## 9. Kiểm tra
-
-```bash
-# Typecheck
 pnpm typecheck
-
-# Lint
 pnpm lint
-
-# Test
+pnpm format:check
 pnpm test
+pnpm -r build
+pnpm --filter @vocab/backend test:coverage
+pnpm --filter @vocab/frontend test:coverage
+pnpm --filter @vocab/frontend exec playwright install --with-deps chromium
+pnpm --filter @vocab/frontend test:e2e
 ```
 
-## Xử lý lỗi thường gặp
+Playwright starts Vite; start the local backend with a disposable seeded DB separately. `pnpm test` runs Vitest, not Playwright. Coverage includes `coverage-summary.json` in each workspace's ignored coverage directory. Auth/mail/AI unit tests use mocks; Workers tests also exercise local D1/KV. Passing those tests does not establish live mail, AI quality, or complete browser flows.
 
-| Vấn đề                                              | Nguyên nhân                                      | Giải pháp                                                                                |
-| --------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `Couldn't find a D1 DB with the name 'ai_vocab_db'` | `database_name` trong `wrangler.toml` không khớp | Kiểm tra `wrangler.toml`, tên DB phải là `ai_vocab_db`                                   |
-| `Unexpected fields found in dev field: "local"`     | `dev.local = true` không được hỗ trợ             | Xoá dòng `local = true` khỏi `[dev]`                                                     |
-| `process is not defined` / `console is not defined` | File `.js` ngoài phạm vi ESLint                  | Dùng `--no-verify` khi commit, hoặc thêm file vào `files` glob trong `eslint.config.mjs` |
-| Port 8787 đã được dùng                              | Có tiến trình khác đang chiếm port               | `lsof -ti :8787 \| xargs kill` hoặc `npx kill-port 8787`                                 |
+## Authentication and security status
+
+M1 is gated on M0 acceptance. The baseline auth client double-serializes JSON; magic-link generation trusts request Origin and has an unsafe token log failure path. Admin secret APIs and review atomicity also need M1 work. Do not test with real email accounts, provider credentials, or production secrets. Do not use token console output or manual token SQL inserts as a login workflow. The old insert recipe used a nonexistent `magic_tokens.id` column and could not satisfy token hashing. A safe mail capture adapter and browser login fixture belong to M1 and are not implemented here.
+
+## Database and release limits
+
+Fresh migrations and a synthetic local legacy upgrade were exercised. Local main's historical migration names `0003_ai_generated_content.sql` / `0004_sm2_review.sql` differ from recovery's `0003_migrate_env_to_db.sql` / `0004_seed_app_settings.sql`. Preserve historical identities. Legacy also retains `mastered_at`, absent from fresh schema. Migration 0009 deletes four old settings keys. Unknown remote history requires private inventory, backup, and a matching rehearsal before any approved upgrade.
+
+Deployment workflow is manual-only and its deploy job is disabled. It depends on reusable quality CI; enabling deployment requires owner review, real environment configuration, and explicit release authorization. No remote migrations, deployment, or paid AI checks were performed.

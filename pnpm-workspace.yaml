@@ -30,3 +30,10 @@ minimumReleaseAgeExclude:
 overrides:
   undici@7: 7.30.1
   sharp@0.34.5: 0.35.5
+
+# Scope the new test plugin's internal Wrangler peer to Types 5.
+# Application compilation and the pinned local CLI continue to use Types 4.
+packageExtensions:
+  '@cloudflare/vitest-plugin@1.4.8':
+    dependencies:
+      '@cloudflare/workers-types': 5.20261023.1

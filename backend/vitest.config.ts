@@ -1,9 +1,9 @@
-import { cloudflareTest } from '@cloudflare/vitest-pool-workers'
+import { cloudflareTest } from '@cloudflare/vitest-plugin'
 import { defineConfig } from 'vitest/config'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-interface SqlFile {
+type SqlFile = {
   name: string
   sql: string
 }

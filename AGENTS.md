@@ -47,7 +47,7 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 
 ## Testing
 
-- Backend uses Vitest with `@cloudflare/vitest-pool-workers` (uses `wrangler.test.toml`)
+- Backend uses Vitest with pinned `@cloudflare/vitest-plugin@1.4.8` (uses `wrangler.test.toml`)
 - Frontend uses Vitest/jsdom; Playwright is separate: `pnpm --filter @vocab/frontend test:e2e` (starts its own disposable Miniflare backend; requires Chromium and free ports 5173/8787/8788).
 - Run all tests: `pnpm test`
 
@@ -75,3 +75,5 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 The 2026-10-29 hardening guide requires a recovery branch, private backup, local synthetic data only, no push/deploy/remote DB changes, and a stop before M1 if M0 does not pass. Preserve all historical migration files; main and recovery have different 0003/0004 identities.
 
 The M0 review follow-up explicitly allows narrow auth JSON, route-limiter scope and language-safe fallback fixes to close browser blockers. This does not authorize overall M1 acceptance. Run final gates after commits and record actual SHA/dirty state; preserve failed attempts and export a secret-scanned complete patch.
+
+Dependency remediation keeps application Types4/local Wrangler4.105 and E2E Miniflare4; the Cloudflare test plugin owns its newer internal tooling and scoped Types5 dependency. Do not remove the scoped peer dependency without rerunning peer/type/unit/E2E/D1/audit gates. M0 technical PASS still requires separate owner acceptance.

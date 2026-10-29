@@ -46,7 +46,7 @@ Playwright tự khởi động Vite và driver Miniflare với D1/KV mới trong
 
 ## Trạng thái xác thực và bảo mật
 
-Đã sửa serialize JSON hai lần và phạm vi limiter trong ngoại lệ hẹp để đóng M0. Fallback không có nhãn đúng ngôn ngữ bị từ chối. M0 vẫn cần nghiệm thu audit và credential. Chỉ bắt đầu M1 tổng thể khi được phép; magic-link dùng Origin từ request và có nhánh log token không an toàn. API secrets admin và tính nguyên tử khi chấm ôn tập cũng cần sửa ở M1. Không thử bằng email thật, credential nhà cung cấp hay secret production. Không dùng token từ console hoặc SQL chèn token thủ công để đăng nhập. Hướng dẫn SQL cũ dùng cột `magic_tokens.id` không tồn tại và không đáp ứng token hashing. Driver E2E chỉ bắt mail tổng hợp để kiểm tra request gửi link; toàn bộ fixture đăng nhập/lưu từ/ôn tập an toàn vẫn thuộc M1, chưa nghiệm thu.
+Đã sửa serialize JSON hai lần và phạm vi limiter trong ngoại lệ hẹp để đóng M0. Fallback không có nhãn đúng ngôn ngữ bị từ chối. Dependency test đã chuyển sang plugin Cloudflare được hỗ trợ để xử lý audit; nghiệm thu M0 vẫn chờ chủ dự án, bước xác minh credential được bỏ qua theo yêu cầu. Chỉ bắt đầu M1 tổng thể khi được phép; magic-link dùng Origin từ request và có nhánh log token không an toàn. API secrets admin và tính nguyên tử khi chấm ôn tập cũng cần sửa ở M1. Không thử bằng email thật, credential nhà cung cấp hay secret production. Không dùng token từ console hoặc SQL chèn token thủ công để đăng nhập. Hướng dẫn SQL cũ dùng cột `magic_tokens.id` không tồn tại và không đáp ứng token hashing. Driver E2E chỉ bắt mail tổng hợp để kiểm tra request gửi link; toàn bộ fixture đăng nhập/lưu từ/ôn tập an toàn vẫn thuộc M1, chưa nghiệm thu.
 
 ## Giới hạn database và phát hành
 

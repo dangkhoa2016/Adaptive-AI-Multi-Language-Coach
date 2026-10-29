@@ -10,9 +10,9 @@ Vòng đóng M0 tiếp tục trên nhánh `recovery/adaptive-coach-production-ha
 
 JSON auth chỉ serialize một lần; limiter chỉ áp dụng đúng các route POST; fallback chỉ trả cặp có nhãn ngôn ngữ rõ ràng. Đã đổi namespace cache để loại dữ liệu fallback cũ có thể sai ngôn ngữ. Browser test yêu cầu magic-link và luồng học hiện PASS qua HTTP Worker/D1/KV thật, có kiểm tra vượt quota, mail tổng hợp được bắt local và fixture en→vi. Điều này chưa chứng minh toàn bộ hành trình đăng nhập/lưu từ/ôn tập an toàn hoặc mail/AI thật.
 
-**M0 chưa được nghiệm thu**: còn advisory công cụ phát triển cần chủ dự án quyết định và chưa xác minh việc rotate credential đã lộ. M1–M4 vẫn NOT_RUN. Kết quả mới, coverage, các lần thử thất bại, quyết định dependency và lệnh chạy trên commit cuối thực tế nằm trong gói evidence đóng M0 bên ngoài repo. Các phần trăm coverage cũ thuộc báo cáo vòng đầu, không dùng lại làm kết quả hiện tại.
+**Việc nghiệm thu M0 vẫn do chủ dự án quyết định.** Vòng chỉ xử lý dependency này thay test pool Cloudflare cũ bằng `@cloudflare/vitest-plugin@1.4.8` được nhà cung cấp hỗ trợ và cập nhật esbuild trực tiếp lên `0.28.2`; full audit trong kiểm tra chuyển đổi đã sạch. Xác minh credential tiếp tục được bỏ qua theo yêu cầu, không coi là đã hoàn tất. M1–M4 vẫn NOT_RUN. Kết quả mới, coverage, các lần thử thất bại, quyết định dependency và lệnh chạy trên commit cuối thực tế nằm trong gói evidence đóng M0 bên ngoài repo. Các phần trăm coverage cũ thuộc báo cáo vòng đầu, không dùng lại làm kết quả hiện tại.
 
-Hai mục audit còn lại là Zod 3 mức high trong test pool phát triển và esbuild mức low trong công cụ phát triển; chưa mục nào được chủ dự án chấp nhận. Frontend Vitest chuyển từ 3 lên 4 để nhận bản vá bảo mật, nên cách ánh xạ coverage mới không thể so sánh trực tiếp với báo cáo cũ.
+Hai đường dependency Zod 3 và esbuild từng bị cảnh báo đã được xử lý bằng cập nhật dependency, không dùng loại trừ audit hoặc ép override Zod khác major. Frontend Vitest chuyển từ 3 lên 4 để nhận bản vá bảo mật, nên cách ánh xạ coverage mới không thể so sánh trực tiếp với báo cáo cũ.
 
 Deploy tiếp tục bị vô hiệu. Vòng này không cho phép push, đọc/ghi DB remote, mail thật, inference tính phí hoặc truy cập dữ liệu production. Giữ kín ZIP gốc/backup riêng tư và rotate GitHub credential đã lộ.
 
@@ -89,3 +89,11 @@ Các bảng D1 gồm user, magic token đã hash, từ đã học, cấu hình n
 Cài Chromium/thư viện hệ thống bằng `pnpm --filter @vocab/frontend exec playwright install --with-deps chromium`, rồi chạy `pnpm --filter @vocab/frontend test:e2e`. Dừng dịch vụ đang dùng cổng 5173/8787/8788 trước: driver không tái sử dụng server, tạo D1/KV mới trong RAM, áp dụng migration/seed được theo dõi, chỉ bắt request Resend tổng hợp và chặn outbound khác. Driver không đọc `.dev.vars`, DB remote hay key nhà cung cấp thật. Kết quả Playwright máy đọc được có annotation HTTP status; không xuất nội dung mail, magic token hay cookie.
 
 Phát hành thật cần chủ dự án phê duyệt, cấu hình môi trường và lịch sử migration riêng tư, xử lý/chấp nhận rủi ro bảo mật, nghiệm thu M1, diễn tập staging/restore và các bước M2–M4 sau đó. Vòng này chưa nghiệm thu deploy hay rollback remote. Chất lượng ngôn ngữ audio đầy đủ, accessibility, offline/mobile và gamification mở rộng còn chưa được kiểm chứng hoặc thuộc tương lai; roadmap lịch sử ở `idea-and-plan/`.
+
+## Bộ công cụ test Worker
+
+Test backend import `cloudflareTest` từ phiên bản chính xác `@cloudflare/vitest-plugin@1.4.8`, dùng `@cloudflare/vitest-plugin/types`. Vitest giữ4.1.12; dependencies ứng dụng, quota native, ngữ nghĩa fallback và fixture không thay đổi. esbuild trực tiếp0.28.2 đáp ứng peer range của Vite đang cài và dùng cho bundler E2E dùng một lần.
+
+Plugin nhà cung cấp dùng Wrangler4.153.0/Miniflare5 nội bộ. CLI local giữ Wrangler4.105.0 và fixture browser giữ Miniflare4.20260625.0. Mục `packageExtensions` giới hạn đúng phiên bản cấp Workers Types5 thật cho Wrangler nội bộ của plugin, còn TypeScript ứng dụng và CLI local giữ Types4. Peer được đáp ứng đúng scope, không bỏ qua kiểm tra peer hay che audit. Kiểu JSON binding mới của Miniflare cần type alias object đóng cho fixture tệp SQL hiện có; dữ liệu và validation giữ nguyên.
+
+Gói evidence xử lý dependency cuối phải ghi mọi gate trên HEAD đã commit và working tree sạch. Khi mọi gate kỹ thuật PASS, báo trạng thái **M0 TECHNICAL GATES PASS / AWAITING OWNER ACCEPTANCE**, chưa phải M0 được nghiệm thu hay M1 hoàn tất. Hướng dẫn chuyển đổi chính thức: https://developers.cloudflare.com/workers/testing/vitest-integration/migration-guides/migrate-to-vitest-plugin/ .

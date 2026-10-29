@@ -42,11 +42,11 @@ pnpm --filter @vocab/frontend exec playwright install --with-deps chromium
 pnpm --filter @vocab/frontend test:e2e
 ```
 
-Playwright starts Vite; start the local backend with a disposable seeded DB separately. `pnpm test` runs Vitest, not Playwright. Coverage includes `coverage-summary.json` in each workspace's ignored coverage directory. Auth/mail/AI unit tests use mocks; Workers tests also exercise local D1/KV. Passing those tests does not establish live mail, AI quality, or complete browser flows.
+Playwright starts Vite and a Miniflare driver with fresh in-memory D1/KV, local migrations/seed and native rate limits. Stop other services on 5173/8787/8788 first; existing backends are never reused. Only synthetic mail is captured locally, every other outbound request is blocked, and no live AI key is configured. `pnpm test` runs Vitest, not Playwright. Coverage includes `coverage-summary.json` in each workspace's ignored coverage directory. Auth/mail/AI unit tests use mocks; Workers tests also exercise local D1/KV. Passing those tests does not establish live mail, AI quality, or complete browser flows.
 
 ## Authentication and security status
 
-M1 is gated on M0 acceptance. The baseline auth client double-serializes JSON; magic-link generation trusts request Origin and has an unsafe token log failure path. Admin secret APIs and review atomicity also need M1 work. Do not test with real email accounts, provider credentials, or production secrets. Do not use token console output or manual token SQL inserts as a login workflow. The old insert recipe used a nonexistent `magic_tokens.id` column and could not satisfy token hashing. A safe mail capture adapter and browser login fixture belong to M1 and are not implemented here.
+The narrow M0 closure exception fixes double serialization, route quota scope and unlabelled fallback; M0 still needs audit and credential review. Overall M1 remains gated on M0 acceptance; magic-link generation trusts request Origin and has an unsafe token log failure path. Admin secret APIs and review atomicity also need M1 work. Do not test with real email accounts, provider credentials, or production secrets. Do not use token console output or manual token SQL inserts as a login workflow. The old insert recipe used a nonexistent `magic_tokens.id` column and could not satisfy token hashing. The E2E driver captures synthetic mail for the link-request assertion only. Complete safe login/save/review fixtures remain M1 work and are not accepted here.
 
 ## Database and release limits
 

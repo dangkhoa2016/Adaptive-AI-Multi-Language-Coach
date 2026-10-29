@@ -42,11 +42,11 @@ pnpm --filter @vocab/frontend exec playwright install --with-deps chromium
 pnpm --filter @vocab/frontend test:e2e
 ```
 
-Playwright khởi động Vite; cần chạy backend riêng với DB local mới đã seed. `pnpm test` chỉ chạy Vitest, không chạy Playwright. Coverage có `coverage-summary.json` trong thư mục coverage được Git bỏ qua của mỗi workspace. Test auth/mail/AI dùng mock; test Workers còn chạy D1/KV local. Kết quả này không chứng minh mail thật, chất lượng AI hay hành trình browser hoàn chỉnh.
+Playwright tự khởi động Vite và driver Miniflare với D1/KV mới trong RAM, migration/seed local và limiter native. Dừng dịch vụ khác trên cổng 5173/8787/8788 trước; không tái sử dụng backend hiện có. Mail chỉ được bắt local cho user tổng hợp, mọi outbound khác bị chặn; không có key AI thật. `pnpm test` chỉ chạy Vitest, không chạy Playwright. Coverage có `coverage-summary.json` trong thư mục coverage được Git bỏ qua của mỗi workspace. Test auth/mail/AI dùng mock; test Workers còn chạy D1/KV local. Kết quả này không chứng minh mail thật, chất lượng AI hay hành trình browser hoàn chỉnh.
 
 ## Trạng thái xác thực và bảo mật
 
-Chỉ bắt đầu M1 khi M0 được nghiệm thu. Client auth baseline serialize JSON hai lần; magic-link dùng Origin từ request và có nhánh log token không an toàn. API secrets admin và tính nguyên tử khi chấm ôn tập cũng cần sửa ở M1. Không thử bằng email thật, credential nhà cung cấp hay secret production. Không dùng token từ console hoặc SQL chèn token thủ công để đăng nhập. Hướng dẫn SQL cũ dùng cột `magic_tokens.id` không tồn tại và không đáp ứng token hashing. Adapter bắt mail an toàn và fixture đăng nhập browser thuộc M1, chưa được triển khai ở đây.
+Đã sửa serialize JSON hai lần và phạm vi limiter trong ngoại lệ hẹp để đóng M0. Fallback không có nhãn đúng ngôn ngữ bị từ chối. M0 vẫn cần nghiệm thu audit và credential. Chỉ bắt đầu M1 tổng thể khi được phép; magic-link dùng Origin từ request và có nhánh log token không an toàn. API secrets admin và tính nguyên tử khi chấm ôn tập cũng cần sửa ở M1. Không thử bằng email thật, credential nhà cung cấp hay secret production. Không dùng token từ console hoặc SQL chèn token thủ công để đăng nhập. Hướng dẫn SQL cũ dùng cột `magic_tokens.id` không tồn tại và không đáp ứng token hashing. Driver E2E chỉ bắt mail tổng hợp để kiểm tra request gửi link; toàn bộ fixture đăng nhập/lưu từ/ôn tập an toàn vẫn thuộc M1, chưa nghiệm thu.
 
 ## Giới hạn database và phát hành
 

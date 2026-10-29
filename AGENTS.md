@@ -48,7 +48,7 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 ## Testing
 
 - Backend uses Vitest with `@cloudflare/vitest-pool-workers` (uses `wrangler.test.toml`)
-- Frontend uses Vitest/jsdom; Playwright is separate: `pnpm --filter @vocab/frontend test:e2e` (requires Chromium and a disposable local backend).
+- Frontend uses Vitest/jsdom; Playwright is separate: `pnpm --filter @vocab/frontend test:e2e` (starts its own disposable Miniflare backend; requires Chromium and free ports 5173/8787/8788).
 - Run all tests: `pnpm test`
 
 ## Architecture Gotchas
@@ -73,3 +73,5 @@ Frontend build uses `vue-tsc --noEmit && vite build`, output dir is `../assets`.
 ## Recovery scope
 
 The 2026-10-29 hardening guide requires a recovery branch, private backup, local synthetic data only, no push/deploy/remote DB changes, and a stop before M1 if M0 does not pass. Preserve all historical migration files; main and recovery have different 0003/0004 identities.
+
+The M0 review follow-up explicitly allows narrow auth JSON, route-limiter scope and language-safe fallback fixes to close browser blockers. This does not authorize overall M1 acceptance. Run final gates after commits and record actual SHA/dirty state; preserve failed attempts and export a secret-scanned complete patch.

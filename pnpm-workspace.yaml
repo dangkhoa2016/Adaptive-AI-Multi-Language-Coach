@@ -25,3 +25,8 @@ minimumReleaseAgeExclude:
   - '@rolldown/binding-win32-x64-msvc@1.0.2'
   - rolldown@1.0.2
   - vite@8.0.14
+
+# Security fixes for transitive local Worker tooling; no Worker runtime override.
+overrides:
+  undici@7: 7.30.1
+  sharp@0.34.5: 0.35.5

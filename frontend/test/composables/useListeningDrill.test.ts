@@ -74,11 +74,9 @@ describe('useListeningDrill', () => {
       const mockBlob = new Blob(['audio-data'], { type: 'audio/mpeg' })
       vi.mocked(fetchTtsAudio).mockResolvedValueOnce(mockBlob)
       const play = vi.fn()
-      window.Audio = vi.fn().mockImplementation(() => ({
-        play,
-        onended: null,
-        onerror: null,
-      }))
+      window.Audio = vi.fn().mockImplementation(function () {
+        return { play, onended: null, onerror: null }
+      })
 
       const drill = useListeningDrill()
       await drill.playAudio('hello', 'en')

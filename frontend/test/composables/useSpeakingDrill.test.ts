@@ -31,9 +31,9 @@ function mockMediaDevices() {
 }
 
 function mockMediaRecorder(recorder: ReturnType<typeof makeMockRecorder>) {
-  window.MediaRecorder = vi
-    .fn()
-    .mockImplementation(() => recorder) as unknown as typeof MediaRecorder
+  window.MediaRecorder = vi.fn().mockImplementation(function () {
+    return recorder
+  }) as unknown as typeof MediaRecorder
 }
 
 describe('useSpeakingDrill', () => {

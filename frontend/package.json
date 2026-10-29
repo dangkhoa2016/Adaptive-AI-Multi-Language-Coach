@@ -17,23 +17,23 @@
     "@vocab/shared": "workspace:*",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "vue": "^3.5.34",
-    "vue-i18n": "^11.4.4",
-    "vue-router": "^5.0.7"
+    "vue": "^3.5.44",
+    "vue-i18n": "^11.4.16",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1",
-    "@tailwindcss/postcss": "^4.3.0",
-    "@vitejs/plugin-vue": "^6.0.7",
-    "@vitest/coverage-v8": "^3.2.6",
-    "@vue/test-utils": "^2.4.11",
-    "autoprefixer": "^10.5.0",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vitest/coverage-v8": "^4.1.12",
+    "@vue/test-utils": "^2.5.1",
+    "autoprefixer": "^10.6.2",
     "jsdom": "^26.1.0",
-    "postcss": "^8.5.15",
-    "tailwindcss": "^4.3.0",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
-    "vite": "^8.0.14",
-    "vitest": "^3.2.4",
-    "vue-tsc": "^3.3.1"
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12",
+    "vue-tsc": "^3.3.13"
   }
 }

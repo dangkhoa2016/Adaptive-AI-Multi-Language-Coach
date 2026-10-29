@@ -1,0 +1,3 @@
+# Synthetic local-only values. Never use in production or staging.
+ENCRYPTION_KEY=local-only-encryption-key-32chars!
+JWT_SECRET=local-only-jwt-secret-do-not-deploy

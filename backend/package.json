@@ -17,7 +17,8 @@
     "db:seed:local": "wrangler d1 execute ai_vocab_db --local --file=seed/0001_topics_and_fallback.sql",
     "db:seed:remote": "wrangler d1 execute ai_vocab_db --remote --file=seed/0001_topics_and_fallback.sql",
     "seed:settings:local": "node scripts/seed-settings.mjs",
-    "seed:settings:remote": "node scripts/seed-settings.mjs --remote"
+    "seed:settings:remote": "node scripts/seed-settings.mjs --remote",
+    "setup:local": "node scripts/setup-local.mjs"
   },
   "dependencies": {
     "@vocab/shared": "workspace:*",

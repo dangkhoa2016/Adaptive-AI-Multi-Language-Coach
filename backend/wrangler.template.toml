@@ -1,8 +1,7 @@
 # Wrangler Configuration Template
-# Copy this file and customize for each environment:
-#   - wrangler.toml (local/dev)
-#   - wrangler.staging.toml (staging)
-#   - wrangler.production.toml (production)
+# Deployment template: customize only for an approved staging/production release.
+# For local development run: pnpm --filter @vocab/backend setup:local
+# This template includes remote Workers AI; do not copy it for local smoke tests.
 
 name = "ai-vocab-app"
 main = "src/index.ts"
@@ -46,3 +45,7 @@ simple = { limit = 10, period = 60 }
 name = "RATE_LIMITER_AUTH"
 namespace_id = "1002"
 simple = { limit = 3, period = 60 }
+
+# Workers AI is a remote, potentially billable binding. Configure only with approval.
+[ai]
+binding = "AI"

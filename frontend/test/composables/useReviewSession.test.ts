@@ -10,6 +10,7 @@ vi.mock('../../src/api/client', () => ({
 
 const mockPair: LearnedPair = {
   id: 'pair-1',
+  review_version: 0,
   user_id: 'user-1',
   source: 'en',
   target: 'vi',
@@ -119,7 +120,7 @@ describe('useReviewSession', () => {
       const session = useReviewSession()
       await session.startSession()
       await session.grade(4)
-      expect(gradeCard).toHaveBeenCalledWith('pair-1', 4)
+      expect(gradeCard).toHaveBeenCalledWith('pair-1', 4, 0, expect.any(String))
       expect(session.currentIndex.value).toBe(1)
       expect(session.flipped.value).toBe(false)
     })
@@ -141,6 +142,38 @@ describe('useReviewSession', () => {
       await session.grade(4)
       expect(session.error.value).toBe('Grade failed')
       expect(session.isGrading.value).toBe(false)
+    })
+
+    it('reuses the submission key, version, and quality after an uncertain network failure', async () => {
+      vi.mocked(fetchDueCards).mockResolvedValueOnce([mockPair])
+      vi.mocked(gradeCard)
+        .mockRejectedValueOnce(new Error('Network interrupted'))
+        .mockResolvedValueOnce(mockPair)
+      const session = useReviewSession()
+      await session.startSession()
+      await session.grade(4)
+      const first = vi.mocked(gradeCard).mock.calls[0]
+      expect(session.phase.value).toBe('session')
+      await session.grade(5)
+      expect(vi.mocked(gradeCard).mock.calls[1]).toEqual(first)
+      expect(first).toEqual(['pair-1', 4, 0, expect.any(String)])
+      expect(session.phase.value).toBe('complete')
+    })
+
+    it('shows conflicts and reloads due cards without claiming completion', async () => {
+      vi.mocked(fetchDueCards)
+        .mockResolvedValueOnce([mockPair])
+        .mockResolvedValueOnce([{ ...mockPair, review_version: 1 }])
+      vi.mocked(gradeCard).mockRejectedValueOnce(
+        Object.assign(new Error('Review changed'), { status: 409 }),
+      )
+      const session = useReviewSession()
+      await session.startSession()
+      await session.grade(4)
+      expect(session.error.value).toBe('Review changed')
+      expect(session.phase.value).toBe('session')
+      expect(session.pairs.value[0].review_version).toBe(1)
+      expect(session.currentIndex.value).toBe(0)
     })
 
     it('does nothing when no pair at current index', async () => {

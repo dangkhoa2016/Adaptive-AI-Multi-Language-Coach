@@ -1,309 +1,15 @@
 import { describe, expect, it, beforeEach } from 'vitest'
-
-const users = new Map<string, { id: string; email: string }>()
-const learnedPairs = new Map<string, Array<Record<string, unknown>>>()
-const reviewLogs = new Map<string, Array<Record<string, unknown>>>()
-
-function createMockDB(): D1Database {
-  return {
-    prepare: (sql: string) => ({
-      bind: (...values: unknown[]) => ({
-        all: async <T>() => {
-          if (sql.includes('FROM learned_pairs') && sql.includes('WHERE user_id =')) {
-            const uid = values[0] as string
-            let pairs = learnedPairs.get(uid) ?? []
-            if (sql.includes('next_review IS NULL OR next_review <= date')) {
-              const today = new Date().toISOString().split('T')[0]
-              return {
-                results: pairs.filter(
-                  (p: any) => !p.next_review || p.next_review <= today,
-                ) as unknown as T[],
-                success: true,
-              }
-            }
-            // Apply search filter for vocab list
-            if (sql.includes('LIKE')) {
-              const pattern = (values[1] as string).replace(/%/g, '')
-              pairs = pairs.filter(
-                (p: any) =>
-                  (p.source_text && String(p.source_text).includes(pattern)) ||
-                  (p.target_text && String(p.target_text).includes(pattern)),
-              )
-            }
-            // Apply pagination
-            if (sql.includes('LIMIT') && sql.includes('OFFSET')) {
-              const limitIdx = values.length - 2
-              const offsetIdx = values.length - 1
-              const l = values[limitIdx] as number
-              const o = values[offsetIdx] as number
-              return { results: pairs.slice(o, o + l) as unknown as T[], success: true }
-            }
-            return { results: pairs as unknown as T[], success: true }
-          }
-          if (sql.includes('FROM learned_pairs WHERE id =')) {
-            for (const [, pairs] of learnedPairs) {
-              const pair = pairs.find((p: any) => p.id === values[0])
-              if (pair) return { results: [pair] as unknown as T[], success: true } as any
-            }
-            return { results: [] as unknown as T[], success: true }
-          }
-          if (sql.includes('COUNT')) {
-            const uid = values[0] as string
-            const pairs = learnedPairs.get(uid) ?? []
-            const due = pairs.filter(
-              (p: any) => !p.next_review || p.next_review <= new Date().toISOString().split('T')[0],
-            ).length
-            const learning = pairs.filter((p: any) => p.status === 'learning').length
-            const mastered = pairs.filter((p: any) => p.status === 'mastered').length
-            if (sql.includes('next_review IS NULL OR next_review <= date')) {
-              return { results: [{ count: due }] as any, success: true }
-            }
-            if (sql.includes("status = 'learning'")) {
-              return { results: [{ count: learning }] as any, success: true }
-            }
-            if (sql.includes("status = 'mastered'")) {
-              return { results: [{ count: mastered }] as any, success: true }
-            }
-            return { results: [{ count: pairs.length }] as any, success: true }
-          }
-          if (sql.includes('FROM review_logs') && sql.includes('WHERE user_id =')) {
-            const uid = values[0] as string
-            const logs = reviewLogs.get(uid) ?? []
-            const limit = values[1] as number
-            const offset = values[2] as number
-            return {
-              results: logs.slice(offset, offset + limit) as unknown as T[],
-              success: true,
-            }
-          }
-          return { results: [] as unknown as T[], success: true }
-        },
-        first: async <T>() => {
-          const uid = values[0] as string
-          if (sql.includes('SELECT COUNT')) {
-            let pairs = learnedPairs.get(uid) ?? []
-            if (sql.includes('next_review IS NULL OR next_review <= date')) {
-              const due = pairs.filter(
-                (p: any) =>
-                  !p.next_review || p.next_review <= new Date().toISOString().split('T')[0],
-              ).length
-              return { count: due } as unknown as T
-            }
-            if (sql.includes("status = 'learning'")) {
-              return {
-                count: pairs.filter((p: any) => p.status === 'learning').length,
-              } as unknown as T
-            }
-            if (sql.includes("status = 'mastered'")) {
-              return {
-                count: pairs.filter((p: any) => p.status === 'mastered').length,
-              } as unknown as T
-            }
-            // Handle search filter for vocab count
-            if (sql.includes('LIKE')) {
-              const pattern = (values[1] as string).replace(/%/g, '')
-              pairs = pairs.filter(
-                (p: any) =>
-                  (p.source_text && String(p.source_text).includes(pattern)) ||
-                  (p.target_text && String(p.target_text).includes(pattern)),
-              )
-            }
-            return { count: pairs.length } as unknown as T
-          }
-          if (sql.includes('FROM learned_pairs WHERE id =')) {
-            for (const [, pairs] of learnedPairs) {
-              const pair = pairs.find((p: any) => p.id === values[0])
-              if (pair) return pair as unknown as T | null
-            }
-            return null
-          }
-          if (sql.includes('SELECT id, ease, interval, repetitions, user_id')) {
-            for (const [, pairs] of learnedPairs) {
-              const pair = pairs.find((p: any) => p.id === values[0])
-              if (pair) return pair as unknown as T | null
-            }
-            return null
-          }
-          if (sql.includes('SELECT id, user_id')) {
-            for (const [, pairs] of learnedPairs) {
-              const pair = pairs.find((p: any) => p.id === values[0])
-              if (pair) return pair as unknown as T | null
-            }
-            return null
-          }
-          // Generic SELECT from learned_pairs by id
-          if (
-            sql.includes('FROM learned_pairs WHERE id = ?') ||
-            (sql.includes('SELECT') &&
-              sql.includes('FROM learned_pairs') &&
-              sql.includes('WHERE id'))
-          ) {
-            for (const [, pairs] of learnedPairs) {
-              const pair = pairs.find((p: any) => p.id === values[0])
-              if (pair) return pair as unknown as T | null
-            }
-            return null
-          }
-          // Review logs COUNT/AVG
-          if (sql.includes('FROM review_logs') && (sql.includes('COUNT') || sql.includes('AVG'))) {
-            const uid = values[0] as string
-            const logs = reviewLogs.get(uid) ?? []
-            if (sql.includes('AVG(quality)')) {
-              if (logs.length === 0) return { avg: 0 } as unknown as T
-              const avg = logs.reduce((s: number, l: any) => s + l.quality, 0) / logs.length
-              return { avg } as unknown as T
-            }
-            if (sql.includes("reviewed_at >= date('now')")) {
-              const today = new Date().toISOString().split('T')[0]
-              return {
-                count: logs.filter((l: any) => l.reviewed_at >= today).length,
-              } as unknown as T
-            }
-            if (sql.includes("reviewed_at >= datetime('now', '-7 days')")) {
-              const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
-              return {
-                count: logs.filter((l: any) => l.reviewed_at >= weekAgo).length,
-              } as unknown as T
-            }
-            return { count: logs.length } as unknown as T
-          }
-          return null
-        },
-        run: async () => {
-          if (sql.includes('INSERT INTO learned_pairs')) {
-            // Parse: INSERT INTO learned_pairs (col1, col2, ...) VALUES (val1, val2, ...)
-            const colMatch = sql.match(/\(([\w_,\s]+)\)\s*VALUES\s*\(([^)]+)\)/i)
-            if (colMatch) {
-              const cols = colMatch[1].split(',').map((c: string) => c.trim())
-              const valsRaw = colMatch[2].split(',').map((c: string) => c.trim())
-              const record: Record<string, unknown> = {}
-              let valueIdx = 0
-              cols.forEach((col: string, i: number) => {
-                if (valsRaw[i] === '?') {
-                  record[col] = values[valueIdx++]
-                } else {
-                  // Parse literal: strip quotes, convert numbers
-                  let lit = valsRaw[i]
-                  if (lit.startsWith("'") && lit.endsWith("'")) {
-                    record[col] = lit.slice(1, -1)
-                  } else if (lit === 'NULL') {
-                    record[col] = null
-                  } else if (/^\d+$/.test(lit)) {
-                    record[col] = Number(lit)
-                  } else if (/^\d+\.\d+$/.test(lit)) {
-                    record[col] = Number(lit)
-                  } else {
-                    record[col] = lit
-                  }
-                }
-              })
-              const userIdVal = record.user_id as string
-              if (!learnedPairs.has(userIdVal)) {
-                learnedPairs.set(userIdVal, [])
-              }
-              learnedPairs.get(userIdVal)!.push(record)
-            }
-          } else if (sql.includes('INSERT INTO review_logs')) {
-            const colMatch = sql.match(/\(([\w_,\s]+)\)\s*VALUES\s*\(([^)]+)\)/i)
-            if (colMatch) {
-              const cols = colMatch[1].split(',').map((c: string) => c.trim())
-              const valsRaw = colMatch[2].split(',').map((c: string) => c.trim())
-              const record: Record<string, unknown> = {}
-              let valueIdx = 0
-              cols.forEach((col: string, i: number) => {
-                if (valsRaw[i] === '?') {
-                  record[col] = values[valueIdx++]
-                } else {
-                  let lit = valsRaw[i]
-                  if (lit.startsWith("'") && lit.endsWith("'")) {
-                    record[col] = lit.slice(1, -1)
-                  } else if (lit === 'NULL') {
-                    record[col] = null
-                  } else if (/^\d+$/.test(lit)) {
-                    record[col] = Number(lit)
-                  } else {
-                    record[col] = lit
-                  }
-                }
-              })
-              const uid = record.user_id as string
-              if (!reviewLogs.has(uid)) {
-                reviewLogs.set(uid, [])
-              }
-              reviewLogs.get(uid)!.push(record)
-            }
-          } else if (sql.includes('UPDATE learned_pairs')) {
-            const pairId = values[values.length - 1] as string
-            for (const [, pairs] of learnedPairs) {
-              const idx = pairs.findIndex((p: any) => p.id === pairId)
-              if (idx !== -1) {
-                const existing = pairs[idx] as Record<string, unknown>
-                if (values.length <= 3) {
-                  // Reset: ease = 2.5, interval = 0, repetitions = 0, next_review = NULL, status = 'learning', updated_at = ?
-                  existing.ease = 2.5
-                  existing.interval = 0
-                  existing.repetitions = 0
-                  existing.next_review = null
-                  existing.status = 'learning'
-                  existing.updated_at = values[0]
-                } else if (typeof values[0] === 'number') {
-                  // Grade update
-                  const gradeClauses = [
-                    'ease',
-                    'interval',
-                    'repetitions',
-                    'next_review',
-                    'last_seen',
-                    'status',
-                    'updated_at',
-                  ]
-                  gradeClauses.forEach((col, i) => {
-                    existing[col] = values[i]
-                  })
-                } else {
-                  // Edit update — parse SET column names from SQL
-                  const setMatch = sql.match(/SET (.+?) WHERE/i)
-                  if (setMatch) {
-                    const setCols = setMatch[1].split(',').map((s) => s.trim().split('=')[0].trim())
-                    setCols.forEach((col, i) => {
-                      existing[col] = values[i]
-                    })
-                  }
-                }
-              }
-            }
-          } else if (sql.includes('DELETE FROM review_logs')) {
-            const lpId = values[0] as string
-            for (const [, logs] of reviewLogs) {
-              const idx = logs.findIndex((l: any) => l.learned_pair_id === lpId)
-              if (idx !== -1) logs.splice(idx, 1)
-            }
-          } else if (sql.includes('DELETE FROM learned_pairs')) {
-            const pid = values[0] as string
-            for (const [, pairs] of learnedPairs) {
-              const idx = pairs.findIndex((p: any) => p.id === pid)
-              if (idx !== -1) pairs.splice(idx, 1)
-            }
-          }
-          return { success: true, meta: { changes: 1 } as any }
-        },
-        raw: async () => [],
-      }),
-      all: async <T>() => ({ results: [] as unknown as T[], success: true }),
-      first: async () => null,
-      run: async () => ({ success: true, meta: { changes: 1 } as any }),
-      raw: async () => [],
-    }),
-    batch: async () => [],
-    exec: async () => ({ success: true }),
-    dump: async () => new ArrayBuffer(0),
-  } as unknown as D1Database
-}
+import { env as cloudflareEnv } from 'cloudflare:test'
+import type { Bindings } from '../../src/env'
+const workerEnv = cloudflareEnv as unknown as Bindings
 
 async function callApp(url: string, init?: RequestInit, cookie?: string): Promise<Response> {
   const { default: app } = await import('../../src/index')
   const env = {
-    DB: createMockDB(),
+    ...workerEnv,
+    DB: workerEnv.DB,
+    PUBLIC_APP_ORIGIN: 'http://localhost',
+    ENVIRONMENT: 'local',
     CACHE: {} as KVNamespace,
     RATE_LIMITER_API: { limit: async () => ({ success: true }) } as unknown as RateLimit,
     RATE_LIMITER_AUTH: { limit: async () => ({ success: true }) } as unknown as RateLimit,
@@ -314,6 +20,7 @@ async function callApp(url: string, init?: RequestInit, cookie?: string): Promis
   }
   const headers = new Headers(init?.headers)
   headers.set('content-type', 'application/json')
+  headers.set('origin', 'http://localhost')
   if (cookie) headers.set('cookie', cookie)
   return app.fetch(new Request(url, { ...init, headers }), env, {
     waitUntil: () => {},
@@ -327,10 +34,11 @@ describe('review routes', () => {
   let jwt: string
 
   beforeEach(async () => {
-    users.clear()
-    learnedPairs.clear()
-    reviewLogs.clear()
-    users.set(userId, { id: userId, email: 'review@test.com' })
+    await workerEnv.DB.prepare('DELETE FROM review_logs').run()
+    await workerEnv.DB.prepare('DELETE FROM learned_pairs').run()
+    await workerEnv.DB.prepare('INSERT OR IGNORE INTO users (id, email) VALUES (?, ?)')
+      .bind(userId, 'review@test.com')
+      .run()
     const { createJwt } = await import('../../src/services/auth')
     jwt = await createJwt(userId, 'test-jwt-secret-32-chars-long!!')
   })
@@ -402,7 +110,12 @@ describe('review routes', () => {
       'http://localhost/api/review/grade',
       {
         method: 'POST',
-        body: JSON.stringify({ learnedPairId: pairId, quality: 4 }),
+        body: JSON.stringify({
+          learnedPairId: pairId,
+          quality: 4,
+          expectedVersion: 0,
+          idempotencyKey: crypto.randomUUID(),
+        }),
       },
       `auth_token=${jwt}`,
     )
@@ -429,7 +142,12 @@ describe('review routes', () => {
       'http://localhost/api/review/grade',
       {
         method: 'POST',
-        body: JSON.stringify({ learnedPairId: 'nonexistent', quality: 4 }),
+        body: JSON.stringify({
+          learnedPairId: 'nonexistent',
+          quality: 4,
+          expectedVersion: 0,
+          idempotencyKey: crypto.randomUUID(),
+        }),
       },
       `auth_token=${jwt}`,
     )
@@ -458,7 +176,12 @@ describe('review routes', () => {
       'http://localhost/api/review/grade',
       {
         method: 'POST',
-        body: JSON.stringify({ learnedPairId: pairId, quality: 5 }),
+        body: JSON.stringify({
+          learnedPairId: pairId,
+          quality: 5,
+          expectedVersion: 0,
+          idempotencyKey: crypto.randomUUID(),
+        }),
       },
       `auth_token=${jwt}`,
     )
@@ -543,7 +266,12 @@ describe('review routes', () => {
       'http://localhost/api/review/grade',
       {
         method: 'POST',
-        body: JSON.stringify({ learnedPairId: pairId, quality: 4 }),
+        body: JSON.stringify({
+          learnedPairId: pairId,
+          quality: 4,
+          expectedVersion: 0,
+          idempotencyKey: crypto.randomUUID(),
+        }),
       },
       `auth_token=${jwt}`,
     )
@@ -579,7 +307,12 @@ describe('review routes', () => {
       'http://localhost/api/review/grade',
       {
         method: 'POST',
-        body: JSON.stringify({ learnedPairId: pairId, quality: 5 }),
+        body: JSON.stringify({
+          learnedPairId: pairId,
+          quality: 5,
+          expectedVersion: 0,
+          idempotencyKey: crypto.randomUUID(),
+        }),
       },
       `auth_token=${jwt}`,
     )
@@ -768,7 +501,7 @@ describe('review routes', () => {
     expect(res.status).toBe(404)
   })
 
-  it("DELETE /api/vocab/:id returns 403 for other user's pair", async () => {
+  it("DELETE /api/vocab/:id returns 404 for other user's pair", async () => {
     const otherUserId = 'other-user'
     const { createJwt } = await import('../../src/services/auth')
     const otherJwt = await createJwt(otherUserId, 'test-jwt-secret-32-chars-long!!')
@@ -794,7 +527,7 @@ describe('review routes', () => {
       { method: 'DELETE' },
       `auth_token=${otherJwt}`,
     )
-    expect(res.status).toBe(403)
+    expect(res.status).toBe(404)
   })
 
   it('GET /api/vocab returns 401 without auth', async () => {
@@ -860,7 +593,7 @@ describe('review routes', () => {
     expect(res.status).toBe(404)
   })
 
-  it("PUT /api/vocab/:id returns 403 for other user's pair", async () => {
+  it("PUT /api/vocab/:id returns 404 for other user's pair", async () => {
     const otherUserId = 'other-user-edit'
     const { createJwt } = await import('../../src/services/auth')
     const otherJwt = await createJwt(otherUserId, 'test-jwt-secret-32-chars-long!!')
@@ -885,7 +618,7 @@ describe('review routes', () => {
       { method: 'PUT', body: JSON.stringify({ sourceText: 'a', targetText: 'b' }) },
       `auth_token=${otherJwt}`,
     )
-    expect(res.status).toBe(403)
+    expect(res.status).toBe(404)
   })
 
   it('PUT /api/vocab/:id returns 400 with missing sourceText', async () => {

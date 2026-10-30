@@ -152,6 +152,7 @@ export const logout = () => request<{ success: boolean }>('/auth/logout', { meth
 export const exportUserData = () => request<unknown>('/user/export')
 
 export interface LearnedPair {
+  review_version: number
   id: string
   user_id: string
   source: string
@@ -201,10 +202,15 @@ export async function fetchDueCards(): Promise<LearnedPair[]> {
   return res.pairs
 }
 
-export async function gradeCard(learnedPairId: string, quality: number): Promise<LearnedPair> {
+export async function gradeCard(
+  learnedPairId: string,
+  quality: number,
+  expectedVersion: number,
+  idempotencyKey: string,
+): Promise<LearnedPair> {
   const res = await request<{ pair: LearnedPair }>('/review/grade', {
     method: 'POST',
-    body: { learnedPairId, quality },
+    body: { learnedPairId, quality, expectedVersion, idempotencyKey },
   })
   return res.pair
 }

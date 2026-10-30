@@ -1,7 +1,9 @@
 import { ref, type Ref } from 'vue'
 import { saveVocabPair, type VocabPair } from '../api/client'
+import { usePrefsStore } from '../stores/prefs'
 
 export function useSavePairs(pairs: Ref<VocabPair[]>) {
+  const prefs = usePrefsStore()
   const savedIndices = ref(new Set<number>())
   const savingIndices = ref(new Set<number>())
   const isSavingAll = ref(false)
@@ -15,8 +17,8 @@ export function useSavePairs(pairs: Ref<VocabPair[]>) {
     error.value = null
     try {
       await saveVocabPair({
-        source: pair.source,
-        target: pair.target,
+        source: prefs.source,
+        target: prefs.target,
         sourceText: pair.source,
         targetText: pair.target,
         isPhrase: pair.isPhrase,

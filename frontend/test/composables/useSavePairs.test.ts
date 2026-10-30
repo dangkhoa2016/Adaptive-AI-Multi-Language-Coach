@@ -1,5 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { ref } from 'vue'
+import { createPinia, setActivePinia } from 'pinia'
+import { usePrefsStore } from '../../src/stores/prefs'
 import { saveVocabPair, type VocabPair } from '../../src/api/client'
 import { useSavePairs } from '../../src/composables/useSavePairs'
 
@@ -31,6 +33,7 @@ const mockPairs: VocabPair[] = [
 describe('useSavePairs', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    setActivePinia(createPinia())
   })
 
   it('initializes with empty state', () => {
@@ -51,6 +54,23 @@ describe('useSavePairs', () => {
       expect(saveVocabPair).toHaveBeenCalled()
       expect(sp.savedIndices.value.has(0)).toBe(true)
       expect(sp.error.value).toBeNull()
+    })
+
+    it('saves language codes separately from vocabulary text using active preferences', async () => {
+      const prefs = usePrefsStore()
+      prefs.source = 'ja'
+      prefs.target = 'ko'
+      vi.mocked(saveVocabPair).mockResolvedValueOnce({ id: 'new-1' } as never)
+      const sp = useSavePairs(ref(mockPairs))
+      await sp.savePair(0)
+      expect(saveVocabPair).toHaveBeenCalledWith(
+        expect.objectContaining({
+          source: 'ja',
+          target: 'ko',
+          sourceText: 'hello',
+          targetText: 'xin chào',
+        }),
+      )
     })
 
     it('skips already saved indices', async () => {

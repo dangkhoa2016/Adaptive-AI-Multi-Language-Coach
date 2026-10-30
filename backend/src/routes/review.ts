@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { SUPPORTED_LOCALES } from '@vocab/shared'
 import { z } from 'zod'
 import type { Bindings, Variables } from '../env'
 import { requireAuth } from '../middleware/auth'
@@ -49,7 +50,7 @@ router.get('/review/due', requireAuth(), async (c) => {
   const result = await c.env.DB.prepare(
     `SELECT id, user_id, source, target, source_text, target_text, is_phrase,
             ipa, pos, example_source, example_target,
-            ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at
+            ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at, review_version
      FROM learned_pairs
      WHERE user_id = ? AND (next_review IS NULL OR next_review <= date('now'))
      ORDER BY ease ASC
@@ -64,54 +65,86 @@ router.get('/review/due', requireAuth(), async (c) => {
 // --- Grade a review ---
 
 const gradeSchema = z.object({
-  learnedPairId: z.string().min(1),
+  learnedPairId: z.string().min(1).max(128),
   quality: z.number().int().min(0).max(5),
+  expectedVersion: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+  idempotencyKey: z.string().min(1).max(128),
 })
 
 router.post('/review/grade', requireAuth(), async (c) => {
   const userId = c.get('userId')!
-  const body = await c.req.json()
-  const parsed = gradeSchema.safeParse(body)
+  const parsed = gradeSchema.safeParse(await c.req.json().catch(() => null))
   if (!parsed.success) {
     return c.json({ error: 'validation_error', message: t(c, 'errors.invalid_quality') }, 400)
   }
-
-  const { learnedPairId, quality } = parsed.data
+  const { learnedPairId, quality, expectedVersion, idempotencyKey } = parsed.data
+  const canonical = JSON.stringify([learnedPairId, quality, expectedVersion])
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical))
+  const requestHash = Array.from(new Uint8Array(digest), (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('')
+  const findReplay = () =>
+    c.env.DB.prepare(
+      'SELECT request_hash, result_json FROM review_logs WHERE user_id = ? AND idempotency_key = ?',
+    )
+      .bind(userId, idempotencyKey)
+      .first<{ request_hash: string; result_json: string }>()
+  const conflict = () =>
+    c.json(
+      { error: 'review_conflict', message: 'Review changed. Reload the card and try again.' },
+      409,
+    )
+  const replayResponse = (replay: { request_hash: string; result_json: string }) =>
+    replay.request_hash === requestHash ? c.json(JSON.parse(replay.result_json)) : conflict()
+  const replay = await findReplay()
+  if (replay) return replayResponse(replay)
 
   const pair = await c.env.DB.prepare(
-    'SELECT id, ease, interval, repetitions, user_id, source_text, target_text FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at, review_version FROM learned_pairs WHERE id = ? AND user_id = ?',
   )
-    .bind(learnedPairId)
+    .bind(learnedPairId, userId)
     .first<{
       id: string
       ease: number
       interval: number
       repetitions: number
-      user_id: string
+      review_version: number
       source_text: string
       target_text: string
     }>()
-
-  if (!pair) {
-    return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
+  if (!pair) return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
+  if (pair.review_version !== expectedVersion) {
+    // A concurrent duplicate may have committed after the initial replay lookup.
+    const committed = await findReplay()
+    return committed ? replayResponse(committed) : conflict()
   }
-  if (pair.user_id !== userId) {
-    return c.json({ error: 'forbidden', message: t(c, 'errors.forbidden') }, 403)
-  }
 
-  const result = sm2(quality, {
-    ease: pair.ease,
-    interval: pair.interval,
-    repetitions: pair.repetitions,
-  })
+  const result = sm2(quality, pair)
   const now = new Date().toISOString()
-
-  await c.env.DB.prepare(
-    `UPDATE learned_pairs
-     SET ease = ?, interval = ?, repetitions = ?, next_review = ?, last_seen = ?, status = ?, updated_at = ?
-     WHERE id = ?`,
-  )
-    .bind(
+  const logId = crypto.randomUUID()
+  const response = {
+    pair: {
+      ...pair,
+      ease: result.ease,
+      interval: result.interval,
+      repetitions: result.repetitions,
+      next_review: result.nextReview,
+      last_seen: now,
+      status: result.status,
+      updated_at: now,
+      review_version: expectedVersion + 1,
+    },
+  }
+  // D1 batches execute transactionally. The operation marker ensures only the CAS winner
+  // can insert a log. A failed insert rolls back the preceding pair update.
+  const batch = await c.env.DB.batch([
+    c.env.DB.prepare(
+      `UPDATE learned_pairs SET ease = ?, interval = ?, repetitions = ?,
+      next_review = ?, last_seen = ?, status = ?, updated_at = ?,
+      review_version = review_version + 1, last_review_id = ?
+      WHERE id = ? AND user_id = ? AND review_version = ?
+      AND NOT EXISTS (SELECT 1 FROM review_logs WHERE user_id = ? AND idempotency_key = ?)`,
+    ).bind(
       result.ease,
       result.interval,
       result.repetitions,
@@ -119,44 +152,54 @@ router.post('/review/grade', requireAuth(), async (c) => {
       now,
       result.status,
       now,
+      logId,
       learnedPairId,
-    )
-    .run()
-
-  const logId = crypto.randomUUID()
-  await c.env.DB.prepare(
-    `INSERT INTO review_logs (id, user_id, learned_pair_id, source_text, target_text, quality, reviewed_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-  )
-    .bind(logId, userId, learnedPairId, pair.source_text, pair.target_text, quality, now)
-    .run()
-
-  const updated = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
-  )
-    .bind(learnedPairId)
-    .first()
-
-  return c.json({ pair: updated })
+      userId,
+      expectedVersion,
+      userId,
+      idempotencyKey,
+    ),
+    c.env.DB.prepare(
+      `INSERT INTO review_logs
+      (id, user_id, learned_pair_id, source_text, target_text, quality, reviewed_at,
+       idempotency_key, request_hash, result_json)
+      SELECT ?, user_id, id, source_text, target_text, ?, ?, ?, ?, ? FROM learned_pairs
+      WHERE id = ? AND user_id = ? AND last_review_id = ? AND review_version = ?`,
+    ).bind(
+      logId,
+      quality,
+      now,
+      idempotencyKey,
+      requestHash,
+      JSON.stringify(response),
+      learnedPairId,
+      userId,
+      logId,
+      expectedVersion + 1,
+    ),
+  ])
+  if (batch[0].meta.changes === 1 && batch[1].meta.changes === 1) return c.json(response)
+  const committed = await findReplay()
+  return committed ? replayResponse(committed) : conflict()
 })
 
 // --- Save a new pair ---
 
 const saveSchema = z.object({
-  source: z.string().min(1),
-  target: z.string().min(1),
-  sourceText: z.string().min(1),
-  targetText: z.string().min(1),
+  source: z.enum(SUPPORTED_LOCALES),
+  target: z.enum(SUPPORTED_LOCALES),
+  sourceText: z.string().min(1).max(2000),
+  targetText: z.string().min(1).max(2000),
   isPhrase: z.boolean().optional().default(false),
-  ipa: z.string().optional(),
-  pos: z.string().optional(),
-  exampleSource: z.string().optional(),
-  exampleTarget: z.string().optional(),
+  ipa: z.string().max(2000).optional(),
+  pos: z.string().max(2000).optional(),
+  exampleSource: z.string().max(2000).optional(),
+  exampleTarget: z.string().max(2000).optional(),
 })
 
 router.post('/vocab/save', requireAuth(), async (c) => {
   const userId = c.get('userId')!
-  const body = await c.req.json()
+  const body = await c.req.json().catch(() => null)
   const parsed = saveSchema.safeParse(body)
   if (!parsed.success) {
     return c.json({ error: 'validation_error', message: t(c, 'errors.validation_error') }, 400)
@@ -198,9 +241,9 @@ router.post('/vocab/save', requireAuth(), async (c) => {
     .run()
 
   const pair = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at, review_version FROM learned_pairs WHERE id = ? AND user_id = ?',
   )
-    .bind(id)
+    .bind(id, userId)
     .first()
 
   return c.json({ pair })
@@ -210,33 +253,35 @@ router.post('/vocab/save', requireAuth(), async (c) => {
 
 router.post('/vocab/reset', requireAuth(), async (c) => {
   const userId = c.get('userId')!
-  const body = (await c.req.json()) as { learnedPairId?: string }
-  if (!body.learnedPairId) {
+  const parsed = z
+    .object({ learnedPairId: z.string().min(1).max(128) })
+    .safeParse(await c.req.json().catch(() => null))
+  if (!parsed.success) {
     return c.json({ error: 'validation_error', message: t(c, 'errors.validation_error') }, 400)
   }
 
-  const pair = await c.env.DB.prepare('SELECT id, user_id FROM learned_pairs WHERE id = ?')
-    .bind(body.learnedPairId)
+  const body = parsed.data
+  const pair = await c.env.DB.prepare(
+    'SELECT id, user_id FROM learned_pairs WHERE id = ? AND user_id = ?',
+  )
+    .bind(body.learnedPairId, userId)
     .first<{ id: string; user_id: string }>()
 
   if (!pair) {
     return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
   }
-  if (pair.user_id !== userId) {
-    return c.json({ error: 'forbidden', message: t(c, 'errors.forbidden') }, 403)
-  }
 
   const now = new Date().toISOString()
   await c.env.DB.prepare(
-    `UPDATE learned_pairs SET ease = 2.5, interval = 0, repetitions = 0, next_review = NULL, status = 'learning', updated_at = ? WHERE id = ?`,
+    `UPDATE learned_pairs SET ease = 2.5, interval = 0, repetitions = 0, next_review = NULL, status = 'learning', updated_at = ?, review_version = review_version + 1, last_review_id = NULL WHERE id = ? AND user_id = ?`,
   )
-    .bind(now, body.learnedPairId)
+    .bind(now, body.learnedPairId, userId)
     .run()
 
   const updated = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at, review_version FROM learned_pairs WHERE id = ? AND user_id = ?',
   )
-    .bind(body.learnedPairId)
+    .bind(body.learnedPairId, userId)
     .first()
 
   return c.json({ pair: updated })
@@ -276,8 +321,8 @@ router.get('/review/history/stats', requireAuth(), async (c) => {
 
 router.get('/review/history', requireAuth(), async (c) => {
   const userId = c.get('userId')!
-  const page = Math.max(1, parseInt(c.req.query('page') ?? '1'))
-  const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '20')))
+  const page = Math.min(100000, Math.max(1, parseInt(c.req.query('page') ?? '1', 10) || 1))
+  const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '20', 10) || 20))
   const offset = (page - 1) * limit
 
   const countResult = await c.env.DB.prepare(
@@ -314,14 +359,15 @@ router.get('/review/history', requireAuth(), async (c) => {
 router.get('/vocab', requireAuth(), async (c) => {
   const userId = c.get('userId')!
   const search = c.req.query('search') ?? ''
-  const page = Math.max(1, parseInt(c.req.query('page') ?? '1'))
-  const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '20')))
+  if (search.length > 2000) return c.json({ error: 'invalid_payload' }, 400)
+  const page = Math.min(100000, Math.max(1, parseInt(c.req.query('page') ?? '1', 10) || 1))
+  const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '20', 10) || 20))
   const offset = (page - 1) * limit
 
   let countSql = 'SELECT COUNT(*) as count FROM learned_pairs WHERE user_id = ?'
   let listSql = `SELECT id, user_id, source, target, source_text, target_text, is_phrase,
             ipa, pos, example_source, example_target,
-            ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at
+            ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at, review_version
      FROM learned_pairs
      WHERE user_id = ?`
   const countParams: unknown[] = [userId]
@@ -362,20 +408,24 @@ router.delete('/vocab/:id', requireAuth(), async (c) => {
   const userId = c.get('userId')!
   const pairId = c.req.param('id')
 
-  const pair = await c.env.DB.prepare('SELECT id, user_id FROM learned_pairs WHERE id = ?')
-    .bind(pairId)
+  const pair = await c.env.DB.prepare(
+    'SELECT id, user_id FROM learned_pairs WHERE id = ? AND user_id = ?',
+  )
+    .bind(pairId, userId)
     .first<{ id: string; user_id: string }>()
 
   if (!pair) {
     return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
   }
-  if (pair.user_id !== userId) {
-    return c.json({ error: 'forbidden', message: t(c, 'errors.forbidden') }, 403)
-  }
 
-  // Delete associated review logs first
-  await c.env.DB.prepare('DELETE FROM review_logs WHERE learned_pair_id = ?').bind(pairId).run()
-  await c.env.DB.prepare('DELETE FROM learned_pairs WHERE id = ?').bind(pairId).run()
+  // Preserve the existing explicit deletion policy, with both deletions atomic.
+  await c.env.DB.batch([
+    c.env.DB.prepare('DELETE FROM review_logs WHERE learned_pair_id = ? AND user_id = ?').bind(
+      pairId,
+      userId,
+    ),
+    c.env.DB.prepare('DELETE FROM learned_pairs WHERE id = ? AND user_id = ?').bind(pairId, userId),
+  ])
 
   return c.json({ success: true })
 })
@@ -383,32 +433,31 @@ router.delete('/vocab/:id', requireAuth(), async (c) => {
 // --- Edit a vocabulary pair ---
 
 const editSchema = z.object({
-  sourceText: z.string().min(1),
-  targetText: z.string().min(1),
-  ipa: z.string().optional(),
-  pos: z.string().optional(),
-  exampleSource: z.string().optional(),
-  exampleTarget: z.string().optional(),
+  sourceText: z.string().min(1).max(2000),
+  targetText: z.string().min(1).max(2000),
+  ipa: z.string().max(2000).optional(),
+  pos: z.string().max(2000).optional(),
+  exampleSource: z.string().max(2000).optional(),
+  exampleTarget: z.string().max(2000).optional(),
 })
 
 router.put('/vocab/:id', requireAuth(), async (c) => {
   const userId = c.get('userId')!
   const pairId = c.req.param('id')
-  const body = await c.req.json()
+  const body = await c.req.json().catch(() => null)
   const parsed = editSchema.safeParse(body)
   if (!parsed.success) {
     return c.json({ error: 'validation_error', message: t(c, 'errors.validation_error') }, 400)
   }
 
-  const pair = await c.env.DB.prepare('SELECT id, user_id FROM learned_pairs WHERE id = ?')
-    .bind(pairId)
+  const pair = await c.env.DB.prepare(
+    'SELECT id, user_id FROM learned_pairs WHERE id = ? AND user_id = ?',
+  )
+    .bind(pairId, userId)
     .first<{ id: string; user_id: string }>()
 
   if (!pair) {
     return c.json({ error: 'not_found', message: t(c, 'errors.pair_not_found') }, 404)
-  }
-  if (pair.user_id !== userId) {
-    return c.json({ error: 'forbidden', message: t(c, 'errors.forbidden') }, 403)
   }
 
   const { sourceText, targetText, ipa, pos, exampleSource, exampleTarget } = parsed.data
@@ -428,17 +477,19 @@ router.put('/vocab/:id', requireAuth(), async (c) => {
       bindValues.push(val)
     }
   }
-  setClauses.push('updated_at = ?')
-  bindValues.push(now, pairId)
+  setClauses.push('updated_at = ?', 'review_version = review_version + 1', 'last_review_id = NULL')
+  bindValues.push(now, pairId, userId)
 
-  await c.env.DB.prepare(`UPDATE learned_pairs SET ${setClauses.join(', ')} WHERE id = ?`)
+  await c.env.DB.prepare(
+    `UPDATE learned_pairs SET ${setClauses.join(', ')} WHERE id = ? AND user_id = ?`,
+  )
     .bind(...bindValues)
     .run()
 
   const updated = await c.env.DB.prepare(
-    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at FROM learned_pairs WHERE id = ?',
+    'SELECT id, user_id, source, target, source_text, target_text, is_phrase, ipa, pos, example_source, example_target, ease, interval, repetitions, next_review, last_seen, status, created_at, updated_at, review_version FROM learned_pairs WHERE id = ? AND user_id = ?',
   )
-    .bind(pairId)
+    .bind(pairId, userId)
     .first()
 
   return c.json({ pair: updated })

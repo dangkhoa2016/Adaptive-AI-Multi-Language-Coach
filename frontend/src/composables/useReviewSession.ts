@@ -16,6 +16,7 @@ export function useReviewSession() {
   const stats = ref<ReviewStats>({ dueCount: 0, learningCount: 0, masteredCount: 0, totalCount: 0 })
   const loading = ref(false)
   const error = ref<string | null>(null)
+  let pendingGrade: { id: string; quality: number; version: number; key: string } | null = null
 
   async function loadStats() {
     loading.value = true
@@ -37,6 +38,7 @@ export function useReviewSession() {
         phase.value = 'dashboard'
         return
       }
+      pendingGrade = null
       pairs.value = due
       currentIndex.value = 0
       flipped.value = false
@@ -54,7 +56,14 @@ export function useReviewSession() {
     isGrading.value = true
     error.value = null
     try {
-      await gradeCard(pair.id, quality)
+      pendingGrade ??= {
+        id: pair.id,
+        quality,
+        version: pair.review_version,
+        key: crypto.randomUUID(),
+      }
+      await gradeCard(pendingGrade.id, pendingGrade.quality, pendingGrade.version, pendingGrade.key)
+      pendingGrade = null
       if (currentIndex.value < pairs.value.length - 1) {
         currentIndex.value++
         flipped.value = false
@@ -63,12 +72,27 @@ export function useReviewSession() {
       }
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'errors.generic'
+      const status = (e as { status?: number })?.status
+      if (status === 409 || status === 404) {
+        pendingGrade = null
+        try {
+          pairs.value = await fetchDueCards()
+          currentIndex.value = 0
+          flipped.value = false
+          if (pairs.value.length === 0) phase.value = 'dashboard'
+        } catch {
+          // Keep the conflict visible; a new session can retry loading cards.
+          pairs.value = []
+          phase.value = 'dashboard'
+        }
+      }
     } finally {
       isGrading.value = false
     }
   }
 
   function resetSession() {
+    pendingGrade = null
     phase.value = 'dashboard'
     pairs.value = []
     currentIndex.value = 0

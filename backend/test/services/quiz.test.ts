@@ -66,7 +66,7 @@ describe('createQuizQuestions', () => {
     expect(unique.size).toBeGreaterThan(1)
   })
 
-  it('pads with (unknown) when distractor pool is too small', () => {
+  it('reports unavailable when the distractor pool is too small', () => {
     const singlePair: VocabPair[] = [
       {
         source: 'hello',
@@ -79,10 +79,7 @@ describe('createQuizQuestions', () => {
       },
     ]
     const questions = createQuizQuestions(singlePair)
-    expect(questions).toHaveLength(1)
-    expect(questions[0].options).toHaveLength(4)
-    const unknownCount = questions[0].options.filter((o) => o === '(unknown)').length
-    expect(unknownCount).toBe(3)
+    expect(questions).toEqual([])
   })
 
   it('uses provided distractor pool', () => {
@@ -116,10 +113,6 @@ describe('createQuizQuestions', () => {
 
   it('works with empty distractor pool', () => {
     const questions = createQuizQuestions(pairs, [])
-    expect(questions).toHaveLength(4)
-    for (const q of questions) {
-      expect(q.options).toHaveLength(4)
-      expect(q.options[q.correctIndex]).toBe(q.pair.target)
-    }
+    expect(questions).toEqual([])
   })
 })

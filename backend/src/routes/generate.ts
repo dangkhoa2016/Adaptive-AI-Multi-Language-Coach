@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { t } from '../i18n'
 import { enforceCostQuota } from '../middleware/costQuota'
-import { generateRequestSchema, type VocabPair } from '../services/schemas'
+import { generateRequestSchema, generateResponseSchema, type VocabPair } from '../services/schemas'
 import { buildCacheKey, generationCacheNamespace, readCache, writeCache } from '../services/cache'
 import { getFallbackPairsFromDB } from '../services/fallback'
 import { callAI } from '../services/ai'
@@ -34,6 +34,14 @@ generateRouter.post('/generate', createRateLimitMiddleware(), async (c) => {
   const quotaError = await enforceCostQuota(c)
   if (quotaError) return quotaError
   const req = parsed.data
+  const resultBody = (pairs: VocabPair[], isFallback: boolean, cacheHit: boolean) => ({
+    pairs,
+    isFallback,
+    cacheHit,
+    requestedCount: req.count,
+    returnedCount: pairs.length,
+    partial: pairs.length < req.count,
+  })
 
   // Try cache first
   let namespace: string
@@ -55,7 +63,7 @@ generateRouter.post('/generate', createRateLimitMiddleware(), async (c) => {
   )
   const cached = await readCache(c.env.CACHE, cacheKey)
   if (cached) {
-    return c.json({ ...cached, cacheHit: true })
+    return c.json(resultBody(cached.pairs.slice(0, req.count), cached.isFallback, true))
   }
 
   // Try AI generation
@@ -74,12 +82,14 @@ generateRouter.post('/generate', createRateLimitMiddleware(), async (c) => {
     pairs = pairs.slice(0, req.count)
   }
 
-  if (pairs.length === 0) {
+  const validated = generateResponseSchema.safeParse({ pairs })
+  if (!validated.success) {
     return c.json({ error: 'fallback_unavailable', message: t(c, 'errors.internal_error') }, 503)
   }
+  pairs = validated.data.pairs.slice(0, req.count)
 
   // Write to cache
   await writeCache(c.env.CACHE, cacheKey, pairs, isFallback)
 
-  return c.json({ pairs, isFallback, cacheHit: false })
+  return c.json(resultBody(pairs, isFallback, false))
 })

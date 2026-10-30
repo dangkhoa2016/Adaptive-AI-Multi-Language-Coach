@@ -24,6 +24,9 @@ export interface GenerateResponse {
   pairs: VocabPair[]
   isFallback: boolean
   cacheHit: boolean
+  requestedCount?: number
+  returnedCount?: number
+  partial?: boolean
 }
 
 export interface QuizQuestion {

@@ -15,8 +15,8 @@ describe('computeSimilarity', () => {
     expect(computeSimilarity('Hello World', 'hello world')).toBe(1.0)
   })
 
-  it('ignores diacritics', () => {
-    expect(computeSimilarity('café', 'cafe')).toBe(1.0)
+  it('preserves diacritics in transcript text comparison', () => {
+    expect(computeSimilarity('café', 'cafe')).toBeLessThan(1.0)
   })
 
   it('ignores punctuation', () => {

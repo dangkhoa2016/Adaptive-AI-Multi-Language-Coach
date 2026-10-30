@@ -1,0 +1,98 @@
+[
+  {
+    "locale": "en",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "en",
+    "TTS_language_claim": "UNKNOWN_REAL_AUDIO",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "vi",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "en",
+    "TTS_language_claim": "INCORRECT_FOR_LANGUAGE_CLAIM",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "ja",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "ja",
+    "TTS_language_claim": "UNKNOWN_REAL_AUDIO",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "ko",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "ko",
+    "TTS_language_claim": "UNKNOWN_REAL_AUDIO",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "th",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "en",
+    "TTS_language_claim": "INCORRECT_FOR_LANGUAGE_CLAIM",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "zh",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "zh",
+    "TTS_language_claim": "UNKNOWN_REAL_AUDIO",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "fr",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "en",
+    "TTS_language_claim": "INCORRECT_FOR_LANGUAGE_CLAIM",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  },
+  {
+    "locale": "de",
+    "UI_available": "IMPLEMENTED_RESOURCE_PRESENT",
+    "content_generation_validated": "UNKNOWN",
+    "TTS_validated": "NOT_RUN",
+    "TTS_configured_language": "en",
+    "TTS_language_claim": "INCORRECT_FOR_LANGUAGE_CLAIM",
+    "STT_validated": "NOT_RUN",
+    "text_similarity_supported": "OFFLINE_UNICODE_COUNTEREXAMPLE_TESTED",
+    "human_quality_review": "NOT_EVALUATED",
+    "live_provider_tested": "NOT_RUN"
+  }
+]

@@ -35,8 +35,8 @@ export function computeSimilarity(reference: string, hypothesis: string): number
   const a = normalizeString(reference)
   const b = normalizeString(hypothesis)
 
-  if (a === b) return 1.0
   if (a.length === 0 || b.length === 0) return 0.0
+  if (a === b) return 1.0
 
   const dist = levenshteinDistance(a, b)
   const maxLen = Math.max(a.length, b.length)
@@ -46,9 +46,8 @@ export function computeSimilarity(reference: string, hypothesis: string): number
 function normalizeString(s: string): string {
   return s
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\s]/g, '')
+    .normalize('NFC')
+    .replace(/[^\p{L}\p{M}\p{N}\s]/gu, '')
     .replace(/\s+/g, ' ')
     .trim()
 }

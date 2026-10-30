@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "direction",
+    "source_locale",
+    "target_locale",
+    "source_text",
+    "context",
+    "accepted_reference_translations",
+    "known_wrong_translations",
+    "level_hint",
+    "tags",
+    "annotation_note",
+    "review_status",
+    "provenance",
+    "rights_status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(ENVI|VIEN)-[0-9]{3}$"
+    },
+    "direction": {
+      "enum": ["ENVI", "VIEN"]
+    },
+    "source_locale": {
+      "enum": ["en", "vi"]
+    },
+    "target_locale": {
+      "enum": ["en", "vi"]
+    },
+    "source_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accepted_reference_translations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "known_wrong_translations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "level_hint": {
+      "enum": ["A1", "A2", "B1", "B2", "C1", "C2"]
+    },
+    "tags": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "annotation_note": {
+      "type": "string"
+    },
+    "review_status": {
+      "enum": ["DRAFT_UNREVIEWED", "HUMAN_REVIEWED"]
+    },
+    "provenance": {
+      "type": "string"
+    },
+    "rights_status": {
+      "type": "string"
+    }
+  },
+  "description": "Draft lexical case contract; JSON Schema validation alone does not evaluate translation correctness."
+}

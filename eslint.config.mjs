@@ -65,6 +65,7 @@ export default [
       'backend/scripts/**/*.js',
       'backend/manual/**/*.js',
       'scripts/**/*.js',
+      'eval/m2a/tools/**/*.mjs',
     ],
     languageOptions: {
       globals: {

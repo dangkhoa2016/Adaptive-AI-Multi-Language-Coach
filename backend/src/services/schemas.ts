@@ -12,9 +12,20 @@ export const generateRequestSchema = z.object({
   mode: z.enum(['word', 'phrase', 'mix']).default('mix'),
 })
 
+// Structural identity only: preserve tone marks; this does not identify a language.
+export const textIdentity = (text: string): string =>
+  text.normalize('NFC').trim().replace(/\s+/gu, ' ').toLowerCase()
+
+export const vocabularyTextSchema = z
+  .string()
+  .max(2000)
+  .transform((text) => text.normalize('NFC').trim())
+  .pipe(z.string().min(1))
+  .refine((text) => !['(unknown)', '[placeholder]'].includes(textIdentity(text)))
+
 export const vocabPairSchema = z.object({
-  source: z.string().min(1).max(2000),
-  target: z.string().min(1).max(2000),
+  source: vocabularyTextSchema,
+  target: vocabularyTextSchema,
   exampleSource: z.string().max(2000).optional().default(''),
   exampleTarget: z.string().max(2000).optional().default(''),
   ipa: z.string().max(2000).optional().default(''),
@@ -26,7 +37,16 @@ export const vocabPairSchema = z.object({
 })
 
 export const generateResponseSchema = z.object({
-  pairs: z.array(vocabPairSchema).min(1).max(50),
+  pairs: z
+    .array(vocabPairSchema)
+    .min(1)
+    .max(50)
+    .refine((pairs) => {
+      const identities = pairs.map((pair) =>
+        JSON.stringify([textIdentity(pair.source), textIdentity(pair.target)]),
+      )
+      return new Set(identities).size === identities.length
+    }, 'Duplicate vocabulary pairs'),
 })
 
 export type GenerateRequest = z.infer<typeof generateRequestSchema>

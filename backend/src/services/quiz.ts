@@ -1,4 +1,4 @@
-import type { VocabPair } from './schemas'
+import { textIdentity, vocabularyTextSchema, type VocabPair } from './schemas'
 
 /**
  * Generates a quiz question for a given vocab pair.
@@ -19,16 +19,26 @@ export interface QuizQuestion {
  */
 export function createQuizQuestions(
   pairs: VocabPair[],
-  distractorPool: string[] = [],
+  distractorPool: string[] = pairs.map((pair) => pair.target),
 ): QuizQuestion[] {
+  const pool = new Map<string, string>()
+  for (const candidate of distractorPool) {
+    const parsed = vocabularyTextSchema.safeParse(candidate)
+    if (parsed.success) pool.set(textIdentity(parsed.data), parsed.data)
+  }
+  // Never fabricate a wrong answer. The route reports this as quiz_unavailable.
+  if (
+    pairs.some(
+      (pair) => [...pool.keys()].filter((key) => key !== textIdentity(pair.target)).length < 3,
+    )
+  ) {
+    return []
+  }
   const shuffled = [...pairs].sort(() => Math.random() - 0.5)
   return shuffled.map((pair) => {
-    const distractors = distractorPool.filter((d) => d !== pair.target).slice(0, 3)
-
-    // If we don't have enough distractors, pad with generic options
-    while (distractors.length < 3) {
-      distractors.push('(unknown)')
-    }
+    const distractors = [...pool.entries()]
+      .filter(([key]) => key !== textIdentity(pair.target))
+      .map(([, text]) => text)
 
     // Shuffle distractors and pick exactly 3
     const shuffled = distractors.sort(() => Math.random() - 0.5).slice(0, 3)

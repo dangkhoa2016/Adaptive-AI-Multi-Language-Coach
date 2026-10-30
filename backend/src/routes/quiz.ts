@@ -34,6 +34,9 @@ quizRouter.post('/quiz', createRateLimitMiddleware(), async (c) => {
   if (quotaError) return quotaError
   const distractorPool = validated.map((p) => p.target)
   const questions = createQuizQuestions(validated, distractorPool)
+  if (questions.length === 0) {
+    return c.json({ error: 'quiz_unavailable' }, 422)
+  }
 
   return c.json({ questions })
 })

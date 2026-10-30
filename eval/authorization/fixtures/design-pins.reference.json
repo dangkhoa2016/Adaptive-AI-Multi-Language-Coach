@@ -1,0 +1,87 @@
+{
+  "authority": "MASTER_HANDOFF_COPY_NOT_A_GRANT",
+  "source_handoff_sha256": "38ce7edc8ca5f8e43316a53b9ad3cf7e6640afe4103541b5dc19ca3c88cd8e6a",
+  "inference_authorization": "NOT_AUTHORIZED",
+  "approved_design_only": [
+    {
+      "scenario_id": "GEN-04",
+      "request": {
+        "source": "vi",
+        "target": "en",
+        "topic": "food",
+        "level": "A2",
+        "count": 10,
+        "mode": "mix",
+        "uiLocale": "en"
+      },
+      "design_approved_request_sha256": "b401830e43dd6895c44acd52c0b034c73507a47f1aa0bc1cdc5a452cb38fc46c",
+      "decision": "OWNER_APPROVED_DESIGN_ONLY",
+      "runtime_permission": false
+    },
+    {
+      "scenario_id": "GEN-06",
+      "request": {
+        "source": "vi",
+        "target": "en",
+        "topic": "technology",
+        "level": "B1",
+        "count": 20,
+        "mode": "mix",
+        "uiLocale": "en"
+      },
+      "design_approved_request_sha256": "536d30035534790e9cb9b3693cd31afb60a1df1fe3ca87a00011e8217f88fca2",
+      "decision": "OWNER_APPROVED_DESIGN_ONLY",
+      "runtime_permission": false
+    },
+    {
+      "scenario_id": "GEN-07",
+      "request": {
+        "source": "en",
+        "target": "vi",
+        "topic": "travel",
+        "level": "A2",
+        "count": 1,
+        "mode": "word",
+        "uiLocale": "en"
+      },
+      "design_approved_request_sha256": "a73bd805c8461f564ddccafce9466cb30f1fd7516e168627f12dbf95ac966a06",
+      "decision": "OWNER_APPROVED_DESIGN_ONLY",
+      "runtime_permission": false
+    },
+    {
+      "scenario_id": "GEN-09",
+      "request": {
+        "source": "en",
+        "target": "vi",
+        "topic": "food",
+        "level": "A1",
+        "count": 5,
+        "mode": "mix",
+        "uiLocale": "en"
+      },
+      "design_approved_request_sha256": "d14d2edc51f711f5a055fd61471d7555fbe6a0c9e597bae358925f0a63b9802e",
+      "decision": "OWNER_APPROVED_DESIGN_ONLY",
+      "runtime_permission": false
+    },
+    {
+      "scenario_id": "GEN-11",
+      "request": {
+        "source": "en",
+        "target": "vi",
+        "topic": "travel",
+        "level": "B1",
+        "count": 10,
+        "mode": "mix",
+        "uiLocale": "en"
+      },
+      "design_approved_request_sha256": "a1a407af899e8a68b1d96f3da6194570358a3de2415a59843d21173f635552ea",
+      "decision": "OWNER_APPROVED_DESIGN_ONLY",
+      "runtime_permission": false
+    }
+  ],
+  "other_scenarios_pending": ["GEN-01", "GEN-02", "GEN-03", "GEN-05", "GEN-08", "GEN-10", "GEN-12"],
+  "planned_initial_requests": 5,
+  "planned_requested_pairs": 46,
+  "live_attempts": 0,
+  "valid_execution_grants": 0
+}

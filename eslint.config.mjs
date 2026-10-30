@@ -77,5 +77,16 @@ export default [
       'no-undef': 'error',
     },
   },
+  {
+    files: ['eval/authorization/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
+  },
   prettier,
 ]

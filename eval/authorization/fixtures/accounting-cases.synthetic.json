@@ -1,0 +1,80 @@
+{
+  "kind": "TEST_ONLY_INVENTED_UNITS_NOT_PRICING",
+  "reservations": [
+    {
+      "id": "EQUAL_BOTH",
+      "project": {
+        "cap": "100",
+        "spent": "20",
+        "holds": ["30", "10"]
+      },
+      "grant": {
+        "cap": "60",
+        "spent": "0",
+        "holds": ["20"]
+      },
+      "W": "40",
+      "want": true
+    },
+    {
+      "id": "PROJECT_ONE_OVER",
+      "project": {
+        "cap": "99",
+        "spent": "20",
+        "holds": ["30", "10"]
+      },
+      "grant": {
+        "cap": "60",
+        "spent": "0",
+        "holds": ["20"]
+      },
+      "W": "40",
+      "want": false
+    },
+    {
+      "id": "GRANT_ONE_OVER",
+      "project": {
+        "cap": "100",
+        "spent": "20",
+        "holds": ["30", "10"]
+      },
+      "grant": {
+        "cap": "59",
+        "spent": "0",
+        "holds": ["20"]
+      },
+      "W": "40",
+      "want": false
+    },
+    {
+      "id": "OTHER_GRANT_UNKNOWN_HOLD",
+      "project": {
+        "cap": "100",
+        "spent": "0",
+        "holds": ["70", "20"]
+      },
+      "grant": {
+        "cap": "100",
+        "spent": "0",
+        "holds": []
+      },
+      "W": "11",
+      "want": false
+    },
+    {
+      "id": "ZERO_NO_PROVIDER_COST_CLAIM",
+      "project": {
+        "cap": "0",
+        "spent": "0",
+        "holds": []
+      },
+      "grant": {
+        "cap": "0",
+        "spent": "0",
+        "holds": []
+      },
+      "W": "0",
+      "want": true
+    }
+  ]
+}

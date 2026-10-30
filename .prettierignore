@@ -9,3 +9,6 @@ idea-and-plan
 
 frontend/test-results/
 frontend/playwright-report/
+
+# Immutable original input; its byte hash is pinned by the offline validator.
+eval/m2b1/data/dataset_metadata.json

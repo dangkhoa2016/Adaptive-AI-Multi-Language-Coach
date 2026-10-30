@@ -1,0 +1,17 @@
+{
+  "data/lexical_cases.draft.jsonl": {
+    "sha256": "820e94e6b2b07c957214871f9435e6b320f82ec44789c06cf6f208271ddb7782",
+    "source_archive": "ADAPTIVE_COACH_M2A_OFFLINE_KICKOFF_2026-10-30.zip",
+    "status": "UNMODIFIED_FROM_M2A_KICKOFF"
+  },
+  "data/generation_scenarios.original.jsonl": {
+    "sha256": "20611ea689f4c6060375d89a0a55c81d6ec3ba5e4a49a1525e004a884d75bc34",
+    "source_archive": "ADAPTIVE_COACH_M2A_OFFLINE_KICKOFF_2026-10-30.zip",
+    "status": "UNMODIFIED_FROM_M2A_KICKOFF"
+  },
+  "data/dataset_metadata.json": {
+    "sha256": "c9098fefbce98fd16117a3ed308cb2b87815a31290ae708426426adab0cb570c",
+    "source_archive": "ADAPTIVE_COACH_M2A_OFFLINE_KICKOFF_2026-10-30.zip",
+    "status": "UNMODIFIED_FROM_M2A_KICKOFF"
+  }
+}

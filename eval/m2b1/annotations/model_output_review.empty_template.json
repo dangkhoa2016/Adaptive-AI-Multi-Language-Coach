@@ -1,0 +1,21 @@
+{
+  "sample_id": null,
+  "scenario_id": null,
+  "model_revision": null,
+  "prompt_hash": null,
+  "generated_pair_index": null,
+  "reviewer_slot": null,
+  "reviewer_id": null,
+  "review_status": "PENDING",
+  "semantic_accuracy": null,
+  "context_alignment": null,
+  "naturalness": null,
+  "example_fidelity": null,
+  "ipa_quality": null,
+  "ipa_applicable": null,
+  "critical_error": null,
+  "language_direction_error": null,
+  "notes": null,
+  "accent_dialect": null,
+  "reviewed_at_utc": null
+}

@@ -1,0 +1,16 @@
+{
+  "dataset_id": "adaptive-coach-m2-lexical-draft-v0.1",
+  "version": "0.1-draft",
+  "created_date": "2026-10-30",
+  "languages": [
+    "en",
+    "vi"
+  ],
+  "cases": 32,
+  "status": "DRAFT_UNREVIEWED",
+  "intended_use": "Offline annotation/evaluation design only; NOT a validated gold standard or measured model performance",
+  "provenance": "Project-specific original examples written during ChatGPT planning session",
+  "license": "NOT_ASSIGNED_OWNER_DECISION_REQUIRED",
+  "human_review_count": 0,
+  "synthetic_model_outputs_included": false
+}

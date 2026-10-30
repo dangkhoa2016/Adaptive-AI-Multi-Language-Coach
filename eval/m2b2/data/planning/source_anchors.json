@@ -1,0 +1,14 @@
+{
+  "source": "M2-B1 evidence ZIP 20261030T040632Z",
+  "baseline_m2b1_commit": "c5f61515b6ff363ef35ee5abb6474ddec5f549b1",
+  "immutable_source_sha256": {
+    "data/source/dataset_metadata.json": "c9098fefbce98fd16117a3ed308cb2b87815a31290ae708426426adab0cb570c",
+    "data/source/generation_scenarios.original.jsonl": "20611ea689f4c6060375d89a0a55c81d6ec3ba5e4a49a1525e004a884d75bc34",
+    "data/source/generation_scenarios.proposed.jsonl": "3803f372074ba7721a19902d080018584449413f6b16e097badf0a94634aa55e",
+    "data/source/input_provenance.json": "b1671cd9798ae06d7f65892bbe3afd33acd562782bdb6997fde62cd7edf9fed5",
+    "data/source/lexical_cases.draft.jsonl": "820e94e6b2b07c957214871f9435e6b320f82ec44789c06cf6f208271ddb7782",
+    "data/source/lexical_reference_review.pending.jsonl": "4757afe9b2275ef40852a3d7d729a3a9f4c44c6b6191e30f138c87ec4aa93d84",
+    "data/source/model_output_review.empty_template.json": "a2ae816d8f19a1384ae6bb7fcbea244e7f91a2a7e7978546150ff816bdb98ad4"
+  },
+  "note": "Pins protect accidental edits, not malicious revision of both checker and pins; compare to original ZIP independently."
+}

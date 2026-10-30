@@ -1,0 +1,38 @@
+{
+  "record_kind": "EMPTY_TEMPLATE_NOT_A_RUN",
+  "execution_status": "NOT_RUN",
+  "evidence_origin": "UNPOPULATED",
+  "scenario_id": null,
+  "attempt_id": null,
+  "attempt_started_utc": null,
+  "attempt_finished_utc": null,
+  "elapsed_ms_monotonic": null,
+  "application_commit": null,
+  "request": null,
+  "request_sha256": null,
+  "http_status": null,
+  "transport_outcome": null,
+  "error_code": null,
+  "response": {
+    "pairs": null,
+    "requestedCount": null,
+    "returnedCount": null,
+    "partial": null,
+    "isFallback": null,
+    "cacheHit": null
+  },
+  "provider": {
+    "provider_kind": null,
+    "model_name": null,
+    "model_revision": null,
+    "model_identity_status": "UNKNOWN_NOT_EVALUATED",
+    "prompt_hash_sha256": null,
+    "model_config_hash_sha256": null,
+    "usage_input_tokens": null,
+    "usage_output_tokens": null,
+    "verified_cost_usd": null
+  },
+  "human_review_status": "NOT_EVALUATED",
+  "semantic_scores": null,
+  "pronunciation_score": null
+}

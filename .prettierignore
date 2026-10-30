@@ -12,3 +12,4 @@ frontend/playwright-report/
 
 # Immutable original input; its byte hash is pinned by the offline validator.
 eval/m2b1/data/dataset_metadata.json
+eval/m2b2/data/source/dataset_metadata.json

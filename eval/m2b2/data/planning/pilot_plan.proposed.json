@@ -1,0 +1,78 @@
+{
+  "protocol_id": "adaptive-coach-m2b2-design-v0.1",
+  "status": "PROPOSED_OWNER_REVIEW_PENDING",
+  "source_final_head": "c5f61515b6ff363ef35ee5abb6474ddec5f549b1",
+  "phase": "M2_B2_EVALUATION_DESIGN_ONLY",
+  "runtime_inference_authorization": "NOT_AUTHORIZED",
+  "stage_0": {
+    "activities": [
+      "finalize_mapping_and_mode",
+      "approve_review_rubric_and_eligibility",
+      "verify_dataset_rights_license",
+      "approve_sampling_and_budget",
+      "verify model identity and test env"
+    ],
+    "gate": "OWNER_SIGNOFF_REQUIRED"
+  },
+  "pilot_candidate": {
+    "main_scenarios": ["GEN-04", "GEN-06", "GEN-07", "GEN-09", "GEN-11"],
+    "exploratory_scenarios": ["GEN-01", "GEN-02", "GEN-05", "GEN-08"],
+    "blocked_original_intent": ["GEN-03", "GEN-10", "GEN-12"],
+    "main_scenario_attempts_if_once_each": 5,
+    "maximum_requested_pairs_for_single_main_pass": 46,
+    "by_direction_requested_pairs_if_complete": {
+      "ENVI": 16,
+      "VIEN": 30
+    },
+    "executed_attempts": 0,
+    "collected_model_pairs": 0,
+    "independent_inferences": 0,
+    "human_reviews": 0,
+    "fallbacks": 0,
+    "cache_hits": 0,
+    "candidate_stage": "NOT_RUN",
+    "policy": "One attempt per exact scenario only after separate approval. No repeat inference is authorized; cache replays do not count as independent model runs."
+  },
+  "evaluation_lanes": {
+    "reference_curation": {
+      "draft_cases": 32,
+      "reviewer_slots": 64,
+      "completed_reviews": 0,
+      "status": "NOT_EVALUATED"
+    },
+    "model_sample": {
+      "actual_samples": 0,
+      "status": "NOT_RUN"
+    },
+    "speech": {
+      "status": "NOT_RUN"
+    }
+  },
+  "metrics": {
+    "successful_deliveries": null,
+    "full_delivery_rate": null,
+    "pair_yield": null,
+    "model_only_semantic_accuracy": null,
+    "semantic_quality_status": "NOT_EVALUATED",
+    "ipa_quality": null,
+    "tts_stt_quality": null,
+    "wilson_ci": null
+  },
+  "execution_prerequisites": {
+    "owner_topic_mode_approval": false,
+    "rubric_approved": false,
+    "reviewers_approved": false,
+    "rights_confirmed": false,
+    "budget_cap_usd": null,
+    "approved_provider_model_revision": null,
+    "approved_sandbox_environment": null,
+    "provider_auth_secret_present": false
+  },
+  "rules": [
+    "Count HTTP failures, timeouts, 429, 503, partials and fallback in attempted delivery denominator.",
+    "Segment live model, fallback and cache populations; cache is never an independent inference.",
+    "Do not map arbitrary generated pairs to individual lexical reference prompts.",
+    "No semantic score from schema validity or string equality.",
+    "All real runs require explicit separate authorization and budget."
+  ]
+}

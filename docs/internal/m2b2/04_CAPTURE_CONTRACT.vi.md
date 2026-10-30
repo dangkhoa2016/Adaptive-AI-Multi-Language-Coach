@@ -1,0 +1,22 @@
+# M2-B2 — Hợp đồng thu thập attempt & provenance (VI)
+
+**Chỉ là thiết kế:** `data/planning/attempt_capture.empty.json` cố ý đặt `record_kind=EMPTY_TEMPLATE_NOT_A_RUN`, `execution_status=NOT_RUN` và các giá trị thực tế `null`. Không có output AI trong gói. Module `tools/attempt_contract.mjs` chỉ nhận bản ghi trong bộ nhớ, không có `fetch`, SDK hay token.
+
+| Trường của bản ghi tương lai                                          | Cách ghi và giới hạn                                                                                                                                                            |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `record_kind`, `evidence_origin`                                      | `CAPTURED_ATTEMPT`; `AUTHORIZED_CAPTURE` chỉ sau phép thật hoặc `SYNTHETIC_TEST` chỉ dùng test. Không đổi nhãn synthetic thành real.                                            |
+| `scenario_id`, `attempt_id`                                           | ID ổn định và duy nhất; capture đối chiếu với 12 scenario. Mỗi retry là một attempt mới, không xóa lỗi trước đó.                                                                |
+| `application_commit`                                                  | Git SHA 40 hex của application thực thi, không mặc định suy từ template.                                                                                                        |
+| `request`, `request_sha256`                                           | Request chứa mã `source`/`target`, `uiLocale`, `topic`, `level`, `count`, `mode`; hash SHA256 từ JSON canonicalized keys. Hash request **không** phải hash prompt gửi provider. |
+| `attempt_started_utc`, `attempt_finished_utc`, `elapsed_ms_monotonic` | UTC ISO8601 và milliseconds lấy từ đồng hồ monotonic. Không lấy chênh lệch wall-clock làm latency nếu có monotonic.                                                             |
+| `transport_outcome`, `http_status`, `error_code`                      | HTTP response, timeout, network error; không tự bịa HTTP status cho lỗi chưa có HTTP response.                                                                                  |
+| `response.pairs`, `requestedCount`, `returnedCount`, `partial`        | Chỉ có với HTTP 200; số pair phải bằng returnedCount, không vượt count; `partial=(returnedCount<count)`. Lỗi HTTP dùng `response=null`.                                         |
+| `isFallback`, `cacheHit`                                              | Ghi nguyên từ API nếu HTTP 200, không tự suy provider. Tách fallback/cache khỏi chất lượng model chính.                                                                         |
+| `provider.model_name`, `model_revision`, `model_identity_status`      | Có thể `UNKNOWN_NOT_EVALUATED`. Chỉ gắn `VERIFIED` nếu có thông tin xác thực và revision.                                                                                       |
+| `prompt_hash_sha256`, `model_config_hash_sha256`                      | Có thể null khi chưa truy xuất. Hash prompt thực tế không phải hash request; không đưa raw prompt chứa dữ liệu nhạy cảm vào ZIP.                                                |
+| `verified_cost_usd`, token usage                                      | `null` nếu không được provider đo/xác thực; quota request không phải ngân sách USD.                                                                                             |
+| `human_review_status`, `semantic_scores`                              | Bản ghi capture ban đầu `NOT_EVALUATED` và `null`. Review đi qua quy trình riêng, hai người thực và adjudication.                                                               |
+
+`sample_id=(attempt_id, pair_index)` chỉ được tạo **sau** khi pair thật có mặt; khi đó chấm theo nguồn model/fallback/cache và phân tầng. Khi chưa có attempt, tổng mẫu và accuracy phải là 0 và `NOT_EVALUATED`, không thể gọi là tỷ lệ 0%.
+
+`tools/attempt_contract.mjs` có `validateCapturedAttempt()` và `summarizeAttempts()` với synthetic tests. Thống kê **delivery** tính cả lỗi 429/503/timeout vào mẫu số. Công cụ chưa thực hiện capture, không liên hệ AI, và chưa thể suy ra số inference độc lập chỉ từ response. Bất kỳ executor tương lai cần owner phê duyệt mới về budget, model, sandbox, source-code change và evidence.

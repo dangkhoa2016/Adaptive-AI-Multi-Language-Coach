@@ -6,15 +6,11 @@ A pnpm monorepo with a Vue 3 SPA, Hono API on Cloudflare Workers, D1 storage, KV
 
 ## Current verification status
 
-The M0 closure continues on `recovery/adaptive-coach-production-hardening-2026-10-29`, from original baseline `42f0d7d9cc261f83e627f112f976c34d2c3b7ddf` and first review HEAD `488121f4384bfa8a0738a871ff112ac9e20b0f6a`.
+M1 hardening follows the owner's continuation request on `recovery/adaptive-coach-production-hardening-2026-10-29`, starting from M0 dependency HEAD `be1417bf8dc94f9bfc9f0eb87c44383e9eee6b8e`. M0 technical gates passed; owner acceptance remains a separate decision. Credential verification remains skipped at the owner's request.
 
-Auth JSON is serialized once, rate limits apply to intended POST routes, and fallback only serves explicitly labelled language pairs. The cache namespace changed to invalidate historical unsafe fallback. Browser auth-request and learning tests now pass with actual Worker/D1/KV HTTP behavior, native quota exhaustion checks, captured synthetic mail, and en→vi fixtures. This does not prove the complete login/save/review security journey or live mail/AI acceptance.
+M1 adds trusted-origin/CSRF checks, race-safe single-use tokens, session revocation, metadata-only admin settings with enforced secret encryption, atomic versioned/idempotent review, durable D1 quotas, bounded payload/provider behavior and model-configuration cache isolation. Browser fixtures exercise login→ENVI generation→save→grade using actual Vue/Worker/D1/KV HTTP and memory-only synthetic mail. The external M1 evidence records final committed-HEAD gates and failed exploratory attempts; historical coverage is not reused.
 
-**M0 acceptance remains an owner decision.** This dependency-only follow-up replaces the deprecated Cloudflare test pool with vendor-supported `@cloudflare/vitest-plugin@1.4.8` and updates direct esbuild to `0.28.2`; full audit is clean in the migration checks. Credential verification remains skipped at the owner’s request and is not claimed complete. M1–M4 remain NOT_RUN. Current results, coverage, failures from earlier attempts, dependency decisions and commands recorded on the actual final commit are delivered in the external M0 closure evidence bundle. Previous coverage percentages belong to the first report; they are not reused as current results.
-
-The previous Zod 3 and esbuild advisory paths are remediated through dependency updates, without an audit exclusion or Zod-major override. Frontend Vitest moved from 3 to 4 for security fixes, so its current coverage mapping must not be compared directly with the earlier report.
-
-Deployment remains disabled. No push, remote database read/write, live mail, paid inference, or production data access is authorized in this run. Keep original ZIPs/private backups private and rotate the exposed GitHub credential.
+M2–M4 remain NOT_RUN. Deployment stays disabled: no push, remote database read/write, real email or paid inference. Local verification does not establish production acceptance or AI/audio language quality. Dependencies retain Cloudflare plugin1.4.8/esbuild0.28.2 advisory remediation without audit suppression. Keep credential-bearing source ZIPs/backups private; rotation is not verified.
 
 ## Local setup
 
@@ -53,23 +49,23 @@ pnpm -r build
 pnpm --filter @vocab/frontend test:e2e
 ```
 
-CI runs typecheck, lint, formatting, Vitest, and build. E2E is a separate command that starts its own disposable backend and frontend; it requires Chromium and system browser libraries. The manual deployment workflow depends on reusable quality CI and has its deployment job disabled pending owner approval and environment configuration.
+CI runs typecheck, lint, formatting, Vitest, the native provider runtime regression, and build. E2E is a separate command that starts its own disposable backend and frontend; it requires Chromium and system browser libraries. The manual deployment workflow depends on reusable quality CI and has its deployment job disabled pending owner approval and environment configuration.
 
 ## Architecture and API
 
 Browser → Vue API client → Vite `/api` proxy (development) or Worker (deployment) → Hono routes → D1/KV. The frontend builds to root `assets/`, served through `ASSETS`. Server locale resolution uses `Accept-Language` or `?lang=` for eight locales: en, vi, ja, ko, th, zh, fr, de. UI locale support is separate from verified AI/audio language quality.
 
-Vocabulary generation reads model/endpoint settings and encrypted API-key configuration from D1, calls the configured HTTP provider only when keys exist, then falls back to language-labelled local pairs. KV keys include languages, topic, level, count, mode and day. Audio routes use Workers AI through `AI`; the local smoke configuration omits this potentially billable remote binding.
+Vocabulary generation reads model/endpoint settings and encrypted API-key configuration from D1, calls the configured HTTP provider only when keys exist, then falls back to language-labelled local pairs. KV v3 keys include languages, topic, level, count, mode, day and an endpoint/model/options snapshot hash; cached fallback remains labelled. Audio routes use Workers AI through `AI`; the local smoke configuration omits this potentially billable remote binding.
 
-| API group         | Main endpoints                                                                       | Current boundary                                                            |
-| ----------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| Public metadata   | `/health`, `/api/locales`, `/api/topics`, `/api/docs`                                | No AI/auth quota charged                                                    |
-| Learning          | POST `/api/generate`, `/api/quiz`, `/api/tts`, `/api/stt`                            | Shared native API limiter; guest behavior retained                          |
-| Auth              | POST `/api/auth/request`, `/api/auth/verify`, `/api/auth/logout`; GET `/api/auth/me` | Auth POST limiter; me requires a session; security hardening pending        |
-| Vocabulary/review | `/api/vocab/*`, `/api/review/*`                                                      | Session required; atomicity/concurrency/authorization acceptance pending M1 |
-| Administration    | `/api/admin/*`                                                                       | Auth/admin checks in source; secret exposure fixes pending M1               |
+| API group         | Main endpoints                                                                       | Current boundary                                                 |
+| ----------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| Public metadata   | `/health`, `/api/locales`, `/api/topics`, `/api/docs`                                | No AI/auth quota charged                                         |
+| Learning          | POST `/api/generate`, `/api/quiz`, `/api/tts`, `/api/stt`                            | Native limiter + durable guest/account/global budgets            |
+| Auth              | POST `/api/auth/request`, `/api/auth/verify`, `/api/auth/logout`; GET `/api/auth/me` | Configured origin, single-use tokens, quotas, revocable sessions |
+| Vocabulary/review | `/api/vocab/*`, `/api/review/*`                                                      | User scope; atomic grade, CAS/version and replay key             |
+| Administration    | `/api/admin/*`                                                                       | Auth/admin; metadata, encrypted secrets, value-free audit        |
 
-D1 tables cover users, hashed magic tokens, learned pairs, email provider configuration, system settings, topics, fallback pairs, AI-generated history, AI model selection, review logs, rate-limit events and audit logs. Preserve all twelve historical migration files. Local main and recovery differ in 0003/0004 migration identity; legacy retains `mastered_at` and an index absent from fresh schema. Migration 0009 intentionally deletes four settings keys. See setup docs for backup/rehearsal restrictions.
+D1 tables cover users, hashed magic tokens, learned pairs, email provider configuration, system settings, topics, fallback pairs, AI-generated history, AI model selection, review logs, rate-limit events and audit logs. Preserve all twelve historical migration files;0013–0015 add M1 schema only. Local main and recovery differ in 0003/0004 migration identity; legacy retains `mastered_at` and an index absent from fresh schema. Migration 0009 intentionally deletes four settings keys. See setup docs for backup/rehearsal restrictions.
 
 ## Configuration and security
 
@@ -82,7 +78,7 @@ D1 tables cover users, hashed magic tokens, learned pairs, email provider config
 | `RATE_LIMITER_AUTH` | 3 auth POST requests per 60 seconds in local template/driver             |
 | `AI`                | Deployment-only Workers AI audio binding; not enabled by local generator |
 
-`JWT_SECRET` and `ENCRYPTION_KEY` are Worker secrets; ignored local `.dev.vars` contains synthetic values from setup, or preserves a pre-existing file. Never use those example values in staging/production. Email providers and generation settings are stored in D1; their admin response/audit handling still has open M1 findings. Source contains token logging/origin/replay risks and non-atomic review updates. Do not treat role checks, encrypted-at-rest helpers, or passing unit tests as proof those findings are resolved.
+`JWT_SECRET` and `ENCRYPTION_KEY` are Worker secrets; ignored local `.dev.vars` contains synthetic values from setup, or preserves a pre-existing file. Never use those example values in staging/production. AI settings live in D1; admin responses expose metadata and enforce AI_KEYS encryption. PUBLIC_APP_ORIGIN/ENVIRONMENT configure the trusted browser origin; AI_PROVIDER_ORIGINS grants provider-origin trust outside D1. See setup docs for existing local config updates. Legacy secret/audit rows may require a separate approved rewrite/cleanup; tests do not verify credential rotation.
 
 ## Browser fixtures and operations
 
@@ -92,8 +88,8 @@ A real release needs owner approval, private environment configuration and migra
 
 ## Worker test toolchain
 
-Backend tests import `cloudflareTest` from exact `@cloudflare/vitest-plugin@1.4.8`, with `@cloudflare/vitest-plugin/types`. Vitest remains 4.1.12; application dependencies, native quotas, fallback semantics and fixtures are unchanged. Direct esbuild0.28.2 is supported by the installed Vite peer range and is also used by the disposable E2E bundler.
+Backend tests import `cloudflareTest` from exact `@cloudflare/vitest-plugin@1.4.8`, with `@cloudflare/vitest-plugin/types`. Vitest remains 4.1.12; M1 extends safe fixtures and durable quotas without dependency changes. Direct esbuild0.28.2 is supported by the installed Vite peer range and is also used by the disposable E2E bundler.
 
 The vendor plugin owns Wrangler4.153.0/Miniflare5 internally. Local CLI remains Wrangler4.105.0 and browser fixtures remain Miniflare4.20260625.0. A version-scoped `packageExtensions` entry supplies genuine Workers Types5 to the plugin’s internal Wrangler, while application TypeScript and local CLI keep Types4. Peer requirements are satisfied in their own scopes; no peer-check bypass or audit suppression is configured. The newer Miniflare JSON-binding types require a closed object type alias for the existing SQL-file fixtures; payloads and validation are unchanged.
 
-Final dependency-remediation evidence must record every gate on the committed clean HEAD. Once all technical gates pass, report **M0 TECHNICAL GATES PASS / AWAITING OWNER ACCEPTANCE**, not M0 accepted or M1 completed. Public vendor migration guidance: https://developers.cloudflare.com/workers/testing/vitest-integration/migration-guides/migrate-to-vitest-plugin/ .
+The M1 evidence records gates on the committed clean HEAD, review findings and remaining limits. Stop for owner review before M2–M4 or deployment.

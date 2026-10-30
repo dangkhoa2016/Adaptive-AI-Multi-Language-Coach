@@ -6,15 +6,11 @@ Monorepo pnpm gồm Vue 3 SPA, API Hono trên Cloudflare Workers, D1, cache KV v
 
 ## Trạng thái kiểm chứng hiện tại
 
-Vòng đóng M0 tiếp tục trên nhánh `recovery/adaptive-coach-production-hardening-2026-10-29`, từ baseline gốc `42f0d7d9cc261f83e627f112f976c34d2c3b7ddf` và HEAD review đầu `488121f4384bfa8a0738a871ff112ac9e20b0f6a`.
+M1 hardening tiếp tục theo yêu cầu chủ dự án trên `recovery/adaptive-coach-production-hardening-2026-10-29`, từ HEAD dependency M0 `be1417bf8dc94f9bfc9f0eb87c44383e9eee6b8e`. M0 đã qua gate kỹ thuật; nghiệm thu vẫn là quyết định riêng của chủ dự án. Credential verification tiếp tục được bỏ qua theo yêu cầu.
 
-JSON auth chỉ serialize một lần; limiter chỉ áp dụng đúng các route POST; fallback chỉ trả cặp có nhãn ngôn ngữ rõ ràng. Đã đổi namespace cache để loại dữ liệu fallback cũ có thể sai ngôn ngữ. Browser test yêu cầu magic-link và luồng học hiện PASS qua HTTP Worker/D1/KV thật, có kiểm tra vượt quota, mail tổng hợp được bắt local và fixture en→vi. Điều này chưa chứng minh toàn bộ hành trình đăng nhập/lưu từ/ôn tập an toàn hoặc mail/AI thật.
+M1 bổ sung origin/CSRF tin cậy, token một lần chống race, thu hồi session, settings admin chỉ metadata và secret mã hóa, review nguyên tử với version/idempotency, quota D1 bền vững, giới hạn payload/provider và cache tách theo cấu hình model. Browser fixture chạy đăng nhập→sinh ENVI→lưu từ→chấm ôn tập qua Vue/Worker/D1/KV thật, chỉ dùng mail tổng hợp trong RAM. Kết quả gate trên commit cuối và các lần thử thất bại nằm trong evidence M1 bên ngoài repo; không dùng lại coverage cũ.
 
-**Việc nghiệm thu M0 vẫn do chủ dự án quyết định.** Vòng chỉ xử lý dependency này thay test pool Cloudflare cũ bằng `@cloudflare/vitest-plugin@1.4.8` được nhà cung cấp hỗ trợ và cập nhật esbuild trực tiếp lên `0.28.2`; full audit trong kiểm tra chuyển đổi đã sạch. Xác minh credential tiếp tục được bỏ qua theo yêu cầu, không coi là đã hoàn tất. M1–M4 vẫn NOT_RUN. Kết quả mới, coverage, các lần thử thất bại, quyết định dependency và lệnh chạy trên commit cuối thực tế nằm trong gói evidence đóng M0 bên ngoài repo. Các phần trăm coverage cũ thuộc báo cáo vòng đầu, không dùng lại làm kết quả hiện tại.
-
-Hai đường dependency Zod 3 và esbuild từng bị cảnh báo đã được xử lý bằng cập nhật dependency, không dùng loại trừ audit hoặc ép override Zod khác major. Frontend Vitest chuyển từ 3 lên 4 để nhận bản vá bảo mật, nên cách ánh xạ coverage mới không thể so sánh trực tiếp với báo cáo cũ.
-
-Deploy tiếp tục bị vô hiệu. Vòng này không cho phép push, đọc/ghi DB remote, mail thật, inference tính phí hoặc truy cập dữ liệu production. Giữ kín ZIP gốc/backup riêng tư và rotate GitHub credential đã lộ.
+M2–M4 chưa chạy. Deploy vẫn bị vô hiệu; không push, đọc/ghi DB remote, gửi mail thật hay gọi inference tính phí. Không coi kiểm thử local là nghiệm thu production hoặc chất lượng ngôn ngữ AI/audio. Dependency giữ plugin Cloudflare1.4.8/esbuild0.28.2 từ vòng sửa advisory, không che audit. Không công bố ZIP/backup có credential; tình trạng rotate chưa xác minh.
 
 ## Thiết lập local
 
@@ -53,23 +49,23 @@ pnpm -r build
 pnpm --filter @vocab/frontend test:e2e
 ```
 
-CI chạy typecheck, lint, định dạng, Vitest và build. E2E có lệnh riêng tự khởi động backend dùng một lần và frontend, cần Chromium cùng thư viện hệ thống. Workflow deploy chỉ kích hoạt thủ công, phụ thuộc CI chất lượng dùng lại; job deploy bị vô hiệu trong khi chờ chủ dự án phê duyệt và cấu hình môi trường.
+CI chạy typecheck, lint, định dạng, Vitest, regression provider trên runtime native và build. E2E có lệnh riêng tự khởi động backend dùng một lần và frontend, cần Chromium cùng thư viện hệ thống. Workflow deploy chỉ kích hoạt thủ công, phụ thuộc CI chất lượng dùng lại; job deploy bị vô hiệu trong khi chờ chủ dự án phê duyệt và cấu hình môi trường.
 
 ## Kiến trúc và API
 
 Browser → API client Vue → proxy `/api` của Vite khi phát triển hoặc Worker khi triển khai → route Hono → D1/KV. Frontend build vào `assets/` ở root, được phục vụ qua `ASSETS`. Backend chọn locale bằng `Accept-Language` hoặc `?lang=`, hỗ trợ tám locale en, vi, ja, ko, th, zh, fr, de. Locale giao diện không đồng nghĩa chất lượng AI/audio đã được kiểm chứng cho từng ngôn ngữ.
 
-Sinh từ vựng đọc model/endpoint và cấu hình API key mã hóa trong D1, chỉ gọi nhà cung cấp HTTP khi có key, sau đó dùng fallback có nhãn ngôn ngữ phù hợp. Khóa KV gồm ngôn ngữ, chủ đề, cấp độ, số lượng, chế độ và ngày. Route audio dùng Workers AI qua `AI`; config local không bật binding remote có thể tính phí này.
+Sinh từ vựng đọc model/endpoint và cấu hình API key mã hóa trong D1, chỉ gọi nhà cung cấp HTTP khi có key, sau đó dùng fallback có nhãn ngôn ngữ phù hợp. Khóa KV v3 gồm ngôn ngữ, chủ đề, cấp độ, số lượng, chế độ, ngày và hash snapshot endpoint/model/options; cache giữ nhãn fallback. Route audio dùng Workers AI qua `AI`; config local không bật binding remote có thể tính phí này.
 
-| Nhóm API           | Endpoint chính                                                                       | Ranh giới hiện tại                                              |
-| ------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| Metadata công khai | `/health`, `/api/locales`, `/api/topics`, `/api/docs`                                | Không trừ quota AI/auth                                         |
-| Học tập            | POST `/api/generate`, `/api/quiz`, `/api/tts`, `/api/stt`                            | Chung limiter API native; giữ hành vi guest                     |
-| Xác thực           | POST `/api/auth/request`, `/api/auth/verify`, `/api/auth/logout`; GET `/api/auth/me` | Limiter cho POST auth; me cần session; còn hardening bảo mật    |
-| Từ vựng/ôn tập     | `/api/vocab/*`, `/api/review/*`                                                      | Cần session; nghiệm thu nguyên tử/đồng thời/phân quyền thuộc M1 |
-| Quản trị           | `/api/admin/*`                                                                       | Có kiểm tra auth/admin trong mã; sửa lộ secrets thuộc M1        |
+| Nhóm API           | Endpoint chính                                                                       | Ranh giới hiện tại                                         |
+| ------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Metadata công khai | `/health`, `/api/locales`, `/api/topics`, `/api/docs`                                | Không trừ quota AI/auth                                    |
+| Học tập            | POST `/api/generate`, `/api/quiz`, `/api/tts`, `/api/stt`                            | Limiter native + quota D1 guest/tài khoản/toàn hệ thống    |
+| Xác thực           | POST `/api/auth/request`, `/api/auth/verify`, `/api/auth/logout`; GET `/api/auth/me` | Origin cấu hình, token một lần, quota, session có thu hồi  |
+| Từ vựng/ôn tập     | `/api/vocab/*`, `/api/review/*`                                                      | Scoped theo user; grade nguyên tử, CAS/version, replay key |
+| Quản trị           | `/api/admin/*`                                                                       | Auth/admin; metadata, secret mã hóa, audit không giá trị   |
 
-Các bảng D1 gồm user, magic token đã hash, từ đã học, cấu hình nhà cung cấp email, settings hệ thống, chủ đề, fallback, lịch sử nội dung AI, lựa chọn model AI, lịch sử ôn tập, sự kiện vượt quota và audit. Bảo toàn mười hai migration lịch sử. Main local và recovery khác identity 0003/0004; legacy còn `mastered_at` và index mà DB mới không có. Migration 0009 chủ động xóa bốn key settings. Xem tài liệu setup về giới hạn backup/diễn tập.
+Các bảng D1 gồm user, magic token đã hash, từ đã học, cấu hình nhà cung cấp email, settings hệ thống, chủ đề, fallback, lịch sử nội dung AI, lựa chọn model AI, lịch sử ôn tập, sự kiện vượt quota và audit. Bảo toàn mười hai migration lịch sử;0013–0015 chỉ thêm schema cho M1. Main local và recovery khác identity 0003/0004; legacy còn `mastered_at` và index mà DB mới không có. Migration 0009 chủ động xóa bốn key settings. Xem tài liệu setup về giới hạn backup/diễn tập.
 
 ## Cấu hình và bảo mật
 
@@ -82,7 +78,7 @@ Các bảng D1 gồm user, magic token đã hash, từ đã học, cấu hình n
 | `RATE_LIMITER_AUTH` | 3 POST auth mỗi 60 giây trong template/driver local                |
 | `AI`                | Binding audio Workers AI cho triển khai; generator local không bật |
 
-`JWT_SECRET` và `ENCRYPTION_KEY` là Worker secrets; `.dev.vars` local được Git bỏ qua, chứa giá trị tổng hợp từ setup hoặc giữ nguyên file có sẵn. Không dùng giá trị mẫu cho staging/production. Nhà cung cấp mail và settings sinh từ nằm trong D1; xử lý response/audit admin vẫn còn phát hiện M1. Mã còn rủi ro log token, Origin, replay và cập nhật review không nguyên tử. Kiểm tra role, helper mã hóa hoặc unit test PASS chưa chứng minh các lỗi này đã được xử lý.
+`JWT_SECRET` và `ENCRYPTION_KEY` là Worker secrets; `.dev.vars` local được Git bỏ qua, chứa giá trị tổng hợp từ setup hoặc giữ nguyên file có sẵn. Không dùng giá trị mẫu cho staging/production. Settings AI nằm trong D1; API admin chỉ trả metadata và buộc mã hóa AI_KEYS. PUBLIC_APP_ORIGIN/ENVIRONMENT là cấu hình origin tin cậy, AI_PROVIDER_ORIGINS cấp quyền origin provider ngoài D1. Xem hướng dẫn local để bổ sung vào config hiện có. Secret/audit legacy có thể cần thay thế/cleanup riêng; kiểm thử không xác minh rotate credential.
 
 ## Fixture browser và vận hành
 
@@ -92,8 +88,8 @@ Phát hành thật cần chủ dự án phê duyệt, cấu hình môi trường
 
 ## Bộ công cụ test Worker
 
-Test backend import `cloudflareTest` từ phiên bản chính xác `@cloudflare/vitest-plugin@1.4.8`, dùng `@cloudflare/vitest-plugin/types`. Vitest giữ4.1.12; dependencies ứng dụng, quota native, ngữ nghĩa fallback và fixture không thay đổi. esbuild trực tiếp0.28.2 đáp ứng peer range của Vite đang cài và dùng cho bundler E2E dùng một lần.
+Test backend import `cloudflareTest` từ phiên bản chính xác `@cloudflare/vitest-plugin@1.4.8`, dùng `@cloudflare/vitest-plugin/types`. Vitest giữ4.1.12; M1 bổ sung fixture an toàn và quota bền vững mà không đổi dependency. esbuild trực tiếp0.28.2 đáp ứng peer range của Vite đang cài và dùng cho bundler E2E dùng một lần.
 
 Plugin nhà cung cấp dùng Wrangler4.153.0/Miniflare5 nội bộ. CLI local giữ Wrangler4.105.0 và fixture browser giữ Miniflare4.20260625.0. Mục `packageExtensions` giới hạn đúng phiên bản cấp Workers Types5 thật cho Wrangler nội bộ của plugin, còn TypeScript ứng dụng và CLI local giữ Types4. Peer được đáp ứng đúng scope, không bỏ qua kiểm tra peer hay che audit. Kiểu JSON binding mới của Miniflare cần type alias object đóng cho fixture tệp SQL hiện có; dữ liệu và validation giữ nguyên.
 
-Gói evidence xử lý dependency cuối phải ghi mọi gate trên HEAD đã commit và working tree sạch. Khi mọi gate kỹ thuật PASS, báo trạng thái **M0 TECHNICAL GATES PASS / AWAITING OWNER ACCEPTANCE**, chưa phải M0 được nghiệm thu hay M1 hoàn tất. Hướng dẫn chuyển đổi chính thức: https://developers.cloudflare.com/workers/testing/vitest-integration/migration-guides/migrate-to-vitest-plugin/ .
+Gói evidence M1 ghi gate trên HEAD đã commit sạch, báo cáo review và các giới hạn còn mở. Dừng để chủ dự án review trước M2–M4 hoặc triển khai.

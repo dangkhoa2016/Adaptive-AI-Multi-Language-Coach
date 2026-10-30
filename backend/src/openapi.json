@@ -277,7 +277,7 @@
     },
     "/api/admin/settings": {
       "get": {
-        "summary": "List all settings",
+        "summary": "List settings metadata (admin only; no stored values)",
         "operationId": "listSettings",
         "tags": ["Admin"],
         "security": [{ "authCookie": [] }],
@@ -294,10 +294,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "key": { "type": "string", "example": "OPENAI_API_KEY" },
-                          "value": { "type": "string", "example": "sk-..." }
+                          "key": { "type": "string", "example": "AI_KEYS" },
+                          "configured": { "type": "boolean" },
+                          "masked": { "type": "string", "example": "********" },
+                          "encrypted": { "type": "boolean" },
+                          "updatedAt": { "type": "string" }
                         },
-                        "required": ["key", "value"]
+                        "required": ["key", "configured", "masked", "encrypted", "updatedAt"]
                       }
                     }
                   },
@@ -335,8 +338,8 @@
                   "value": { "type": "string", "description": "Setting value" },
                   "encrypted": {
                     "type": "boolean",
-                    "description": "Whether to encrypt the value",
-                    "default": false
+                    "description": "Ignored; server policy always encrypts AI_KEYS",
+                    "deprecated": true
                   }
                 },
                 "required": ["value"]
@@ -353,7 +356,7 @@
                   "type": "object",
                   "properties": {
                     "success": { "type": "boolean", "example": true },
-                    "key": { "type": "string", "example": "OPENAI_API_KEY" },
+                    "key": { "type": "string", "example": "AI_KEYS" },
                     "encrypted": { "type": "boolean", "example": false }
                   },
                   "required": ["success", "key", "encrypted"]
@@ -763,9 +766,20 @@
                     "minimum": 0,
                     "maximum": 5,
                     "description": "Quality rating 0-5"
+                  },
+                  "expectedVersion": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "review_version from the fetched card"
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "description": "Reuse on retry with the exact same grade payload"
                   }
                 },
-                "required": ["learnedPairId", "quality"]
+                "required": ["learnedPairId", "quality", "expectedVersion", "idempotencyKey"]
               }
             }
           }
@@ -788,7 +802,10 @@
           "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": {
+            "description": "Stale card version or changed payload for an existing idempotency key"
+          }
         }
       }
     },
@@ -1237,6 +1254,7 @@
       "LearnedPair": {
         "type": "object",
         "properties": {
+          "review_version": { "type": "integer", "minimum": 0 },
           "id": { "type": "string", "format": "uuid" },
           "user_id": { "type": "string", "format": "uuid" },
           "source": { "type": "string" },

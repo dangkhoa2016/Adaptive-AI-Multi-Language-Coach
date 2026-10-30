@@ -101,7 +101,7 @@ function createMockDB(): D1Database {
           }
           return { success: true }
         },
-        first: async () => null,
+        first: async () => (sql.includes('INSERT INTO quota_buckets') ? { used: 1 } : null),
         raw: async () => [],
       }),
       all: async <T>() => ({ results: [] as T[], success: true }) as never,
@@ -119,6 +119,8 @@ export function createMockEnv(overrides?: Record<string, unknown>) {
   const db = (overrides?.DB as D1Database | undefined) ?? createMockDB()
   return {
     DB: db,
+    ENVIRONMENT: 'local',
+    PUBLIC_APP_ORIGIN: 'http://localhost',
     CACHE: {} as KVNamespace,
     ENCRYPTION_KEY: 'test-encryption-key-32-chars!!',
     ...overrides,

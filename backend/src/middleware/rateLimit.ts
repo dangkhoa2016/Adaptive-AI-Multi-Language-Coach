@@ -16,10 +16,10 @@ export function createRateLimitMiddleware(
   Variables: Variables
 }> {
   return async (c, next) => {
-    const ip =
-      c.req.header('cf-connecting-ip') ?? c.req.raw.headers.get('x-forwarded-for') ?? 'unknown'
+    const ip = c.req.header('cf-connecting-ip') ?? 'unknown'
     const limiter =
       binding === 'RATE_LIMITER_AUTH' ? c.env.RATE_LIMITER_AUTH : c.env.RATE_LIMITER_API
+    if (!limiter?.limit) return c.json({ error: 'service_unavailable' }, 503)
     const result = await limiter.limit({ key: ip })
     if (result.success === false) {
       try {
@@ -32,8 +32,9 @@ export function createRateLimitMiddleware(
           .bind(id, ip, endpoint, now)
           .run()
       } catch (_err) {
-        console.error('Failed to log rate limit event:', _err)
+        console.error('[rate_limit] audit_failed')
       }
+      c.header('Retry-After', '60')
       return c.json({ error: 'rate_limited', message: t(c, 'errors.rate_limited') }, 429)
     }
     await next()

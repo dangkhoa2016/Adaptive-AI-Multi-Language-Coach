@@ -25,7 +25,7 @@ function selectProvider(providers: ProviderRecord[]): ProviderRecord | null {
 export async function getActiveProviders(db: D1Database): Promise<ProviderRecord[]> {
   const result = await db
     .prepare(
-      'SELECT provider_id, provider_name, is_active, weight, config_json FROM email_providers_config WHERE is_active = 1',
+      `SELECT provider_id, provider_name, is_active, weight, config_json FROM email_providers_config WHERE is_active = 1 AND provider_id IN ('resend', 'postmark')`,
     )
     .all<ProviderRecord>()
   return result.results ?? []
@@ -42,9 +42,10 @@ export async function getForceProviderWhitelist(db: D1Database): Promise<string[
     .filter(Boolean)
 }
 
-export async function sendEmail(
+async function deliverEmail(
   db: D1Database,
   params: { to: string; subject: string; html: string; from?: string },
+  deadline: number,
 ): Promise<boolean> {
   const whitelist = await getForceProviderWhitelist(db)
   let activeProviders = await getActiveProviders(db)
@@ -53,14 +54,16 @@ export async function sendEmail(
     activeProviders = activeProviders.filter((p) => whitelist.includes(p.provider_id))
   }
 
+  activeProviders = activeProviders.filter((provider) => providerMap[provider.provider_id])
+
   if (activeProviders.length === 0) {
-    console.log(`[mail] No active providers configured — email not sent to ${params.to}`)
+    console.log('[mail] delivery_unavailable')
     return false
   }
 
   const tried = new Set<string>()
 
-  while (tried.size < activeProviders.length) {
+  while (tried.size < activeProviders.length && tried.size < 3 && Date.now() < deadline) {
     const remaining = activeProviders.filter((p) => !tried.has(p.provider_id))
     const selected = selectProvider(remaining)
     if (!selected) break
@@ -69,22 +72,50 @@ export async function sendEmail(
     const adapter = providerMap[selected.provider_id]
     if (!adapter) continue
 
+    let config: Record<string, string>
     try {
-      const config = JSON.parse(selected.config_json) as Record<string, string>
+      config = JSON.parse(selected.config_json) as Record<string, string>
       config.from = params.from ?? config.from ?? 'noreply@vocab.app'
+    } catch {
+      console.log('[mail] provider_configuration_invalid')
+      continue
+    }
+    try {
       const ok = await adapter.send({
         to: params.to,
         subject: params.subject,
         html: params.html,
         config,
+        timeoutMs: Math.min(5000, deadline - Date.now()),
       })
       if (ok) return true
-      console.log(`[mail] Provider ${selected.provider_id} failed, trying next...`)
-    } catch (err) {
-      console.log(`[mail] Provider ${selected.provider_id} error: ${err}`)
+      console.log('[mail] provider_delivery_failed')
+    } catch {
+      // A timeout/network failure might have occurred after acceptance. Do not duplicate mail.
+      console.log('[mail] provider_delivery_unknown')
+      return false
     }
   }
 
-  console.log(`[mail] All providers exhausted — email not sent to ${params.to}`)
+  console.log('[mail] delivery_exhausted')
   return false
+}
+
+export async function sendEmail(
+  db: D1Database,
+  params: { to: string; subject: string; html: string; from?: string },
+): Promise<boolean> {
+  const deadline = Date.now() + 15000
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    const timeout = new Promise<boolean>((resolve) => {
+      timer = setTimeout(() => {
+        console.log('[mail] delivery_deadline_exceeded')
+        resolve(false)
+      }, 15000)
+    })
+    return await Promise.race([deliverEmail(db, params, deadline), timeout])
+  } finally {
+    if (timer !== undefined) clearTimeout(timer)
+  }
 }

@@ -22,3 +22,7 @@ simple = { limit = 1000, period = 60 }
 name = "RATE_LIMITER_AUTH"
 namespace_id = "1002"
 simple = { limit = 3, period = 60 }
+
+[vars]
+PUBLIC_APP_ORIGIN = "http://localhost"
+ENVIRONMENT = "local"

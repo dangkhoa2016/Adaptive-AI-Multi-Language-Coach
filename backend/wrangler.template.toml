@@ -17,8 +17,15 @@ binding = "ASSETS"
 #   - ENCRYPTION_KEY: AES-256 root key for encrypting sensitive D1 system_settings
 #   - JWT_SECRET: JWT signing/verification key (if auth is enabled)
 #
-# All other config (AI endpoints, model options, email settings) is stored
-# in the D1 `system_settings` table. Use PATCH /api/admin/settings/:key to manage.
+# D1 admin settings allow only AI_KEYS, AI_ENDPOINT_URL, AI_MODEL_NAME, AI_MODEL_OPTIONS.
+# GET returns metadata only; secret replacements are server-encrypted.
+
+# [Trusted runtime configuration] Replace with the real canonical HTTPS application origin.
+[vars]
+PUBLIC_APP_ORIGIN = "https://replace-before-release.example.invalid"
+ENVIRONMENT = "production"
+# Custom provider origins require deployment review; D1 endpoint changes cannot add trust.
+AI_PROVIDER_ORIGINS = "https://api.openai.com"
 
 # [KV] Cache layer only — stores AI response cache with 24h TTL.
 # App settings are stored in D1, NOT in KV.

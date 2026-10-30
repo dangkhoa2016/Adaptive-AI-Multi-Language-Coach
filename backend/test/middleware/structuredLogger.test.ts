@@ -57,13 +57,13 @@ describe('structuredLogger middleware', () => {
     expect(entry.remote).toBe('1.2.3.4')
   })
 
-  it('falls back to x-forwarded-for if cf-connecting-ip missing', async () => {
+  it('ignores untrusted x-forwarded-for when cf-connecting-ip is missing', async () => {
     const req = new Request('http://localhost/ok', {
       headers: { 'x-forwarded-for': '5.6.7.8' },
     })
     await app.fetch(req)
 
     const entry = JSON.parse(logSpy.mock.calls[0][0])
-    expect(entry.remote).toBe('5.6.7.8')
+    expect(entry.remote).toBe('unknown')
   })
 })

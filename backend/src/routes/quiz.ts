@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { t } from '../i18n'
+import { enforceCostQuota } from '../middleware/costQuota'
 import { vocabPairSchema, type VocabPair } from '../services/schemas'
 import { createQuizQuestions } from '../services/quiz'
 import { createRateLimitMiddleware } from '../middleware/rateLimit'
@@ -25,10 +26,12 @@ quizRouter.post('/quiz', createRateLimitMiddleware(), async (c) => {
     })
     .filter(Boolean) as VocabPair[]
 
-  if (validated.length === 0) {
+  if (pairList.length > 50 || validated.length === 0 || validated.length !== pairList.length) {
     return c.json({ error: 'invalid_payload', message: t(c, 'errors.invalid_payload') }, 400)
   }
 
+  const quotaError = await enforceCostQuota(c)
+  if (quotaError) return quotaError
   const distractorPool = validated.map((p) => p.target)
   const questions = createQuizQuestions(validated, distractorPool)
 

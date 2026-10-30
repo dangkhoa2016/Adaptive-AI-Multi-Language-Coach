@@ -1,4 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest'
+import { encrypt } from '../../src/services/crypto'
 import { parseAIResponse, callAI } from '../../src/services/ai'
 import {
   savedAiContent,
@@ -86,30 +87,25 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     resetSavedAiContent()
   })
 
-  function setAiKeys(keys: string[]) {
-    // Stored as raw JSON in D1 system_settings under 'env.AI_KEYS'
-    // Not encrypted in tests — getEnvSettingDecrypted returns as-is when isEncrypted() is false
-    systemSettingsStore.set('env.AI_KEYS', JSON.stringify(keys))
+  async function setAiKeys(keys: string[]) {
+    systemSettingsStore.set(
+      'env.AI_KEYS',
+      'enc:v1:' + (await encrypt(JSON.stringify(keys), 'test-encryption-key-32-chars!!')),
+    )
   }
 
   function mockFetchResponseWith(pairs: VocabPair[]) {
-    return {
-      ok: true,
-      json: async () => ({
-        output: [
-          {
-            type: 'message',
-            content: [{ type: 'output_text', text: JSON.stringify({ pairs }) }],
-          },
-        ],
-      }),
-    }
+    return Response.json({
+      output: [
+        { type: 'message', content: [{ type: 'output_text', text: JSON.stringify({ pairs }) }] },
+      ],
+    })
   }
 
   // --- Key availability ---
 
   it('does not save to DB when AI_KEYS is empty', async () => {
-    setAiKeys([])
+    await setAiKeys([])
     const env = createMockEnv()
     const req: GenerateRequest = {
       source: 'en',
@@ -132,7 +128,7 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     const originalFetch = globalThis.fetch
     globalThis.fetch = async () => mockFetchResponseWith(VALID_PAIRS) as Response
 
-    setAiKeys(['key-1', 'key-2'])
+    await setAiKeys(['key-1', 'key-2'])
 
     const env = createMockEnv({})
     const req: GenerateRequest = {
@@ -146,7 +142,7 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     }
 
     try {
-      const result = await callAI(env, req)
+      const result = await callAI(env, req, 'synthetic-approved-cache-namespace')
       expect(result).toEqual(VALID_PAIRS)
       expect(savedAiContent.length).toBe(1)
       const saved = savedAiContent[0]
@@ -156,7 +152,7 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
       expect(saved.level).toBe('A1')
       expect(saved.mode).toBe('word')
       expect(saved.count).toBe(2)
-      expect(saved.cache_key).toContain('en|vi|travel|A1|2|word')
+      expect(saved.cache_key).toBe('synthetic-approved-cache-namespace')
 
       const parsed = JSON.parse(saved.pairs_json) as VocabPair[]
       expect(parsed).toEqual(VALID_PAIRS)
@@ -169,9 +165,9 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
 
   it('does not save to DB when AI returns non-OK response', async () => {
     const originalFetch = globalThis.fetch
-    globalThis.fetch = async () => ({ ok: false, status: 500 }) as Response
+    globalThis.fetch = async () => new Response(null, { status: 500 })
 
-    setAiKeys(['key-1'])
+    await setAiKeys(['key-1'])
 
     const env = createMockEnv({})
     const req: GenerateRequest = {
@@ -196,19 +192,16 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
   it('does not save to DB when AI response fails parsing', async () => {
     const originalFetch = globalThis.fetch
     globalThis.fetch = async () =>
-      ({
-        ok: true,
-        json: async () => ({
-          output: [
-            {
-              type: 'message',
-              content: [{ type: 'output_text', text: 'I cannot help with that' }],
-            },
-          ],
-        }),
-      }) as Response
+      Response.json({
+        output: [
+          {
+            type: 'message',
+            content: [{ type: 'output_text', text: 'I cannot help with that' }],
+          },
+        ],
+      })
 
-    setAiKeys(['key-1'])
+    await setAiKeys(['key-1'])
 
     const env = createMockEnv({})
     const req: GenerateRequest = {
@@ -233,24 +226,21 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
   it('does not save to DB when AI response has invalid pair schema', async () => {
     const originalFetch = globalThis.fetch
     globalThis.fetch = async () =>
-      ({
-        ok: true,
-        json: async () => ({
-          output: [
-            {
-              type: 'message',
-              content: [
-                {
-                  type: 'output_text',
-                  text: JSON.stringify({ pairs: [{ source: 'hello' }] }),
-                },
-              ],
-            },
-          ],
-        }),
-      }) as Response
+      Response.json({
+        output: [
+          {
+            type: 'message',
+            content: [
+              {
+                type: 'output_text',
+                text: JSON.stringify({ pairs: [{ source: 'hello' }] }),
+              },
+            ],
+          },
+        ],
+      })
 
-    setAiKeys(['key-1'])
+    await setAiKeys(['key-1'])
 
     const env = createMockEnv({})
     const req: GenerateRequest = {
@@ -278,6 +268,8 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     const originalFetch = globalThis.fetch
     globalThis.fetch = async () => mockFetchResponseWith(VALID_PAIRS) as Response
 
+    const encryptedKeys =
+      'enc:v1:' + (await encrypt(JSON.stringify(['key-1']), 'test-encryption-key-32-chars!!'))
     const brokenDB = {
       prepare: (sql: string) => ({
         bind: (...values: unknown[]) => ({
@@ -286,7 +278,7 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
               const keyPattern = values[0] as string
               if (keyPattern === 'env.AI_KEYS') {
                 return {
-                  results: [{ value: JSON.stringify(['key-1']) }] as T[],
+                  results: [{ value: encryptedKeys }] as T[],
                   success: true,
                 } as never
               }
@@ -336,11 +328,11 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     let callCount = 0
     globalThis.fetch = async () => {
       callCount++
-      if (callCount === 1) return { ok: false, status: 429 } as Response
+      if (callCount === 1) return new Response(null, { status: 429 })
       return mockFetchResponseWith(VALID_PAIRS) as Response
     }
 
-    setAiKeys(['key-bad', 'key-good'])
+    await setAiKeys(['key-bad', 'key-good'])
 
     const env = createMockEnv({})
     const req: GenerateRequest = {
@@ -362,7 +354,7 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     }
   })
 
-  it('falls back when first key throws network error', async () => {
+  it('stops after ambiguous network error without risking duplicate inference', async () => {
     const originalFetch = globalThis.fetch
     let callCount = 0
     globalThis.fetch = async () => {
@@ -371,74 +363,7 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
       return mockFetchResponseWith(VALID_PAIRS) as Response
     }
 
-    setAiKeys(['key-error', 'key-good'])
-
-    const env = createMockEnv({})
-    const req: GenerateRequest = {
-      source: 'en',
-      target: 'vi',
-      topic: 'travel',
-      level: 'A1',
-      count: 2,
-      uiLocale: 'en',
-      mode: 'word',
-    }
-
-    try {
-      const result = await callAI(env, req)
-      expect(result).toEqual(VALID_PAIRS)
-      expect(callCount).toBe(2)
-    } finally {
-      globalThis.fetch = originalFetch
-    }
-  })
-
-  it('falls back when first key returns unparseable response', async () => {
-    const originalFetch = globalThis.fetch
-    let callCount = 0
-    globalThis.fetch = async () => {
-      callCount++
-      if (callCount === 1)
-        return {
-          ok: true,
-          json: async () => ({
-            output: [{ type: 'message', content: [{ type: 'output_text', text: 'no json here' }] }],
-          }),
-        } as Response
-      return mockFetchResponseWith(VALID_PAIRS) as Response
-    }
-
-    setAiKeys(['key-bad-response', 'key-good'])
-
-    const env = createMockEnv({})
-    const req: GenerateRequest = {
-      source: 'en',
-      target: 'vi',
-      topic: 'travel',
-      level: 'A1',
-      count: 2,
-      uiLocale: 'en',
-      mode: 'word',
-    }
-
-    try {
-      const result = await callAI(env, req)
-      expect(result).toEqual(VALID_PAIRS)
-      expect(callCount).toBe(2)
-    } finally {
-      globalThis.fetch = originalFetch
-    }
-  })
-
-  it('returns null when all keys fail', async () => {
-    const originalFetch = globalThis.fetch
-    let callCount = 0
-    globalThis.fetch = async () => {
-      callCount++
-      return { ok: false, status: 500 } as Response
-    }
-
-    setAiKeys(['key-1', 'key-2', 'key-3'])
+    await setAiKeys(['key-error', 'key-good'])
 
     const env = createMockEnv({})
     const req: GenerateRequest = {
@@ -454,7 +379,71 @@ describe('callAI — key rotation and saveGeneratedContent', () => {
     try {
       const result = await callAI(env, req)
       expect(result).toBeNull()
-      expect(callCount).toBe(3)
+      expect(callCount).toBe(1)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+
+  it('stops after an accepted but unparseable response', async () => {
+    const originalFetch = globalThis.fetch
+    let callCount = 0
+    globalThis.fetch = async () => {
+      callCount++
+      if (callCount === 1)
+        return Response.json({
+          output: [{ type: 'message', content: [{ type: 'output_text', text: 'no json here' }] }],
+        })
+      return mockFetchResponseWith(VALID_PAIRS) as Response
+    }
+
+    await setAiKeys(['key-bad-response', 'key-good'])
+
+    const env = createMockEnv({})
+    const req: GenerateRequest = {
+      source: 'en',
+      target: 'vi',
+      topic: 'travel',
+      level: 'A1',
+      count: 2,
+      uiLocale: 'en',
+      mode: 'word',
+    }
+
+    try {
+      const result = await callAI(env, req)
+      expect(result).toBeNull()
+      expect(callCount).toBe(1)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+
+  it('stops on ambiguous server failure', async () => {
+    const originalFetch = globalThis.fetch
+    let callCount = 0
+    globalThis.fetch = async () => {
+      callCount++
+      return new Response(null, { status: 500 })
+    }
+
+    await setAiKeys(['key-1', 'key-2', 'key-3'])
+
+    const env = createMockEnv({})
+    const req: GenerateRequest = {
+      source: 'en',
+      target: 'vi',
+      topic: 'travel',
+      level: 'A1',
+      count: 2,
+      uiLocale: 'en',
+      mode: 'word',
+    }
+
+    try {
+      const result = await callAI(env, req)
+      expect(result).toBeNull()
+      expect(callCount).toBe(1)
     } finally {
       globalThis.fetch = originalFetch
     }

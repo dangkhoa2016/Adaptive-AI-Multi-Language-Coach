@@ -1,8 +1,9 @@
-import type { VocabPair } from './schemas'
+import { generateResponseSchema, type VocabPair } from './schemas'
+import { getAppSettings, type AppSettings } from './appSettings'
 import type { Bindings } from '../env'
 
 // Invalidate legacy entries that may contain unlabelled, wrong-language fallback.
-const CACHE_PREFIX = 'cache:v2:'
+const CACHE_PREFIX = 'cache:v3:'
 const CACHE_TTL = 86400 // 24 hours in seconds
 
 /**
@@ -15,21 +16,46 @@ export function buildCacheKey(
   level: string,
   count: number,
   mode: string,
+  configuration = 'default',
 ): string {
   const dayBucket = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
-  const raw = `${source}|${target}|${topic}|${level}|${count}|${mode}|${dayBucket}`
-  return CACHE_PREFIX + raw
+  const raw = JSON.stringify([source, target, topic, level, count, mode, dayBucket])
+  return CACHE_PREFIX + configuration + ':' + raw
 }
 
 /**
  * Attempts to read from KV cache. Returns null on failure (non-blocking).
  */
-export async function readCache(kv: Bindings['CACHE'], key: string): Promise<VocabPair[] | null> {
+export interface CachedGeneration {
+  pairs: VocabPair[]
+  isFallback: boolean
+}
+
+// Only public generation inputs/settings enter this namespace; never credentials or user data.
+export async function generationCacheNamespace(
+  db: D1Database,
+  snapshot?: AppSettings,
+): Promise<string> {
+  const settings = snapshot ?? (await getAppSettings(db))
+  const bytes = new TextEncoder().encode(JSON.stringify(settings))
+  const hash = await crypto.subtle.digest('SHA-256', bytes)
+  return Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+export async function readCache(
+  kv: Bindings['CACHE'],
+  key: string,
+): Promise<CachedGeneration | null> {
   try {
     const raw = await kv.get(key, 'json')
-    if (raw && Array.isArray(raw)) return raw as VocabPair[]
+    if (!raw || typeof raw !== 'object') return null
+    const value = raw as Partial<CachedGeneration>
+    const parsed = generateResponseSchema.safeParse({ pairs: value.pairs })
+    if (parsed.success && typeof value.isFallback === 'boolean') {
+      return { pairs: parsed.data.pairs, isFallback: value.isFallback }
+    }
   } catch {
-    // Cache unavailable, continue without it
+    // Cache unavailable, continue without it.
   }
   return null
 }
@@ -41,9 +67,10 @@ export async function writeCache(
   kv: Bindings['CACHE'],
   key: string,
   pairs: VocabPair[],
+  isFallback: boolean,
 ): Promise<void> {
   try {
-    await kv.put(key, JSON.stringify(pairs), { expirationTtl: CACHE_TTL })
+    await kv.put(key, JSON.stringify({ pairs, isFallback }), { expirationTtl: CACHE_TTL })
   } catch {
     // Cache write failure is non-critical
   }

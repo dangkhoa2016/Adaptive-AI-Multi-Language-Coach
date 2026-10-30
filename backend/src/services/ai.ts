@@ -1,9 +1,18 @@
 import { buildCacheKey } from './cache'
 import { buildGeneratePrompt } from './prompts'
 import { generateResponseSchema, type GenerateRequest, type VocabPair } from './schemas'
-import { getAppSettings } from './appSettings'
+import { getAppSettings, type AppSettings } from './appSettings'
+import { validateSetting } from './settingPolicy'
 import type { Bindings } from '../env'
 import { getEnvSettingDecrypted } from './envSettings'
+import {
+  fetchProviderJson,
+  ProviderRejectionError,
+  requireTrustedAiEndpoint,
+  PROVIDER_ATTEMPT_TIMEOUT_MS,
+  PROVIDER_TOTAL_TIMEOUT_MS,
+  PROVIDER_MAX_ATTEMPTS,
+} from './providerSafety'
 
 const AI_KEYS_SETTING = 'AI_KEYS'
 
@@ -14,17 +23,8 @@ async function getAiKeys(db: D1Database, encryptionKey: string): Promise<string[
   const raw = await getEnvSettingDecrypted(db, encryptionKey, AI_KEYS_SETTING)
   if (!raw) return []
 
-  try {
-    const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) {
-      return parsed.filter((k): k is string => typeof k === 'string' && k.length > 0)
-    }
-  } catch {
-    // Not valid JSON, treat as single key
-    return raw.length > 0 ? [raw] : []
-  }
-
-  return []
+  // The settings service already validates the decrypted JSON array.
+  return JSON.parse(raw) as string[]
 }
 
 /**
@@ -55,66 +55,75 @@ async function saveGeneratedContent(
         cacheKey,
       )
       .run()
-  } catch (err) {
-    console.error('Failed to save AI-generated content to DB:', err)
+  } catch {
+    console.error('[ai] persistence_unavailable')
   }
 }
 
 /**
  * Calls the AI model to generate vocabulary pairs.
- * Reads AI_KEYS (JSON array) from D1 system_settings and rotates through them on failure.
+ * Rotates keys only after explicit credential/quota rejection; ambiguous outcomes never retry.
  */
-export async function callAI(env: Bindings, req: GenerateRequest): Promise<VocabPair[] | null> {
-  const prompt = buildGeneratePrompt(req)
-  const settings = await getAppSettings(env.DB)
-  const keys = await getAiKeys(env.DB, env.ENCRYPTION_KEY)
+export async function callAI(
+  env: Bindings,
+  req: GenerateRequest,
+  persistedCacheKey?: string,
+  settingsSnapshot?: AppSettings,
+): Promise<VocabPair[] | null> {
+  const deadline = Date.now() + PROVIDER_TOTAL_TIMEOUT_MS
+  let settings: Awaited<ReturnType<typeof getAppSettings>>
+  let keys: string[]
+  try {
+    settings = settingsSnapshot ?? (await getAppSettings(env.DB))
+    validateSetting('AI_ENDPOINT_URL', settings.aiEndpointUrl)
+    validateSetting('AI_MODEL_NAME', settings.aiModelName)
+    validateSetting('AI_MODEL_OPTIONS', JSON.stringify(settings.aiModelOptions))
+    requireTrustedAiEndpoint(settings.aiEndpointUrl, env.AI_PROVIDER_ORIGINS)
+    keys = await getAiKeys(env.DB, env.ENCRYPTION_KEY)
+  } catch {
+    console.error('[ai] configuration_unavailable')
+    return null
+  }
   if (keys.length === 0) return null
+  const prompt = buildGeneratePrompt(req)
+  const cacheKey =
+    persistedCacheKey ??
+    buildCacheKey(req.source, req.target, req.topic, req.level, req.count, req.mode)
 
-  const cacheKey = buildCacheKey(req.source, req.target, req.topic, req.level, req.count, req.mode)
-
-  for (const key of keys) {
+  for (const key of keys.slice(0, PROVIDER_MAX_ATTEMPTS)) {
+    const remainingMs = deadline - Date.now()
+    if (remainingMs <= 0) break
     try {
-      const res = await fetch(settings.aiEndpointUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${key}`,
+      const data = (await fetchProviderJson(
+        settings.aiEndpointUrl,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+          body: JSON.stringify({
+            ...settings.aiModelOptions,
+            model: settings.aiModelName,
+            input: prompt,
+          }),
         },
-        body: JSON.stringify({
-          model: settings.aiModelName,
-          input: prompt,
-          ...settings.aiModelOptions,
-        }),
-      })
-
-      if (!res.ok) {
-        console.error(`AI call failed with HTTP ${res.status}`)
-        continue
+        Math.min(PROVIDER_ATTEMPT_TIMEOUT_MS, remainingMs),
+      )) as {
+        output?: Array<{ type?: string; content?: Array<{ type?: string; text?: string }> }>
       }
-
-      const data = (await res.json()) as {
-        output?: Array<{
-          type?: string
-          content?: Array<{ type?: string; text?: string }>
-        }>
-      }
-      const text =
-        data.output
-          ?.find((item) => item.type === 'message')
-          ?.content?.find((c) => c.type === 'output_text')?.text ?? ''
-
-      const pairs = parseAIResponse(text)
+      const text = data.output
+        ?.find((item) => item.type === 'message')
+        ?.content?.find((content) => content.type === 'output_text')?.text
+      const pairs = typeof text === 'string' ? parseAIResponse(text) : null
       if (pairs) {
         await saveGeneratedContent(env.DB, req, pairs, cacheKey)
         return pairs
       }
-
-      console.error('AI parse failed, raw text:', text.slice(0, 500))
-    } catch (err) {
-      console.error('AI call error:', err instanceof Error ? err.message : String(err))
+      console.error('[ai] provider_unavailable')
+      return null
+    } catch (error) {
+      console.error('[ai] provider_unavailable')
+      if (!(error instanceof ProviderRejectionError)) return null
     }
   }
-
   return null
 }
 

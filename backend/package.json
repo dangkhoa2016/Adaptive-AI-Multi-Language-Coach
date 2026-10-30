@@ -19,7 +19,8 @@
     "seed:settings:local": "node scripts/seed-settings.mjs",
     "seed:settings:remote": "node scripts/seed-settings.mjs --remote",
     "setup:local": "node scripts/setup-local.mjs",
-    "test:e2e:server": "node scripts/e2e-server.mjs"
+    "test:e2e:server": "node scripts/e2e-server.mjs",
+    "test:provider-runtime": "node scripts/provider-runtime-check.mjs"
   },
   "dependencies": {
     "@vocab/shared": "workspace:*",

@@ -27,7 +27,7 @@ describe('generateTtsAudio (stateless, no R2)', () => {
 
     await expect(
       generateTtsAudio('hello', 'en', ai as never, '@cf/myshell-ai/melotts'),
-    ).rejects.toThrow('TTS model returned no audio')
+    ).rejects.toThrow('TTS generation failed')
   })
 
   it('throws when AI model returns empty object', async () => {
@@ -37,17 +37,17 @@ describe('generateTtsAudio (stateless, no R2)', () => {
 
     await expect(
       generateTtsAudio('hello', 'en', ai as never, '@cf/myshell-ai/melotts'),
-    ).rejects.toThrow('TTS model returned no audio')
+    ).rejects.toThrow('TTS generation failed')
   })
 
-  it('propagates AI model errors', async () => {
+  it('returns a generic error when the provider fails', async () => {
     const ai = {
       run: vi.fn().mockRejectedValue(new Error('AI service unavailable')),
     }
 
     await expect(
       generateTtsAudio('hello', 'en', ai as never, '@cf/myshell-ai/melotts'),
-    ).rejects.toThrow('AI service unavailable')
+    ).rejects.toThrow('TTS generation failed')
   })
 })
 

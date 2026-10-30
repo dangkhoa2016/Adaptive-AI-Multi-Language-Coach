@@ -13,12 +13,12 @@ export const generateRequestSchema = z.object({
 })
 
 export const vocabPairSchema = z.object({
-  source: z.string().min(1),
-  target: z.string().min(1),
-  exampleSource: z.string().optional().default(''),
-  exampleTarget: z.string().optional().default(''),
-  ipa: z.string().optional().default(''),
-  pos: z.string().optional().default(''),
+  source: z.string().min(1).max(2000),
+  target: z.string().min(1).max(2000),
+  exampleSource: z.string().max(2000).optional().default(''),
+  exampleTarget: z.string().max(2000).optional().default(''),
+  ipa: z.string().max(2000).optional().default(''),
+  pos: z.string().max(2000).optional().default(''),
   isPhrase: z
     .union([z.boolean(), z.number()])
     .transform((v) => !!v)
@@ -26,7 +26,7 @@ export const vocabPairSchema = z.object({
 })
 
 export const generateResponseSchema = z.object({
-  pairs: z.array(vocabPairSchema).min(1),
+  pairs: z.array(vocabPairSchema).min(1).max(50),
 })
 
 export type GenerateRequest = z.infer<typeof generateRequestSchema>

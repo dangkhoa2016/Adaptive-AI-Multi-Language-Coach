@@ -74,7 +74,7 @@ export default defineConfig({
       enabled: true,
       provider: 'istanbul',
       reporter: ['text', 'lcov', 'html', 'json-summary'],
-      include: ['src/**'],
+      include: ['src/**/*.ts'],
     },
   },
 })

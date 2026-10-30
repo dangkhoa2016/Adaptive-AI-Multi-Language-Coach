@@ -4,6 +4,7 @@ export interface EmailProvider {
     subject: string
     html: string
     config: Record<string, string>
+    timeoutMs?: number
   }): Promise<boolean>
 }
 

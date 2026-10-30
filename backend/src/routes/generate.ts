@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
 import { t } from '../i18n'
+import { enforceCostQuota } from '../middleware/costQuota'
 import { generateRequestSchema, type VocabPair } from '../services/schemas'
-import { buildCacheKey, readCache, writeCache } from '../services/cache'
+import { buildCacheKey, generationCacheNamespace, readCache, writeCache } from '../services/cache'
 import { getFallbackPairsFromDB } from '../services/fallback'
 import { callAI } from '../services/ai'
+import { getAppSettings, type AppSettings } from '../services/appSettings'
 import { createRateLimitMiddleware } from '../middleware/rateLimit'
 import type { Bindings, Variables } from '../env'
 
@@ -29,21 +31,39 @@ generateRouter.post('/generate', createRateLimitMiddleware(), async (c) => {
     )
   }
 
+  const quotaError = await enforceCostQuota(c)
+  if (quotaError) return quotaError
   const req = parsed.data
 
   // Try cache first
-  const cacheKey = buildCacheKey(req.source, req.target, req.topic, req.level, req.count, req.mode)
+  let namespace: string
+  let settings: AppSettings
+  try {
+    settings = await getAppSettings(c.env.DB)
+    namespace = await generationCacheNamespace(c.env.DB, settings)
+  } catch {
+    return c.json({ error: 'service_unavailable' }, 503)
+  }
+  const cacheKey = buildCacheKey(
+    req.source,
+    req.target,
+    req.topic,
+    req.level,
+    req.count,
+    req.mode,
+    namespace,
+  )
   const cached = await readCache(c.env.CACHE, cacheKey)
   if (cached) {
-    return c.json({ pairs: cached, cacheHit: true })
+    return c.json({ ...cached, cacheHit: true })
   }
 
   // Try AI generation
   let pairs: VocabPair[] | null = null
   try {
-    pairs = await callAI(c.env, req)
-  } catch (err) {
-    console.error('AI generation error:', err)
+    pairs = await callAI(c.env, req, cacheKey, settings)
+  } catch {
+    console.error('[ai] generation_failed')
   }
 
   // Fallback if AI failed
@@ -59,7 +79,7 @@ generateRouter.post('/generate', createRateLimitMiddleware(), async (c) => {
   }
 
   // Write to cache
-  await writeCache(c.env.CACHE, cacheKey, pairs)
+  await writeCache(c.env.CACHE, cacheKey, pairs, isFallback)
 
   return c.json({ pairs, isFallback, cacheHit: false })
 })

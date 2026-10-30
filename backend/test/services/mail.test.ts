@@ -114,9 +114,9 @@ describe('mail service', () => {
       expect(callUrl).toBe('https://api.postmarkapp.com/email')
     })
 
-    it('falls back to next provider when first fails', async () => {
+    it('falls back to next provider after an explicit rate rejection', async () => {
       fetchSpy
-        .mockResolvedValueOnce(new Response(null, { status: 500 }))
+        .mockResolvedValueOnce(new Response(null, { status: 429 }))
         .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
       const db = mockDB([

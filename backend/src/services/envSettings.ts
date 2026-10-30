@@ -1,117 +1,95 @@
 import type { D1Database } from '@cloudflare/workers-types'
 import { decrypt, encrypt, isEncrypted } from './crypto'
+import { isSettingKey, SETTING_POLICIES, validateSetting } from './settingPolicy'
 
-/**
- * Keys stored in system_settings table.
- * Convention: env var `FOO_BAR` maps to settings key `env.FOO_BAR`.
- */
 const ENV_PREFIX = 'env.'
+const CIPHERTEXT_PREFIX = 'enc:v1:'
 
-/**
- * Read a raw (possibly encrypted) value from system_settings.
- */
 export async function getEnvSetting(
   db: D1Database,
   key: string,
   fallback?: string,
 ): Promise<string | undefined> {
-  const settingsKey = ENV_PREFIX + key
   const { results } = await db
     .prepare('SELECT value FROM system_settings WHERE key = ?')
-    .bind(settingsKey)
+    .bind(ENV_PREFIX + key)
     .all<{ value: string }>()
-
-  const row = results?.[0]
-  if (!row) return fallback
-  return row.value
+  return results?.[0]?.value ?? fallback
 }
 
-/**
- * Read and decrypt a sensitive env var from system_settings.
- * If the value is not encrypted, returns it as-is.
- */
+/** Secret rows must authenticate as ciphertext. Legacy plaintext requires an explicit admin rewrite. */
 export async function getEnvSettingDecrypted(
   db: D1Database,
   encryptionKey: string,
   key: string,
   fallback?: string,
 ): Promise<string | undefined> {
-  const raw = await getEnvSetting(db, key, fallback)
-  if (!raw) return fallback
-
-  if (isEncrypted(raw)) {
-    try {
-      return await decrypt(raw, encryptionKey)
-    } catch {
-      // If decryption fails, return fallback
-      return fallback
-    }
+  const raw = await getEnvSetting(db, key)
+  if (raw === undefined) return fallback
+  if (!isSettingKey(key)) throw new Error('Unsupported setting')
+  if (!SETTING_POLICIES[key].secret) return raw
+  try {
+    if (!raw.startsWith(CIPHERTEXT_PREFIX) && !isEncrypted(raw)) throw new Error('plaintext')
+    const value = await decrypt(
+      raw.startsWith(CIPHERTEXT_PREFIX) ? raw.slice(CIPHERTEXT_PREFIX.length) : raw,
+      encryptionKey,
+    )
+    validateSetting(key, value)
+    return value
+  } catch {
+    throw new Error('Stored secret is unavailable; replace it through the admin settings API')
   }
-
-  return raw
 }
 
-/**
- * Set an env var in system_settings, optionally encrypting it.
- */
+/** Build the write so callers can atomically batch it together with audit metadata. */
+export async function prepareEnvSetting(
+  db: D1Database,
+  encryptionKey: string,
+  key: string,
+  value: string,
+) {
+  validateSetting(key, value)
+  if (!isSettingKey(key)) throw new Error('invalid_key')
+  const encrypted = SETTING_POLICIES[key].secret
+  const storedValue = encrypted ? CIPHERTEXT_PREFIX + (await encrypt(value, encryptionKey)) : value
+  return {
+    encrypted,
+    statement: db
+      .prepare(
+        `INSERT INTO system_settings (key, value, description, updated_at)
+       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
+      )
+      .bind(
+        ENV_PREFIX + key,
+        storedValue,
+        `Environment variable: ${key}${encrypted ? ' (encrypted)' : ''}`,
+      ),
+  }
+}
+
 export async function setEnvSetting(
   db: D1Database,
   encryptionKey: string,
   key: string,
   value: string,
-  encrypted = false,
+  _encrypted = false,
 ): Promise<void> {
-  const settingsKey = ENV_PREFIX + key
-  const storedValue = encrypted ? await encrypt(value, encryptionKey) : value
-
-  await db
-    .prepare(
-      `INSERT INTO system_settings (key, value, description, updated_at)
-       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
-    )
-    .bind(
-      settingsKey,
-      storedValue,
-      `Environment variable: ${key}${encrypted ? ' (encrypted)' : ''}`,
-    )
-    .run()
+  const write = await prepareEnvSetting(db, encryptionKey, key, value)
+  await write.statement.run()
 }
 
-/**
- * List all env-prefixed settings from system_settings.
- * Returns decrypted values if encryptionKey is provided.
- */
-export async function listEnvSettings(
-  db: D1Database,
-  encryptionKey?: string,
-): Promise<Array<{ key: string; value: string; encrypted: boolean }>> {
+/** Administrative reads never decrypt or return stored values, including unknown historical keys. */
+export async function listEnvSettings(db: D1Database, _encryptionKey?: string) {
   const { results } = await db
-    .prepare('SELECT key, value FROM system_settings WHERE key LIKE ? ORDER BY key')
+    .prepare('SELECT key, value, updated_at FROM system_settings WHERE key LIKE ? ORDER BY key')
     .bind(ENV_PREFIX + '%')
-    .all<{ key: string; value: string }>()
-
-  if (!results) return []
-
-  return Promise.all(
-    results.map(async (row) => {
-      const varKey = row.key.replace(ENV_PREFIX, '')
-      const looksEncrypted = isEncrypted(row.value)
-
-      if (looksEncrypted && encryptionKey) {
-        try {
-          return {
-            key: varKey,
-            value: await decrypt(row.value, encryptionKey),
-            encrypted: true,
-          }
-        } catch {
-          // If decryption fails, show placeholder
-          return { key: varKey, value: '***encrypted***', encrypted: true }
-        }
-      }
-
-      return { key: varKey, value: row.value, encrypted: false }
-    }),
-  )
+    .all<{ key: string; value: string; updated_at: string }>()
+  return (results ?? []).map((row) => ({
+    key: row.key.slice(ENV_PREFIX.length),
+    configured: row.value.length > 0,
+    masked: row.value.length > 0 ? '********' : '',
+    encrypted: row.value.startsWith(CIPHERTEXT_PREFIX) || isEncrypted(row.value),
+    updatedAt: row.updated_at,
+  }))
 }

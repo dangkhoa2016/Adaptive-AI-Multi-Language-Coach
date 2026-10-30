@@ -179,8 +179,9 @@ describe('cache behavior', () => {
       headers: { 'content-type': 'application/json' },
       body: payload,
     })
-    const body2 = (await res2.json()) as { cacheHit: boolean }
+    const body2 = (await res2.json()) as { cacheHit: boolean; isFallback: boolean }
     expect(body2.cacheHit).toBe(true)
+    expect(body2.isFallback).toBe(true)
   })
 })
 

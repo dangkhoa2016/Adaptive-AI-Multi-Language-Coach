@@ -21,7 +21,7 @@ export function structuredLogger(): MiddlewareHandler<{
       path,
       status: c.res.status,
       durationMs: ms,
-      remote: c.req.header('cf-connecting-ip') ?? c.req.header('x-forwarded-for') ?? 'unknown',
+      remote: c.req.header('cf-connecting-ip') ?? 'unknown',
     }
 
     if (c.res.status >= 500) {

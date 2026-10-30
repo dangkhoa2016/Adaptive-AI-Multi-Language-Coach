@@ -1,3 +1,5 @@
+import { validateSetting } from './settingPolicy'
+
 const APP_SETTING_KEYS: Record<string, string> = {
   aiEndpointUrl: 'env.AI_ENDPOINT_URL',
   aiModelName: 'env.AI_MODEL_NAME',
@@ -23,20 +25,16 @@ const DEFAULT_SETTINGS: AppSettings = {
  * Reads a single setting from system_settings with fallback.
  */
 async function getSetting(db: D1Database, key: string, fallback: string): Promise<string> {
-  try {
-    const { results } = await db
-      .prepare('SELECT value FROM system_settings WHERE key = ?')
-      .bind(key)
-      .all<{ value: string }>()
+  const { results } = await db
+    .prepare('SELECT value FROM system_settings WHERE key = ?')
+    .bind(key)
+    .all<{ value: string }>()
 
-    return results?.[0]?.value ?? fallback
-  } catch {
-    return fallback
-  }
+  return results?.[0]?.value ?? fallback
 }
 
 /**
- * Reads app settings from D1 system_settings. Falls back to defaults on failure or missing keys.
+ * Reads validated app settings; defaults apply only to missing keys. Unsafe legacy rows fail closed.
  */
 export async function getAppSettings(db: D1Database): Promise<AppSettings> {
   const [aiEndpointUrl, aiModelName, aiModelOptionsRaw] = await Promise.all([
@@ -49,12 +47,11 @@ export async function getAppSettings(db: D1Database): Promise<AppSettings> {
     ),
   ])
 
-  let aiModelOptions: Record<string, unknown>
-  try {
-    aiModelOptions = JSON.parse(aiModelOptionsRaw)
-  } catch {
-    aiModelOptions = DEFAULT_SETTINGS.aiModelOptions
-  }
+  // Apply current policy to legacy stored settings before they enter provider requests.
+  validateSetting('AI_ENDPOINT_URL', aiEndpointUrl)
+  validateSetting('AI_MODEL_NAME', aiModelName)
+  validateSetting('AI_MODEL_OPTIONS', aiModelOptionsRaw)
+  const aiModelOptions = JSON.parse(aiModelOptionsRaw) as Record<string, unknown>
 
   return {
     aiEndpointUrl,

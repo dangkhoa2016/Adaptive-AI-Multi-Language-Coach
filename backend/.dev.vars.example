@@ -1,3 +1,9 @@
 # Synthetic local-only values. Never use in production or staging.
 ENCRYPTION_KEY=local-only-encryption-key-32chars!
 JWT_SECRET=local-only-jwt-secret-do-not-deploy
+
+# Trusted local browser origin; production must use its canonical HTTPS origin.
+PUBLIC_APP_ORIGIN=http://localhost:5173
+ENVIRONMENT=local
+# Optional trusted provider origins, comma separated; default is OpenAI only.
+# AI_PROVIDER_ORIGINS=https://api.openai.com

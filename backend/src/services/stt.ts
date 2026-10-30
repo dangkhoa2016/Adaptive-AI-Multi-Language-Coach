@@ -5,19 +5,29 @@ export async function transcribeAudio(
   ai: Ai,
   model: string,
 ): Promise<string> {
+  let deadline: ReturnType<typeof setTimeout> | undefined
   try {
-    const response = await ai.run(model as never, {
-      audio: Array.from(new Uint8Array(audioBuffer)),
-    })
+    // The AI binding has no cancellation API. Bound our wait and never retry the call.
+    const response = await Promise.race([
+      ai.run(model as never, { audio: Array.from(new Uint8Array(audioBuffer)) }),
+      new Promise<never>((_, reject) => {
+        deadline = setTimeout(() => reject(new Error('STT transcription failed')), 10_000)
+      }),
+    ])
 
     if (!response || typeof response !== 'object' || !('text' in response)) {
-      throw new Error('STT model returned no transcription')
+      throw new Error('STT transcription failed')
     }
 
-    return (response as { text: string }).text.trim()
-  } catch (err) {
-    console.error('STT transcription failed:', err)
-    throw err
+    const text = (response as { text: unknown }).text
+    if (typeof text !== 'string' || text.length > 2000 || text.trim().length === 0) {
+      throw new Error('STT transcription failed')
+    }
+    return text.trim()
+  } catch {
+    throw new Error('STT transcription failed')
+  } finally {
+    if (deadline !== undefined) clearTimeout(deadline)
   }
 }
 

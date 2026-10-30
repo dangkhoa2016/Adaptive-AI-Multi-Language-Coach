@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono'
 import { getCookie } from 'hono/cookie'
 import type { Bindings, Variables } from '../env'
-import { verifyJwt } from '../services/auth'
+import { hashToken, verifyJwt } from '../services/auth'
 import { t } from '../i18n'
 
 export function requireAuth(): MiddlewareHandler<{
@@ -14,7 +14,14 @@ export function requireAuth(): MiddlewareHandler<{
       return c.json({ error: 'unauthorized', message: t(c, 'errors.unauthorized') }, 401)
     }
     const payload = await verifyJwt(token, c.env.JWT_SECRET)
-    if (!payload) {
+    const revoked = payload
+      ? await c.env.DB.prepare(
+          'SELECT token_hash FROM revoked_sessions WHERE token_hash = ? AND expires_at > ?',
+        )
+          .bind(await hashToken(token), Math.floor(Date.now() / 1000))
+          .first()
+      : null
+    if (!payload || revoked) {
       return c.json({ error: 'unauthorized', message: t(c, 'errors.unauthorized') }, 401)
     }
     c.set('userId', payload.sub)

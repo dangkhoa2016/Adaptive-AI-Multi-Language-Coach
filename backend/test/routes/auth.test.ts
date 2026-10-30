@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from 'vitest'
+import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { createMockRateLimiter } from '../helpers'
 import { createJwt, verifyJwt, hashToken } from '../../src/services/auth'
 
@@ -29,6 +29,8 @@ function createMockDB(): D1Database {
             if (t) t.used = 1
           }
           if (sql.includes('INSERT INTO users')) {
+            const existing = [...users.values()].find((u) => u.email === values[1])
+            if (existing) return { success: true }
             users.set(values[0] as string, {
               id: values[0] as string,
               email: values[1] as string,
@@ -38,6 +40,13 @@ function createMockDB(): D1Database {
           return { success: true }
         },
         first: async <T>() => {
+          if (sql.includes('quota_buckets')) return { used: 1 } as T
+          if (sql.includes('UPDATE magic_tokens SET used = 1')) {
+            const row = magicTokens.get(values[0] as string)
+            if (!row || row.used || row.expires_at <= (values[1] as string)) return null
+            row.used = 1
+            return { email: row.email } as T
+          }
           if (sql.includes('FROM magic_tokens WHERE token_hash =')) {
             return magicTokens.get(values[0] as string) as unknown as T | null
           }
@@ -77,11 +86,14 @@ async function callApp(url: string, init?: RequestInit, cookie?: string): Promis
     RATE_LIMITER_AUTH: pass as unknown as RateLimit,
     ENCRYPTION_KEY: 'test-key',
     JWT_SECRET,
+    ENVIRONMENT: 'local',
+    PUBLIC_APP_ORIGIN: 'http://localhost',
     AI: {} as Ai,
     ASSETS: {} as Fetcher,
   }
   const headers = new Headers(init?.headers)
   headers.set('content-type', 'application/json')
+  headers.set('origin', 'http://localhost')
   if (cookie) headers.set('cookie', cookie)
   return app.fetch(new Request(url, { ...init, headers }), env, {
     waitUntil: () => {},
@@ -91,6 +103,13 @@ async function callApp(url: string, init?: RequestInit, cookie?: string): Promis
 }
 
 describe('auth service', () => {
+  it('issues unique sessions for the same user in the same second', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(1793275742000)
+    const first = await createJwt('synthetic-user', JWT_SECRET)
+    const second = await createJwt('synthetic-user', JWT_SECRET)
+    expect(first).not.toBe(second)
+    vi.restoreAllMocks()
+  })
   it('creates and verifies a valid JWT', async () => {
     const jwt = await createJwt('user-123', JWT_SECRET)
     expect(jwt).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/)
@@ -181,7 +200,7 @@ describe('auth routes', () => {
     const setCookie = res.headers.get('set-cookie')
     expect(setCookie).toContain('auth_token')
     expect(setCookie).toContain('HttpOnly')
-    expect(setCookie).toContain('Secure')
+    expect(setCookie).not.toContain('Secure')
   })
 
   it('POST /api/auth/verify rejects already-used token', async () => {
@@ -200,7 +219,7 @@ describe('auth routes', () => {
     })
     expect(res.status).toBe(401)
     const body = (await res.json()) as { error: string }
-    expect(body.error).toBe('token_used')
+    expect(body.error).toBe('invalid_token')
   })
 
   it('POST /api/auth/verify rejects expired token', async () => {
@@ -219,7 +238,7 @@ describe('auth routes', () => {
     })
     expect(res.status).toBe(401)
     const body = (await res.json()) as { error: string }
-    expect(body.error).toBe('token_expired')
+    expect(body.error).toBe('invalid_token')
   })
 
   it('GET /api/auth/me returns 401 without cookie', async () => {

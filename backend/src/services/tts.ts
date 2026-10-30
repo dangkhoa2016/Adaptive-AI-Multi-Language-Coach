@@ -6,20 +6,35 @@ export async function generateTtsAudio(
   ai: Ai,
   model: string,
 ): Promise<{ body: ReadableStream | null; contentType: string }> {
+  let deadline: ReturnType<typeof setTimeout> | undefined
   try {
-    const response = await ai.run(model as never, { text, lang: mapLocaleToMelo(locale) })
+    // The AI binding has no cancellation API. Bound our wait and never retry the call.
+    const response = await Promise.race([
+      ai.run(model as never, { text, lang: mapLocaleToMelo(locale) }),
+      new Promise<never>((_, reject) => {
+        deadline = setTimeout(() => reject(new Error('TTS generation failed')), 10_000)
+      }),
+    ])
 
     if (!response || typeof response !== 'object' || !('audio' in response)) {
-      throw new Error('TTS model returned no audio')
+      throw new Error('TTS generation failed')
     }
 
-    const audioBytes = (response as { audio: ArrayBuffer }).audio
+    const audioBytes = (response as { audio: unknown }).audio
+    if (
+      !(audioBytes instanceof ArrayBuffer) ||
+      audioBytes.byteLength === 0 ||
+      audioBytes.byteLength > 5 * 1024 * 1024
+    ) {
+      throw new Error('TTS generation failed')
+    }
     const contentType = 'audio/mpeg'
 
     return { body: new Response(audioBytes).body, contentType }
-  } catch (aiErr) {
-    console.error('TTS generation failed:', aiErr)
-    throw aiErr
+  } catch {
+    throw new Error('TTS generation failed')
+  } finally {
+    if (deadline !== undefined) clearTimeout(deadline)
   }
 }
 

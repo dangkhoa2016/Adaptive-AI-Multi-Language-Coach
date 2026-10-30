@@ -22,10 +22,13 @@ export interface JwtPayload {
 }
 
 export async function createJwt(userId: string, secret: string): Promise<string> {
+  if (!secret?.trim() || !userId.trim()) throw new Error('Invalid session configuration')
   const header = base64url(encoder.encode(JSON.stringify({ alg: 'HS256', typ: 'JWT' })))
   const now = Math.floor(Date.now() / 1000)
   const payload = base64url(
-    encoder.encode(JSON.stringify({ sub: userId, iat: now, exp: now + 7 * 86400 })),
+    encoder.encode(
+      JSON.stringify({ sub: userId, iat: now, exp: now + 7 * 86400, jti: crypto.randomUUID() }),
+    ),
   )
   const key = await crypto.subtle.importKey(
     'raw',
@@ -39,10 +42,13 @@ export async function createJwt(userId: string, secret: string): Promise<string>
 }
 
 export async function verifyJwt(token: string, secret: string): Promise<JwtPayload | null> {
+  if (!secret?.trim()) return null
   const parts = token.split('.')
   if (parts.length !== 3) return null
   const [header, payload, signature] = parts
   try {
+    const parsedHeader = JSON.parse(atob(header.replace(/-/g, '+').replace(/_/g, '/')))
+    if (parsedHeader.alg !== 'HS256' || parsedHeader.typ !== 'JWT') return null
     const key = await crypto.subtle.importKey(
       'raw',
       encoder.encode(secret),
@@ -61,7 +67,18 @@ export async function verifyJwt(token: string, secret: string): Promise<JwtPaylo
     )
     if (!valid) return null
     const data = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as JwtPayload
-    if (data.exp && data.exp < Math.floor(Date.now() / 1000)) return null
+    const now = Math.floor(Date.now() / 1000)
+    if (
+      typeof data.sub !== 'string' ||
+      !data.sub.trim() ||
+      !Number.isSafeInteger(data.iat) ||
+      !Number.isSafeInteger(data.exp) ||
+      data.iat > now ||
+      data.exp <= now ||
+      data.exp <= data.iat ||
+      data.exp - data.iat > 7 * 86400
+    )
+      return null
     return data
   } catch {
     return null

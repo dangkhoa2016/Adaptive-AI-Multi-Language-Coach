@@ -1,17 +1,17 @@
+import { isSettingKey, validateSetting } from '../services/settingPolicy'
 import { Hono } from 'hono'
 import type { Bindings, Variables } from '../env'
 import { requireAuth, requireAdmin } from '../middleware/auth'
-import { listEnvSettings, setEnvSetting } from '../services/envSettings'
+import { listEnvSettings, prepareEnvSetting } from '../services/envSettings'
 
 const router = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 /**
  * GET /api/admin/settings
- * List all env-prefixed system_settings (decrypted).
+ * List setting metadata without exposing stored values.
  */
 router.get('/admin/settings', requireAuth(), requireAdmin(), async (c) => {
-  const { ENCRYPTION_KEY, DB } = c.env
-  const settings = await listEnvSettings(DB, ENCRYPTION_KEY)
+  const settings = await listEnvSettings(c.env.DB)
   return c.json({ settings })
 })
 
@@ -24,39 +24,30 @@ router.patch('/admin/settings/:key', requireAuth(), requireAdmin(), async (c) =>
   const { ENCRYPTION_KEY, DB } = c.env
   const key = c.req.param('key')
 
-  // Reject keys that could break the system
-  if (key.startsWith('env.')) {
-    return c.json({ error: 'invalid_key', message: 'Do not include env. prefix' }, 400)
+  if (!isSettingKey(key)) return c.json({ error: 'invalid_key' }, 400)
+  let body: { value?: unknown }
+  try {
+    body = await c.req.json()
+    validateSetting(key, body?.value)
+  } catch {
+    return c.json({ error: 'invalid_value' }, 400)
   }
 
-  const body = await c.req.json<{ value: string; encrypted?: boolean }>()
-  if (!body.value) {
-    return c.json({ error: 'missing_value', message: 'value is required' }, 400)
-  }
-
-  // Read old value before overwriting
-  const settingsKey = 'env.' + key
-  const oldRow = await DB.prepare('SELECT value FROM system_settings WHERE key = ?')
-    .bind(settingsKey)
-    .first<{ value: string }>()
-
-  await setEnvSetting(DB, ENCRYPTION_KEY, key, body.value, body.encrypted ?? false)
-
-  // Audit log (redact secrets when encrypted)
+  const write = await prepareEnvSetting(DB, ENCRYPTION_KEY, key, body.value as string)
   const userId = c.var.userId!
-  const isEncrypted = body.encrypted ?? false
   const details = JSON.stringify({
-    oldValue: isEncrypted ? '[REDACTED]' : (oldRow?.value ?? null),
-    newValue: isEncrypted ? '[REDACTED]' : body.value,
-    encrypted: isEncrypted,
+    actor: userId,
+    action: 'update_setting',
+    key,
+    result: 'success',
   })
-  await DB.prepare(
-    'INSERT INTO audit_log (id, user_id, action, target, details, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-  )
-    .bind(crypto.randomUUID(), userId, 'update_setting', key, details, new Date().toISOString())
-    .run()
-
-  return c.json({ success: true, key, encrypted: body.encrypted ?? false })
+  await DB.batch([
+    write.statement,
+    DB.prepare(
+      'INSERT INTO audit_log (id, user_id, action, target, details, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    ).bind(crypto.randomUUID(), userId, 'update_setting', key, details, new Date().toISOString()),
+  ])
+  return c.json({ success: true, key, encrypted: write.encrypted })
 })
 
 /**
@@ -80,7 +71,22 @@ router.get('/admin/audit-log', requireAuth(), requireAdmin(), async (c) => {
     .bind(limit, offset)
     .all()
 
-  return c.json({ entries, total, page, limit })
+  // Historical audit rows may contain plaintext credentials. Return only trusted metadata;
+  // retain their original storage for a separately approved remediation procedure.
+  const sanitized = (entries ?? []).map((entry) => ({
+    id: entry.id,
+    user_id: entry.user_id,
+    action: entry.action,
+    target: entry.target,
+    created_at: entry.created_at,
+    details: JSON.stringify({
+      actor: entry.user_id,
+      action: entry.action,
+      key: entry.target,
+      result: 'recorded',
+    }),
+  }))
+  return c.json({ entries: sanitized, total, page, limit })
 })
 
 export { router as adminRouter }

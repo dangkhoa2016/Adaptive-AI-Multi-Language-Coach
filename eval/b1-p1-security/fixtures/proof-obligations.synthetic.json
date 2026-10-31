@@ -1,0 +1,48 @@
+{
+  "kind": "TEST_ONLY_P1_PROOF_OBLIGATIONS",
+  "mode": "OFFLINE_SYNTHETIC_NON_OPERATIVE",
+  "operationalDecision": "DENY",
+  "runtimeAuthority": false,
+  "gate": "OWNER_REVIEW_PENDING",
+  "statusByIar": [
+    {
+      "gate": "IAR-02",
+      "syntheticTests": "SIGNED_NON_GRANT_EPHEMERAL_ROOT_REPLAY_EPOCH_REVOKE",
+      "runtime": "NOT_VERIFIED",
+      "missing": [
+        "INDEPENDENT_ENROLLMENT",
+        "SIGNER_CUSTODY_AND_POP",
+        "TRUSTED_CLOCK",
+        "REVOCATION_AND_RELEASE_ATTESTATION"
+      ]
+    },
+    {
+      "gate": "IAR-03",
+      "syntheticTests": "FOUR_FAKE_BILLING_DIMENSIONS_AND_3_SEND_W",
+      "runtime": "NOT_VERIFIED",
+      "missing": [
+        "PROVIDER_BILLABLE_UNIT_LIMITS",
+        "MODEL_PRICE_VERSION_REGION",
+        "OWNER_USD_LIMIT",
+        "RETRY_BILLING_PROOF",
+        "ATOMIC_LEDGER"
+      ]
+    },
+    {
+      "gate": "IAR-05",
+      "syntheticTests": "CLOSED_RUNNER_BROKER_GRAPH",
+      "runtime": "NOT_VERIFIED",
+      "missing": [
+        "REAL_CLOUDFLARE_ENTITLEMENT",
+        "GLOBAL_OUTBOUND_NULL_RUNTIME_TEST",
+        "SERVICE_BINDING_ABSENCE_PROOF",
+        "BROKER_CREDENTIAL_ISOLATION",
+        "REAL_NETWORK_NEGATIVE_TESTS"
+      ]
+    }
+  ],
+  "noLiveGrants": true,
+  "noProviderCalls": true,
+  "noD1Remote": true,
+  "noDeployment": true
+}

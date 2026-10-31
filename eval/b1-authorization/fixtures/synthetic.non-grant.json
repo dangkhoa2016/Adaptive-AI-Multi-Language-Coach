@@ -1,0 +1,28 @@
+{
+  "kind": "TEST_ONLY_NON_GRANT_B1_P0",
+  "operationalDecision": "DENY",
+  "fixturesOnly": true,
+  "nonGrantPaperBytes": ["{}", "{\"a\":1,\"b\":2}"],
+  "syntheticReleaseDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "syntheticRate": {
+    "marker": "TEST_ONLY_FAKE_PRICE_SCHEDULE",
+    "model": "TEST_ONLY_MODEL",
+    "revision": "TEST_ONLY_REV_1",
+    "blockUnits": "1000",
+    "priceNumeratorUsd": "1",
+    "priceDenominator": "1000000"
+  },
+  "syntheticMaximum": {
+    "marker": "TEST_ONLY_BILLABLE_BOUND",
+    "model": "TEST_ONLY_MODEL",
+    "revision": "TEST_ONLY_REV_1",
+    "inputUnits": "900",
+    "outputUnits": "100",
+    "hiddenUnits": "1000",
+    "maxSends": 3,
+    "covered": ["input", "output", "hidden"]
+  },
+  "sourcePins": "DESIGN_ONLY_NOT_GRANTED",
+  "neverFor": "RUNTIME_PROVIDER_OR_GRANT",
+  "noBackendIntegration": true
+}
